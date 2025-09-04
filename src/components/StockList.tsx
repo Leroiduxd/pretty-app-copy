@@ -16,39 +16,39 @@ interface StockListProps {
 
 export const StockList = ({ stocks, selectedStock, onSelectStock }: StockListProps) => {
   return (
-    <div className="w-80 h-screen bg-[hsl(var(--sidebar-bg))] border-r border-border overflow-y-auto">
-      <div className="p-4 border-b border-border">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">B</span>
+    <div className="w-72 h-full bg-card border-r border-border overflow-y-auto">
+      <div className="p-3 border-b border-border">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center">
+            <span className="text-primary-foreground font-bold text-xs">B</span>
           </div>
-          <span className="text-foreground font-semibold">BrokeX</span>
+          <span className="text-foreground font-medium text-sm">Markets</span>
         </div>
         
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">SYMBOL</span>
           <span className="text-muted-foreground">LAST/CHANGE</span>
         </div>
       </div>
       
-      <div className="space-y-1 p-2">
+      <div className="space-y-0.5 p-2">
         {stocks.map((stock) => (
           <Card
             key={stock.symbol}
-            className={`p-3 cursor-pointer transition-colors hover:bg-[hsl(var(--sidebar-hover))] border-0 ${
-              selectedStock === stock.symbol ? 'bg-[hsl(var(--sidebar-hover))]' : 'bg-transparent'
+            className={`p-2.5 cursor-pointer transition-colors hover:bg-muted border-0 ${
+              selectedStock === stock.symbol ? 'bg-primary/10 border border-primary/20' : 'bg-transparent'
             }`}
             onClick={() => onSelectStock(stock.symbol)}
           >
             <div className="flex items-center justify-between">
               <div>
-                <div className="font-semibold text-foreground">{stock.symbol}</div>
-                <div className="text-xs text-muted-foreground">{stock.name}</div>
+                <div className="font-medium text-foreground text-sm">{stock.symbol}</div>
+                <div className="text-xs text-muted-foreground truncate">{stock.name}</div>
               </div>
               <div className="text-right">
-                <div className="font-semibold text-foreground">{stock.price.toFixed(2)}</div>
+                <div className="font-medium text-foreground text-sm">{stock.price.toFixed(2)}</div>
                 <div className={`text-xs ${stock.change >= 0 ? 'text-success' : 'text-danger'}`}>
-                  {stock.change >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}% / {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
+                  {stock.change >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
                 </div>
               </div>
             </div>

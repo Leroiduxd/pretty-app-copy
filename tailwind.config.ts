@@ -60,6 +60,12 @@ export default {
 					DEFAULT: 'hsl(var(--danger))',
 					foreground: 'hsl(var(--danger-foreground))'
 				},
+				'header-bg': 'hsl(var(--header-bg))',
+				'pro-accent': 'hsl(var(--pro-accent))',
+				'pro-neutral': 'hsl(var(--pro-neutral))',
+				'connection-good': 'hsl(var(--connection-good))',
+				'connection-medium': 'hsl(var(--connection-medium))',
+				'connection-poor': 'hsl(var(--connection-poor))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

@@ -1,7 +1,9 @@
 import { StockList } from "@/components/StockList";
 import { TradingChart } from "@/components/TradingChart";
 import { TradingPanel } from "@/components/TradingPanel";
-import { useState } from "react";
+import { Header } from "@/components/Header";
+import { PositionsPanel } from "@/components/PositionsPanel";
+import { useState, useEffect } from "react";
 
 // Sample stock data
 const stocksData = [
@@ -23,25 +25,44 @@ const stocksData = [
 
 const Index = () => {
   const [selectedStock, setSelectedStock] = useState("AAPL_USD");
+  const [showPositions, setShowPositions] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   
   const currentStock = stocksData.find(stock => stock.symbol === selectedStock) || stocksData[0];
 
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDarkMode);
+  }, [isDarkMode]);
+
   return (
-    <div className="min-h-screen bg-background flex">
-      <StockList 
-        stocks={stocksData}
-        selectedStock={selectedStock}
-        onSelectStock={setSelectedStock}
+    <div className="min-h-screen bg-background">
+      <Header 
+        onTogglePositions={() => setShowPositions(!showPositions)}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
       />
-      <TradingChart 
-        symbol={currentStock.symbol}
-        price={currentStock.price}
-        change={currentStock.change}
-        changePercent={currentStock.changePercent}
-      />
-      <TradingPanel 
-        symbol={currentStock.symbol}
-        price={currentStock.price}
+      
+      <div className="flex">
+        <StockList 
+          stocks={stocksData}
+          selectedStock={selectedStock}
+          onSelectStock={setSelectedStock}
+        />
+        <TradingChart 
+          symbol={currentStock.symbol}
+          price={currentStock.price}
+          change={currentStock.change}
+          changePercent={currentStock.changePercent}
+        />
+        <TradingPanel 
+          symbol={currentStock.symbol}
+          price={currentStock.price}
+        />
+      </div>
+
+      <PositionsPanel 
+        isOpen={showPositions}
+        onClose={() => setShowPositions(false)}
       />
     </div>
   );

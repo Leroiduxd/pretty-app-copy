@@ -17,8 +17,8 @@ export const TradingPanel = ({ symbol, price }: TradingPanelProps) => {
   const leverageOptions = ["1", "5", "10", "25"];
 
   return (
-    <div className="w-80 p-4">
-      <Card className="bg-card border-border">
+    <div className="w-80 p-3">
+      <Card className="bg-card border-border shadow-sm">
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm text-muted-foreground">{symbol}</span>
@@ -36,9 +36,20 @@ export const TradingPanel = ({ symbol, price }: TradingPanelProps) => {
           
           <Tabs defaultValue="market" className="mb-4">
             <TabsList className="grid grid-cols-2 w-full bg-muted">
-              <TabsTrigger value="market" className="data-[state=active]:bg-background">Market</TabsTrigger>
-              <TabsTrigger value="order" className="data-[state=active]:bg-background">Order</TabsTrigger>
+              <TabsTrigger value="market" className="data-[state=active]:bg-background text-xs">Market</TabsTrigger>
+              <TabsTrigger value="limit" className="data-[state=active]:bg-background text-xs">Limit</TabsTrigger>
             </TabsList>
+            <TabsContent value="market" className="mt-0">
+              <div className="text-xs text-muted-foreground mb-2">Execute at market price</div>
+            </TabsContent>
+            <TabsContent value="limit" className="mt-0">
+              <div className="text-xs text-muted-foreground mb-2">Set custom price</div>
+              <Input
+                type="number"
+                placeholder="Limit price"
+                className="bg-input border-border text-foreground text-sm h-8"
+              />
+            </TabsContent>
           </Tabs>
           
           <div className="space-y-4">
