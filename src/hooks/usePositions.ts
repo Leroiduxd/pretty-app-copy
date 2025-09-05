@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useAccount, useReadContract } from 'wagmi';
-import { readContract } from '@wagmi/core';
+import { useAccount, useReadContract, usePublicClient } from 'wagmi';
+
 import { formatUnits } from 'viem';
 import { pharosTestnet } from '@/lib/wagmi';
 import { useWebSocket } from '@/hooks/useWebSocket';
-import { config as wagmiConfig } from '@/lib/wagmi';
+
 
 const CORE_CONTRACT_ADDRESS = '0x34f89ca5a1c6dc4eb67dfe0af5b621185df32854' as const;
 
@@ -154,6 +154,7 @@ export const usePositions = () => {
   const [openOrders, setOpenOrders] = useState<OpenOrder[]>([]);
   const [closedPositions, setClosedPositions] = useState<ClosedPosition[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const publicClient = usePublicClient({ chainId: pharosTestnet.id });
 
   // Fetch open position IDs
   const { data: openIds } = useReadContract({
@@ -190,7 +191,7 @@ export const usePositions = () => {
   // Map WSS ids to pair names and live prices
   useEffect(() => {
     if (!wsData || Object.keys(wsData).length === 0) return;
-    idToPair.clear();
+    // preserve existing mappings; do not clear on every tick
     Object.values(wsData as any).forEach((payload: any) => {
       const item = payload?.instruments?.[0];
       const id = Number(payload?.id);
@@ -220,13 +221,13 @@ export const usePositions = () => {
         const positions: OpenPosition[] = [];
         for (const id of ids) {
           try {
-            const openData: any = await readContract(wagmiConfig, {
+            if (!publicClient) continue;
+            const openData: any = await (publicClient as any).readContract({
               address: CORE_CONTRACT_ADDRESS,
-              abi: CORE_CONTRACT_ABI,
+              abi: CORE_CONTRACT_ABI as any,
               functionName: 'getOpenById',
               args: [id],
-              chainId: pharosTestnet.id,
-            });
+            } as any);
             if (!openData) continue;
 
             const assetIndex = Number(openData.assetIndex);
