@@ -22,18 +22,20 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
   const [leverageInput, setLeverageInput] = useState("1");
   const [chartType, setChartType] = useState("candlesticks");
   const [selectedIndicator, setSelectedIndicator] = useState("");
-  // Use WebSocket prices with 0 spread
-  const [askPrice] = useState(price);
-  const [bidPrice] = useState(price);
-  // Use WebSocket high/low data
-  const [high24hValue] = useState(high24h || price * 1.032);
-  const [low24hValue] = useState(low24h || price * 0.965);
   const [stopLoss, setStopLoss] = useState("");
   const [takeProfit, setTakeProfit] = useState("");
   const [showStopLoss, setShowStopLoss] = useState(false);
   const [showTakeProfit, setShowTakeProfit] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState("1H");
+  
   const { usdBalance } = useTokenBalance();
+  
+  // Use WebSocket prices with 0 spread
+  const askPrice = price;
+  const bidPrice = price;
+  // Use WebSocket high/low data
+  const high24hValue = high24h || price * 1.032;
+  const low24hValue = low24h || price * 0.965;
   
   const percentageButtons = [25, 50, 75, 100];
   const leverageOptions = ["1", "5", "10", "25"];
@@ -186,8 +188,8 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
             
             {/* Price labels on right */}
             <div className="absolute right-0 top-0 h-full flex flex-col justify-between text-xs text-muted-foreground py-4">
-              {[240, 239, 238, 237, 236, 235, 234, 233].map((price) => (
-                <span key={price}>{price}.00</span>
+              {[240, 239, 238, 237, 236, 235, 234, 233].map((priceLabel) => (
+                <span key={priceLabel}>{priceLabel}.00</span>
               ))}
             </div>
             
@@ -230,7 +232,6 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
               SELL
             </Button>
           </div>
-          
           
           <Tabs defaultValue="market" className="mb-4">
             <TabsList className="grid grid-cols-2 w-full bg-muted">
@@ -404,7 +405,6 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
                 <span className="text-blue-500 font-medium">${(parseFloat(usdBalance) * parseFloat(leverage)).toFixed(2)}</span>
               </div>
             </div>
-            
             
             <Button 
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 text-sm"
