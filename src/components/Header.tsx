@@ -54,6 +54,15 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
               ))}
             </SelectContent>
           </Select>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs"
+            onClick={() => window.open('https://brokex.trade/faucet', '_blank')}
+          >
+            Faucet
+          </Button>
         </div>
 
         <div className="flex items-center gap-4">

@@ -18,12 +18,6 @@ export const StockList = ({ stocks, selectedStock, onSelectStock }: StockListPro
   return (
     <div className="w-72 h-full bg-card border-r border-border overflow-y-auto">
       <div className="p-3 border-b border-border">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-xs">B</span>
-          </div>
-          <span className="text-foreground font-medium text-sm">Markets</span>
-        </div>
         
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">SYMBOL</span>

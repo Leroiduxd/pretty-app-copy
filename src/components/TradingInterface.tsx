@@ -2,6 +2,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BarChart, TrendingUp } from "lucide-react";
 import { useState } from "react";
 
 interface TradingInterfaceProps {
@@ -14,9 +16,32 @@ interface TradingInterfaceProps {
 export const TradingInterface = ({ symbol, price, change, changePercent }: TradingInterfaceProps) => {
   const [orderSize, setOrderSize] = useState("10");
   const [leverage, setLeverage] = useState("1");
+  const [leverageInput, setLeverageInput] = useState("1");
+  const [chartType, setChartType] = useState("candlesticks");
+  const [selectedIndicator, setSelectedIndicator] = useState("");
+  const [askPrice] = useState(price * 1.001);
+  const [bidPrice] = useState(price * 0.999);
+  const [high24h] = useState(price * 1.032);
+  const [low24h] = useState(price * 0.965);
+  const [stopLoss, setStopLoss] = useState("");
+  const [takeProfit, setTakeProfit] = useState("");
   
   const percentageButtons = [25, 50, 75, 100];
   const leverageOptions = ["1", "5", "10", "25"];
+  
+  const technicalIndicators = [
+    "Average Price",
+    "Correlation", 
+    "Median Price",
+    "Momentum",
+    "Simple Moving Average",
+    "Percent Change",
+    "Product",
+    "Ratio",
+    "Spread",
+    "Sum",
+    "Weighted Close"
+  ];
 
   return (
     <div className="flex-1 flex overflow-hidden">
@@ -24,13 +49,51 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
       <div className="flex-1 p-4">
         <Card className="h-full bg-card border-border flex flex-col">
           <div className="p-4 border-b border-border">
-            <div className="flex items-center gap-4">
-              <h2 className="text-xl font-bold text-foreground">{symbol}</h2>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl font-bold text-foreground">{symbol}</h2>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-bold text-foreground">${price.toFixed(2)}</span>
+                  <span className={`text-sm ${change >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
+                    {change >= 0 ? '+' : ''}{changePercent.toFixed(2)}%
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span>24H High: <span className="text-foreground font-medium">${high24h.toFixed(2)}</span></span>
+                  <span>24H Low: <span className="text-foreground font-medium">${low24h.toFixed(2)}</span></span>
+                </div>
+              </div>
+              
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold text-foreground">${price.toFixed(2)}</span>
-                <span className={`text-sm ${change >= 0 ? 'text-success' : 'text-danger'}`}>
-                  {change >= 0 ? '+' : ''}{changePercent.toFixed(2)}%
-                </span>
+                <Button
+                  variant={chartType === "candlesticks" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setChartType("candlesticks")}
+                  className="h-8 px-2"
+                >
+                  <BarChart className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={chartType === "lines" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setChartType("lines")}
+                  className="h-8 px-2"
+                >
+                  <TrendingUp className="w-4 h-4" />
+                </Button>
+                
+                <Select value={selectedIndicator} onValueChange={setSelectedIndicator}>
+                  <SelectTrigger className="w-40 h-8 bg-card border-border">
+                    <SelectValue placeholder="Technical Indicators" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover border-border">
+                    {technicalIndicators.map((indicator) => (
+                      <SelectItem key={indicator} value={indicator}>
+                        {indicator}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             
@@ -81,10 +144,21 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
                 {[...Array(50)].map((_, i) => {
                   const isGreen = Math.random() > 0.5;
                   const height = 20 + Math.random() * 60;
+                  
+                  if (chartType === "lines") {
+                    return (
+                      <div
+                        key={i}
+                        className="w-1 bg-blue-500 opacity-80"
+                        style={{ height: `${height}%` }}
+                      />
+                    );
+                  }
+                  
                   return (
                     <div
                       key={i}
-                      className={`w-2 ${isGreen ? 'bg-success' : 'bg-danger'} opacity-80`}
+                      className={`w-2 ${isGreen ? 'bg-blue-500' : 'bg-red-500'} opacity-80`}
                       style={{ height: `${height}%` }}
                     />
                   );
@@ -120,12 +194,23 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
           </div>
           
           <div className="grid grid-cols-2 gap-2">
-            <Button className="bg-success hover:bg-success/90 text-success-foreground font-semibold h-12">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold h-12">
               BUY
             </Button>
-            <Button className="bg-danger hover:bg-danger/90 text-danger-foreground font-semibold h-12">
+            <Button className="bg-red-600 hover:bg-red-700 text-white font-semibold h-12">
               SELL
             </Button>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 text-xs">
+            <div>
+              <span className="text-muted-foreground">Ask Price</span>
+              <div className="text-foreground font-medium">${askPrice.toFixed(2)}</div>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Bid Price</span>
+              <div className="text-foreground font-medium">${bidPrice.toFixed(2)}</div>
+            </div>
           </div>
           
           <Tabs defaultValue="market" className="mb-4">
@@ -185,29 +270,72 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
             
             <div>
               <div className="text-xs text-muted-foreground mb-2">Leverage</div>
-              <div className="grid grid-cols-5 gap-1">
-                {leverageOptions.map((lev) => (
+              <div className="space-y-2">
+                <Input
+                  type="number"
+                  value={leverageInput}
+                  onChange={(e) => {
+                    setLeverageInput(e.target.value);
+                    setLeverage(e.target.value);
+                  }}
+                  className="bg-input border-border text-foreground h-8 text-sm"
+                  placeholder="Custom leverage"
+                />
+                <div className="grid grid-cols-5 gap-1">
+                  {leverageOptions.map((lev) => (
+                    <Button
+                      key={lev}
+                      variant={leverage === lev ? "default" : "outline"}
+                      size="sm"
+                      className={`text-xs h-7 ${
+                        leverage === lev 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'border-border hover:bg-muted'
+                      }`}
+                      onClick={() => {
+                        setLeverage(lev);
+                        setLeverageInput(lev);
+                      }}
+                    >
+                      {lev}x
+                    </Button>
+                  ))}
                   <Button
-                    key={lev}
-                    variant={leverage === lev ? "default" : "outline"}
+                    variant="outline"
                     size="sm"
-                    className={`text-xs h-8 ${
-                      leverage === lev 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'border-border hover:bg-muted'
-                    }`}
-                    onClick={() => setLeverage(lev)}
+                    className="text-xs border-border hover:bg-muted h-7"
+                    onClick={() => {
+                      setLeverage("100");
+                      setLeverageInput("100");
+                    }}
                   >
-                    {lev}x
+                    MAX
                   </Button>
-                ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs border-border hover:bg-muted h-8"
-                >
-                  MAX
-                </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <div className="text-xs text-muted-foreground">Stop Loss</div>
+                <Input
+                  type="number"
+                  value={stopLoss}
+                  onChange={(e) => setStopLoss(e.target.value)}
+                  className="bg-input border-border text-foreground h-8 text-sm"
+                  placeholder="Stop loss price"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <div className="text-xs text-muted-foreground">Take Profit</div>
+                <Input
+                  type="number"
+                  value={takeProfit}
+                  onChange={(e) => setTakeProfit(e.target.value)}
+                  className="bg-input border-border text-foreground h-8 text-sm"
+                  placeholder="Take profit price"
+                />
               </div>
             </div>
 
@@ -219,7 +347,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
               
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Liquidation Price</span>
-                <span className="text-danger font-medium">${(price * 0.85).toFixed(2)}</span>
+                <span className="text-red-500 font-medium">${(price * 0.85).toFixed(2)}</span>
               </div>
               
               <div className="flex items-center justify-between text-xs">
@@ -229,25 +357,10 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
               
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Buying Power</span>
-                <span className="text-success font-medium">${(25847.32 * parseFloat(leverage)).toFixed(2)}</span>
+                <span className="text-blue-500 font-medium">${(25847.32 * parseFloat(leverage)).toFixed(2)}</span>
               </div>
             </div>
             
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Take Profit</span>
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground">
-                  +
-                </Button>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Stop Loss</span>
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground">
-                  +
-                </Button>
-              </div>
-            </div>
             
             <Button 
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 text-sm"
