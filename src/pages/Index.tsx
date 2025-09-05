@@ -36,15 +36,17 @@ const Index = () => {
   const stocksFromWS = Object.keys(wsData).map(key => {
     const asset = wsData[key];
     const instrument = asset.instruments[0];
+    const currentPrice = Number(instrument.currentPrice);
+    const change = Number(instrument["24h_change"]);
     return {
       symbol: instrument.tradingPair,
       name: asset.name,
-      price: instrument.currentPrice,
-      change: instrument["24h_change"],
-      changePercent: ((instrument.currentPrice - (instrument.currentPrice - instrument["24h_change"])) / (instrument.currentPrice - instrument["24h_change"])) * 100,
+      price: currentPrice,
+      change: change,
+      changePercent: currentPrice > 0 ? (change / (currentPrice - change)) * 100 : 0,
       id: asset.id,
-      high24h: instrument["24h_high"],
-      low24h: instrument["24h_low"],
+      high24h: Number(instrument["24h_high"]),
+      low24h: Number(instrument["24h_low"]),
     };
   });
   
