@@ -9,8 +9,8 @@ interface TradingChartProps {
 
 export const TradingChart = ({ symbol, price, change, changePercent }: TradingChartProps) => {
   return (
-    <div className="flex-1 p-4">
-      <Card className="h-full bg-card border-border">
+    <div className="flex-1 p-4 overflow-hidden">
+      <Card className="h-full bg-card border-border flex flex-col">
         <div className="p-4 border-b border-border">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-bold text-foreground">{symbol}</h2>
@@ -32,7 +32,7 @@ export const TradingChart = ({ symbol, price, change, changePercent }: TradingCh
           </div>
         </div>
         
-        <div className="flex-1 p-4 relative">
+        <div className="flex-1 p-4 relative overflow-hidden">
           {/* Chart Grid Background */}
           <div className="absolute inset-4 opacity-20">
             <svg className="w-full h-full">

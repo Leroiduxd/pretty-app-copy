@@ -35,29 +35,31 @@ const Index = () => {
   }, [isDarkMode]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       <Header 
         onTogglePositions={() => setShowPositions(!showPositions)}
         isDarkMode={isDarkMode}
         onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
       />
       
-      <div className="flex">
+      <div className="flex flex-1 overflow-hidden">
         <StockList 
           stocks={stocksData}
           selectedStock={selectedStock}
           onSelectStock={setSelectedStock}
         />
-        <TradingChart 
-          symbol={currentStock.symbol}
-          price={currentStock.price}
-          change={currentStock.change}
-          changePercent={currentStock.changePercent}
-        />
-        <TradingPanel 
-          symbol={currentStock.symbol}
-          price={currentStock.price}
-        />
+        <div className="flex-1 flex">
+          <TradingChart 
+            symbol={currentStock.symbol}
+            price={currentStock.price}
+            change={currentStock.change}
+            changePercent={currentStock.changePercent}
+          />
+          <TradingPanel 
+            symbol={currentStock.symbol}
+            price={currentStock.price}
+          />
+        </div>
       </div>
 
       <PositionsPanel 
