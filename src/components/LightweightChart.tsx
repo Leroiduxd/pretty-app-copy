@@ -24,6 +24,11 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
     if (!chartContainerRef.current) return;
 
     try {
+      // Theme-aware colors
+      const isDark = document.documentElement.classList.contains('dark') || window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(42, 46, 57, 0.12)';
+      const borderColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(197, 203, 206, 0.4)';
+
       // Create chart with proper configuration - based on working repo
       const chart = createChart(chartContainerRef.current, {
         layout: {
@@ -31,23 +36,15 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
           textColor: 'hsl(var(--foreground))',
         },
         grid: {
-          vertLines: { 
-            color: 'rgba(42, 46, 57, 0.06)',
-            style: 0,
-            visible: true,
-          },
-          horzLines: { 
-            color: 'rgba(42, 46, 57, 0.06)',
-            style: 0,
-            visible: true,
-          },
+          vertLines: { color: gridColor, style: 0, visible: true },
+          horzLines: { color: gridColor, style: 0, visible: true },
         },
         rightPriceScale: {
-          borderColor: 'rgba(197, 203, 206, 0.4)',
+          borderColor: borderColor,
           textColor: 'hsl(var(--foreground))',
         },
         timeScale: {
-          borderColor: 'rgba(197, 203, 206, 0.4)',
+          borderColor: borderColor,
           timeVisible: true,
           secondsVisible: false,
         },
@@ -114,11 +111,6 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
         }));
 
         seriesRef.current.setData(formattedData);
-        
-        // Fit content to time scale
-        if (chartRef.current?.timeScale) {
-          chartRef.current.timeScale().fitContent();
-        }
       } catch (error) {
         console.error('Error setting chart data:', error);
       }

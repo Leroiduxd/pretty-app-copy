@@ -20,18 +20,18 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
       const change = parseFloat(item["24h_change"]);
       const price = parseFloat(item.currentPrice);
 
-      return {
-        symbol: item.tradingPair.toUpperCase(),
-        name: payload.name || item.tradingPair.toUpperCase(),
-        price: price,
-        change: change,
-        changePercent: change,
-        high24h: parseFloat(item["24h_high"]),
-        low24h: parseFloat(item["24h_low"]),
-        timestamp: item.timestamp,
-        id: payload.id,
-        pairId: pairKey // Add the pair key for chart API
-      };
+        return {
+          symbol: item.tradingPair.toUpperCase(),
+          name: payload.name || item.tradingPair.toUpperCase(),
+          price: price,
+          change: change,
+          changePercent: change,
+          high24h: parseFloat(item["24h_high"]),
+          low24h: parseFloat(item["24h_low"]),
+          timestamp: item.timestamp,
+          id: payload.id,
+          pairId: String(payload.id) // Utiliser l'ID pour l'API chart
+        };
     }).filter(Boolean);
   }, [wsData]);
 
@@ -78,9 +78,7 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
                 <div>
                   <div className="font-medium text-foreground text-sm">{stock.symbol}</div>
                   <div className="text-xs text-muted-foreground truncate">{stock.name}</div>
-                  {stock.id && (
-                    <div className="text-xs text-muted-foreground">ID: {stock.id}</div>
-                  )}
+                  {/* ID retiré de l'UI selon demande */}
                 </div>
                 <div className="text-right">
                   <div className="font-medium text-foreground text-sm">{stock.price.toFixed(2)}</div>

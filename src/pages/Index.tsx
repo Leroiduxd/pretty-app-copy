@@ -44,12 +44,11 @@ const Index = () => {
   useEffect(() => {
     // Auto-select first available stock when WebSocket data loads
     if (wsData && Object.keys(wsData).length > 0 && selectedStock === "AAPL_USD") {
-      const firstStock = Object.values(wsData)[0];
-      const firstItem = firstStock?.instruments?.[0];
-      const firstPairKey = Object.keys(wsData)[0];
-      if (firstItem && firstPairKey) {
+      const firstPayload: any = Object.values(wsData)[0];
+      const firstItem = firstPayload?.instruments?.[0];
+      if (firstItem && firstPayload?.id != null) {
         setSelectedStock(firstItem.tradingPair.toUpperCase());
-        setSelectedPairId(firstPairKey);
+        setSelectedPairId(String(firstPayload.id));
       }
     }
   }, [wsData, selectedStock]);
