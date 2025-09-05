@@ -39,8 +39,8 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
-    /* Trading specific colors */
-    --success: 142 76% 36%;
+    /* Trading specific colors - Blue/Red theme */
+    --success: 210 100% 50%;
     --success-foreground: 0 0% 98%;
     --danger: 0 84% 60%;
     --danger-foreground: 0 0% 98%;
@@ -84,7 +84,7 @@ All colors MUST be HSL.
     --input: 240 3.7% 15.9%;
     --ring: 210 100% 50%;
 
-    --success: 142 76% 36%;
+    --success: 210 100% 50%;
     --success-foreground: 0 0% 98%;
     --danger: 0 84% 60%;
     --danger-foreground: 0 0% 98%;

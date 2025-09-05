@@ -12,13 +12,10 @@ interface HeaderProps {
 
 export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: HeaderProps) => {
   const [walletConnected, setWalletConnected] = useState(false);
-  const [selectedNetwork, setSelectedNetwork] = useState("ethereum");
+  const [selectedNetwork, setSelectedNetwork] = useState("pharos");
 
   const networks = [
-    { value: "ethereum", label: "Ethereum", color: "text-blue-500" },
-    { value: "bsc", label: "BSC", color: "text-yellow-500" },
-    { value: "polygon", label: "Polygon", color: "text-purple-500" },
-    { value: "arbitrum", label: "Arbitrum", color: "text-blue-400" },
+    { value: "pharos", label: "Pharos Testnet", color: "text-blue-500" },
   ];
 
   const getConnectionStatus = () => {
@@ -43,10 +40,10 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
     <header className="bg-header-bg border-b border-border px-4 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h1 className="text-xl font-bold text-foreground">BrokeX Pro</h1>
+          <h1 className="text-xl font-bold text-foreground">Brokex Protocol</h1>
           
           <Select value={selectedNetwork} onValueChange={setSelectedNetwork}>
-            <SelectTrigger className="w-36 h-8 bg-card border-border">
+            <SelectTrigger className="w-40 h-8 bg-card border-border">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-popover border-border">
@@ -60,6 +57,25 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
         </div>
 
         <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onTogglePositions}
+            className="h-8"
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Positions
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggleDarkMode}
+            className="h-8 w-8 p-0"
+          >
+            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </Button>
+
           {walletConnected && (
             <Card className="px-3 py-1.5 bg-card border-border">
               <div className="flex items-center gap-2 text-xs">
@@ -81,25 +97,6 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
           >
             <Wallet className="w-4 h-4 mr-2" />
             {walletConnected ? "Connected" : "Connect Wallet"}
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onTogglePositions}
-            className="h-8"
-          >
-            <BarChart3 className="w-4 h-4 mr-2" />
-            Positions
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleDarkMode}
-            className="h-8 w-8 p-0"
-          >
-            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </Button>
         </div>
       </div>

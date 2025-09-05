@@ -1,6 +1,5 @@
 import { StockList } from "@/components/StockList";
-import { TradingChart } from "@/components/TradingChart";
-import { TradingPanel } from "@/components/TradingPanel";
+import { TradingInterface } from "@/components/TradingInterface";
 import { Header } from "@/components/Header";
 import { PositionsPanel } from "@/components/PositionsPanel";
 import { useState, useEffect } from "react";
@@ -48,18 +47,12 @@ const Index = () => {
           selectedStock={selectedStock}
           onSelectStock={setSelectedStock}
         />
-        <div className="flex-1 flex">
-          <TradingChart 
-            symbol={currentStock.symbol}
-            price={currentStock.price}
-            change={currentStock.change}
-            changePercent={currentStock.changePercent}
-          />
-          <TradingPanel 
-            symbol={currentStock.symbol}
-            price={currentStock.price}
-          />
-        </div>
+        <TradingInterface 
+          symbol={currentStock.symbol}
+          price={currentStock.price}
+          change={currentStock.change}
+          changePercent={currentStock.changePercent}
+        />
       </div>
 
       <PositionsPanel 
