@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
 import { LightweightChart } from "./LightweightChart";
 import { useChartData } from "@/hooks/useChartData";
+import { TradingPanel } from "./TradingPanel";
 
 interface TradingInterfaceProps {
   symbol: string;
@@ -390,6 +391,12 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
             </div>
           </div>
         </div>
+        
+        <TradingPanel 
+          symbol={symbol}
+          price={price}
+          assetId={parseInt(pairId || "0")}
+        />
       </div>
     </div>
   );
