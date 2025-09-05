@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChart, TrendingUp } from "lucide-react";
+import { BarChart, TrendingUp, Plus } from "lucide-react";
 import { useState } from "react";
 
 interface TradingInterfaceProps {
@@ -25,6 +25,8 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
   const [low24h] = useState(price * 0.965);
   const [stopLoss, setStopLoss] = useState("");
   const [takeProfit, setTakeProfit] = useState("");
+  const [showStopLoss, setShowStopLoss] = useState(false);
+  const [showTakeProfit, setShowTakeProfit] = useState(false);
   
   const percentageButtons = [25, 50, 75, 100];
   const leverageOptions = ["1", "5", "10", "25"];
@@ -57,10 +59,6 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
                   <span className={`text-sm ${change >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
                     {change >= 0 ? '+' : ''}{changePercent.toFixed(2)}%
                   </span>
-                </div>
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <span>24H High: <span className="text-foreground font-medium">${high24h.toFixed(2)}</span></span>
-                  <span>24H Low: <span className="text-foreground font-medium">${low24h.toFixed(2)}</span></span>
                 </div>
               </div>
               
@@ -97,13 +95,19 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
               </div>
             </div>
             
-            <div className="flex gap-4 mt-4 text-sm text-muted-foreground">
-              <span className="cursor-pointer hover:text-foreground">1M</span>
-              <span className="cursor-pointer hover:text-foreground">5M</span>
-              <span className="cursor-pointer hover:text-foreground">15M</span>
-              <span className="cursor-pointer hover:text-foreground">1H</span>
-              <span className="cursor-pointer hover:text-foreground">4H</span>
-              <span className="cursor-pointer hover:text-foreground">1D</span>
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex gap-4 text-sm text-muted-foreground">
+                <span className="cursor-pointer hover:text-foreground">1M</span>
+                <span className="cursor-pointer hover:text-foreground">5M</span>
+                <span className="cursor-pointer hover:text-foreground">15M</span>
+                <span className="cursor-pointer hover:text-foreground">1H</span>
+                <span className="cursor-pointer hover:text-foreground">4H</span>
+                <span className="cursor-pointer hover:text-foreground">1D</span>
+              </div>
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <span>24H High: <span className="text-foreground font-medium">${high24h.toFixed(2)}</span></span>
+                <span>24H Low: <span className="text-foreground font-medium">${low24h.toFixed(2)}</span></span>
+              </div>
             </div>
           </div>
           
@@ -193,16 +197,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
             <span className="text-lg font-bold text-foreground">${price.toFixed(2)}</span>
           </div>
           
-          <div className="grid grid-cols-2 gap-2">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold h-12">
-              BUY
-            </Button>
-            <Button className="bg-red-600 hover:bg-red-700 text-white font-semibold h-12">
-              SELL
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4 text-xs">
+          <div className="grid grid-cols-2 gap-4 text-xs mb-4">
             <div>
               <span className="text-muted-foreground">Ask Price</span>
               <div className="text-foreground font-medium">${askPrice.toFixed(2)}</div>
@@ -212,6 +207,16 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
               <div className="text-foreground font-medium">${bidPrice.toFixed(2)}</div>
             </div>
           </div>
+          
+          <div className="grid grid-cols-2 gap-2">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold h-12">
+              BUY
+            </Button>
+            <Button className="bg-red-600 hover:bg-red-700 text-white font-semibold h-12">
+              SELL
+            </Button>
+          </div>
+          
           
           <Tabs defaultValue="market" className="mb-4">
             <TabsList className="grid grid-cols-2 w-full bg-muted">
@@ -317,25 +322,41 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
             
             <div className="space-y-3">
               <div className="space-y-2">
-                <div className="text-xs text-muted-foreground">Stop Loss</div>
-                <Input
-                  type="number"
-                  value={stopLoss}
-                  onChange={(e) => setStopLoss(e.target.value)}
-                  className="bg-input border-border text-foreground h-8 text-sm"
-                  placeholder="Stop loss price"
-                />
+                <div 
+                  className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer hover:text-foreground"
+                  onClick={() => setShowStopLoss(!showStopLoss)}
+                >
+                  <Plus className={`w-3 h-3 transition-transform ${showStopLoss ? 'rotate-45' : ''}`} />
+                  <span>Stop Loss</span>
+                </div>
+                {showStopLoss && (
+                  <Input
+                    type="number"
+                    value={stopLoss}
+                    onChange={(e) => setStopLoss(e.target.value)}
+                    className="bg-input border-border text-foreground h-8 text-sm"
+                    placeholder="Stop loss price"
+                  />
+                )}
               </div>
               
               <div className="space-y-2">
-                <div className="text-xs text-muted-foreground">Take Profit</div>
-                <Input
-                  type="number"
-                  value={takeProfit}
-                  onChange={(e) => setTakeProfit(e.target.value)}
-                  className="bg-input border-border text-foreground h-8 text-sm"
-                  placeholder="Take profit price"
-                />
+                <div 
+                  className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer hover:text-foreground"
+                  onClick={() => setShowTakeProfit(!showTakeProfit)}
+                >
+                  <Plus className={`w-3 h-3 transition-transform ${showTakeProfit ? 'rotate-45' : ''}`} />
+                  <span>Take Profit</span>
+                </div>
+                {showTakeProfit && (
+                  <Input
+                    type="number"
+                    value={takeProfit}
+                    onChange={(e) => setTakeProfit(e.target.value)}
+                    className="bg-input border-border text-foreground h-8 text-sm"
+                    placeholder="Take profit price"
+                  />
+                )}
               </div>
             </div>
 
