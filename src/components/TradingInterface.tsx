@@ -27,6 +27,9 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
   const [takeProfit, setTakeProfit] = useState("");
   const [showStopLoss, setShowStopLoss] = useState(false);
   const [showTakeProfit, setShowTakeProfit] = useState(false);
+  const [selectedTimeframe, setSelectedTimeframe] = useState("1H");
+  
+  const availableBalance = 25847.32;
   
   const percentageButtons = [25, 50, 75, 100];
   const leverageOptions = ["1", "5", "10", "25"];
@@ -84,7 +87,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
                   <SelectTrigger className="w-40 h-8 bg-card border-border">
                     <SelectValue placeholder="Technical Indicators" />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover border-border">
+                  <SelectContent className="bg-popover border-border" align="end">
                     {technicalIndicators.map((indicator) => (
                       <SelectItem key={indicator} value={indicator}>
                         {indicator}
@@ -96,13 +99,20 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
             </div>
             
             <div className="flex items-center justify-between mt-4">
-              <div className="flex gap-4 text-sm text-muted-foreground">
-                <span className="cursor-pointer hover:text-foreground">1M</span>
-                <span className="cursor-pointer hover:text-foreground">5M</span>
-                <span className="cursor-pointer hover:text-foreground">15M</span>
-                <span className="cursor-pointer hover:text-foreground">1H</span>
-                <span className="cursor-pointer hover:text-foreground">4H</span>
-                <span className="cursor-pointer hover:text-foreground">1D</span>
+              <div className="flex gap-4 text-sm">
+                {["1M", "5M", "15M", "1H", "4H", "1D"].map((timeframe) => (
+                  <span
+                    key={timeframe}
+                    className={`cursor-pointer px-2 py-1 rounded ${
+                      selectedTimeframe === timeframe
+                        ? 'bg-blue-600 text-white'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                    onClick={() => setSelectedTimeframe(timeframe)}
+                  >
+                    {timeframe}
+                  </span>
+                ))}
               </div>
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <span>24H High: <span className="text-foreground font-medium">${high24h.toFixed(2)}</span></span>
@@ -265,7 +275,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
                     variant="outline"
                     size="sm"
                     className="text-xs border-border hover:bg-muted h-7"
-                    onClick={() => setOrderSize((price * percent / 100).toString())}
+                    onClick={() => setOrderSize((availableBalance * percent / 100).toString())}
                   >
                     {percent}%
                   </Button>
@@ -276,16 +286,19 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
             <div>
               <div className="text-xs text-muted-foreground mb-2">Leverage</div>
               <div className="space-y-2">
-                <Input
-                  type="number"
-                  value={leverageInput}
-                  onChange={(e) => {
-                    setLeverageInput(e.target.value);
-                    setLeverage(e.target.value);
-                  }}
-                  className="bg-input border-border text-foreground h-8 text-sm"
-                  placeholder="Custom leverage"
-                />
+                 <Input
+                   type="number"
+                   value={leverageInput}
+                   onChange={(e) => {
+                     const value = Math.min(100, Math.max(1, parseInt(e.target.value) || 1));
+                     setLeverageInput(value.toString());
+                     setLeverage(value.toString());
+                   }}
+                   min="1"
+                   max="100"
+                   className="bg-input border-border text-foreground h-8 text-sm"
+                   placeholder="Custom leverage"
+                 />
                 <div className="grid grid-cols-5 gap-1">
                   {leverageOptions.map((lev) => (
                     <Button
@@ -324,7 +337,10 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
               <div className="space-y-2">
                 <div 
                   className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer hover:text-foreground"
-                  onClick={() => setShowStopLoss(!showStopLoss)}
+                  onClick={() => {
+                    setShowStopLoss(!showStopLoss);
+                    if (showStopLoss) setStopLoss("");
+                  }}
                 >
                   <Plus className={`w-3 h-3 transition-transform ${showStopLoss ? 'rotate-45' : ''}`} />
                   <span>Stop Loss</span>
@@ -343,7 +359,10 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
               <div className="space-y-2">
                 <div 
                   className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer hover:text-foreground"
-                  onClick={() => setShowTakeProfit(!showTakeProfit)}
+                  onClick={() => {
+                    setShowTakeProfit(!showTakeProfit);
+                    if (showTakeProfit) setTakeProfit("");
+                  }}
                 >
                   <Plus className={`w-3 h-3 transition-transform ${showTakeProfit ? 'rotate-45' : ''}`} />
                   <span>Take Profit</span>

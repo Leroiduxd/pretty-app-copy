@@ -11,18 +11,82 @@ interface PositionsPanelProps {
 }
 
 const mockPositions = [
-  { id: 1, symbol: "AAPL_USD", size: "50", type: "long", pnl: 125.50, pnlPercent: 2.1, status: "open" },
-  { id: 2, symbol: "TSLA_USD", size: "25", type: "short", pnl: -45.20, pnlPercent: -1.8, status: "open" },
+  { 
+    id: "ORD-001", 
+    symbol: "AAPL_USD", 
+    openDate: "2024-01-10 14:30", 
+    openPrice: 238.45, 
+    currentPrice: 240.12,
+    pnl: 125.50, 
+    pnlPercent: 2.1, 
+    sizeUSD: 6000,
+    margin: 600,
+    leverage: 10,
+    liquidationPrice: 214.61,
+    type: "long"
+  },
+  { 
+    id: "ORD-002", 
+    symbol: "TSLA_USD", 
+    openDate: "2024-01-09 11:15", 
+    openPrice: 185.20, 
+    currentPrice: 182.85,
+    pnl: -45.20, 
+    pnlPercent: -1.8, 
+    sizeUSD: 2500,
+    margin: 500,
+    leverage: 5,
+    liquidationPrice: 203.72,
+    type: "short"
+  },
 ];
 
 const mockOrders = [
-  { id: 1, symbol: "NVDA_USD", size: "100", type: "limit", price: "170.50", status: "pending" },
-  { id: 2, symbol: "META_USD", size: "75", type: "market", price: "737.00", status: "filled" },
+  { 
+    id: "ORD-003", 
+    symbol: "NVDA_USD", 
+    openDate: "2024-01-11 09:45",
+    targetPrice: 170.50, 
+    currentPrice: 172.30,
+    sizeUSD: 5000, 
+    leverage: 25,
+    type: "limit", 
+    status: "pending" 
+  },
+  { 
+    id: "ORD-004", 
+    symbol: "META_USD", 
+    openDate: "2024-01-11 16:20",
+    targetPrice: 737.00, 
+    currentPrice: 737.00,
+    sizeUSD: 3750, 
+    leverage: 5,
+    type: "market", 
+    status: "pending" 
+  },
 ];
 
 const mockHistory = [
-  { id: 1, symbol: "GOOGL_USD", size: "30", type: "long", pnl: 89.30, closedAt: "2024-01-15", status: "closed" },
-  { id: 2, symbol: "AMZN_USD", size: "20", type: "short", pnl: -23.10, closedAt: "2024-01-14", status: "closed" },
+  { 
+    id: "ORD-005", 
+    symbol: "GOOGL_USD", 
+    openDate: "2024-01-14 10:15", 
+    closeDate: "2024-01-15 14:30",
+    openPrice: 142.80,
+    closePrice: 145.75,
+    pnl: 89.30, 
+    sizeUSD: 3000
+  },
+  { 
+    id: "ORD-006", 
+    symbol: "AMZN_USD", 
+    openDate: "2024-01-13 13:45", 
+    closeDate: "2024-01-14 11:20",
+    openPrice: 155.60,
+    closePrice: 154.85,
+    pnl: -23.10, 
+    sizeUSD: 2000
+  },
 ];
 
 export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
@@ -49,26 +113,56 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
             <TabsContent value="positions" className="space-y-3 mt-4">
               {mockPositions.map((position) => (
                 <Card key={position.id} className="p-4 bg-card border-border">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-foreground">{position.symbol}</span>
-                      <Badge variant={position.type === "long" ? "default" : "secondary"} className="text-xs">
-                        {position.type}
-                      </Badge>
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-foreground">{position.symbol}</span>
+                        <Badge variant={position.type === "long" ? "default" : "secondary"} className="text-xs">
+                          {position.type}
+                        </Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground">ID: {position.id}</div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      {position.pnl > 0 ? (
-                        <TrendingUp className="w-4 h-4 text-success" />
-                      ) : (
-                        <TrendingDown className="w-4 h-4 text-danger" />
-                      )}
-                      <span className={position.pnl > 0 ? "text-success" : "text-danger"}>
-                        ${position.pnl.toFixed(2)} ({position.pnlPercent > 0 ? "+" : ""}{position.pnlPercent}%)
-                      </span>
-                    </div>
+                    <Button size="sm" variant="destructive" className="h-7 px-2 text-xs">
+                      Close Position
+                    </Button>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    Size: ${position.size}
+                  
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <div className="text-muted-foreground">Open Date</div>
+                      <div className="text-foreground">{position.openDate}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Open Price</div>
+                      <div className="text-foreground">${position.openPrice}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Current Price</div>
+                      <div className="text-foreground">${position.currentPrice}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">PnL</div>
+                      <div className={position.pnl > 0 ? "text-blue-500" : "text-red-500"}>
+                        ${position.pnl.toFixed(2)} ({position.pnlPercent > 0 ? "+" : ""}{position.pnlPercent}%)
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Position Size</div>
+                      <div className="text-foreground">${position.sizeUSD}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Margin Used</div>
+                      <div className="text-foreground">${position.margin}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Leverage</div>
+                      <div className="text-foreground">{position.leverage}x</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Liquidation Price</div>
+                      <div className="text-red-500">${position.liquidationPrice}</div>
+                    </div>
                   </div>
                 </Card>
               ))}
@@ -77,19 +171,42 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
             <TabsContent value="orders" className="space-y-3 mt-4">
               {mockOrders.map((order) => (
                 <Card key={order.id} className="p-4 bg-card border-border">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-foreground">{order.symbol}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {order.type}
-                      </Badge>
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-foreground">{order.symbol}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {order.type}
+                        </Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground">ID: {order.id}</div>
                     </div>
-                    <Badge variant={order.status === "filled" ? "default" : "secondary"} className="text-xs">
-                      {order.status}
-                    </Badge>
+                    <Button size="sm" variant="destructive" className="h-7 px-2 text-xs">
+                      Cancel Order
+                    </Button>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    Size: ${order.size} • Price: ${order.price}
+                  
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <div className="text-muted-foreground">Open Date</div>
+                      <div className="text-foreground">{order.openDate}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Target Price</div>
+                      <div className="text-foreground">${order.targetPrice}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Market Price</div>
+                      <div className="text-foreground">${order.currentPrice}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Size USD</div>
+                      <div className="text-foreground">${order.sizeUSD}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Leverage</div>
+                      <div className="text-foreground">{order.leverage}x</div>
+                    </div>
                   </div>
                 </Card>
               ))}
@@ -98,19 +215,43 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
             <TabsContent value="history" className="space-y-3 mt-4">
               {mockHistory.map((trade) => (
                 <Card key={trade.id} className="p-4 bg-card border-border">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-foreground">{trade.symbol}</span>
-                      <Badge variant={trade.type === "long" ? "default" : "secondary"} className="text-xs">
-                        {trade.type}
-                      </Badge>
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-foreground">{trade.symbol}</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground">ID: {trade.id}</div>
                     </div>
-                    <span className={trade.pnl > 0 ? "text-success" : "text-danger"}>
+                    <div className={trade.pnl > 0 ? "text-blue-500" : "text-red-500"}>
                       ${trade.pnl.toFixed(2)}
-                    </span>
+                    </div>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    Size: ${trade.size} • Closed: {trade.closedAt}
+                  
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <div className="text-muted-foreground">Open Date</div>
+                      <div className="text-foreground">{trade.openDate}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Close Date</div>
+                      <div className="text-foreground">{trade.closeDate}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Open Price</div>
+                      <div className="text-foreground">${trade.openPrice}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Close Price</div>
+                      <div className="text-foreground">${trade.closePrice}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Size USD</div>
+                      <div className="text-foreground">${trade.sizeUSD}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">PnL USD</div>
+                      <div className={trade.pnl > 0 ? "text-blue-500" : "text-red-500"}>${trade.pnl.toFixed(2)}</div>
+                    </div>
                   </div>
                 </Card>
               ))}
