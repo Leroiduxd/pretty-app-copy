@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAccount, useReadContract } from 'wagmi';
 import { formatUnits, parseUnits } from 'viem';
 import { pharosTestnet } from '@/lib/wagmi';
+import { useWebSocket } from './useWebSocket';
 
 const CORE_CONTRACT_ADDRESS = '0x34f89ca5a1c6dc4eb67dfe0af5b621185df32854' as const;
 
@@ -141,9 +142,28 @@ interface ClosedPosition {
   pnlPercent: number;
 }
 
-// Global state for WebSocket data
-export const idToPair = new Map<number, string>();
-export const lastPrices: { [key: number]: number } = {};
+// Helper function to get pair name from WebSocket data by assetIndex (id)
+const getPairNameById = (id: number, wsData: any): string => {
+  for (const [pairKey, pairData] of Object.entries(wsData)) {
+    if (pairData && typeof pairData === 'object' && 'id' in pairData && pairData.id === id.toString()) {
+      return (pairData as any).name || pairKey.toUpperCase();
+    }
+  }
+  return `ASSET_${id}`;
+};
+
+// Helper function to get current price from WebSocket data by assetIndex (id)
+const getCurrentPriceById = (id: number, wsData: any): number => {
+  for (const [pairKey, pairData] of Object.entries(wsData)) {
+    if (pairData && typeof pairData === 'object' && 'id' in pairData && pairData.id === id.toString()) {
+      const data = pairData as any;
+      if (data.instruments && Array.isArray(data.instruments) && data.instruments.length > 0) {
+        return parseFloat(data.instruments[0].currentPrice) || 0;
+      }
+    }
+  }
+  return 0;
+};
 
 export const usePositions = () => {
   const { address, isConnected } = useAccount();
@@ -151,6 +171,9 @@ export const usePositions = () => {
   const [openOrders, setOpenOrders] = useState<OpenOrder[]>([]);
   const [closedPositions, setClosedPositions] = useState<ClosedPosition[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // WebSocket connection for live data
+  const { data: wsData } = useWebSocket('wss://wss.brokex.trade');
 
   // Fetch open position IDs
   const { data: openIds } = useReadContract({
@@ -230,8 +253,8 @@ export const usePositions = () => {
             };
 
             const assetIndex = mockOpen.assetIndex;
-            const symbol = idToPair.get(assetIndex) || `ASSET_${assetIndex}`;
-            const currentPrice = lastPrices[assetIndex] || 51000; // Mock current price
+            const symbol = getPairNameById(assetIndex, wsData);
+            const currentPrice = getCurrentPriceById(assetIndex, wsData) || 51000;
             
             // Convert from on-chain format
             const openPrice = Number(formatUnits(mockOpen.openPrice, 18));
@@ -277,7 +300,7 @@ export const usePositions = () => {
     };
 
     fetchOpenPositions();
-  }, [openIds, address]);
+  }, [openIds, address, wsData]);
 
   // Fetch individual orders
   useEffect(() => {
@@ -307,8 +330,8 @@ export const usePositions = () => {
           };
 
           const assetIndex = mockOrder.assetIndex;
-          const symbol = idToPair.get(assetIndex) || `ASSET_${assetIndex}`;
-          const currentPrice = lastPrices[assetIndex] || 51000;
+          const symbol = getPairNameById(assetIndex, wsData);
+          const currentPrice = getCurrentPriceById(assetIndex, wsData) || 51000;
           
           orders.push({
             id: mockOrder.id,
@@ -333,7 +356,7 @@ export const usePositions = () => {
     };
 
     fetchOrders();
-  }, [orderIds, address]);
+  }, [orderIds, address, wsData]);
 
   // Process closed positions
   useEffect(() => {
@@ -344,7 +367,7 @@ export const usePositions = () => {
 
     const processedClosed = closedData.map((closed: any) => {
       const assetIndex = Number(closed.assetIndex);
-      const symbol = idToPair.get(assetIndex) || `ASSET_${assetIndex}`;
+      const symbol = getPairNameById(assetIndex, wsData);
       const sizeUsd = Number(formatUnits(closed.sizeUsd, 6));
       const pnlUsd = Number(formatUnits(closed.pnl, 6));
       const pnlPercent = (pnlUsd / sizeUsd) * 100;
@@ -365,7 +388,7 @@ export const usePositions = () => {
     });
 
     setClosedPositions(processedClosed);
-  }, [closedData]);
+  }, [closedData, wsData]);
 
   const closePosition = async (openId: bigint) => {
     try {
