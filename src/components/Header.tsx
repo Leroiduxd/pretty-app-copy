@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Moon, Sun, Wallet, Wifi, Menu, BarChart3 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount } from 'wagmi';
+import { useUSDCBalance } from '@/hooks/useUSDCBalance';
 
 interface HeaderProps {
   onTogglePositions: () => void;
@@ -11,8 +14,9 @@ interface HeaderProps {
 }
 
 export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: HeaderProps) => {
-  const [walletConnected, setWalletConnected] = useState(false);
   const [selectedNetwork, setSelectedNetwork] = useState("pharos");
+  const { address, isConnected } = useAccount();
+  const { balance } = useUSDCBalance(address);
 
   const networks = [
     { value: "pharos", label: "Pharos Testnet", color: "text-blue-500" },
@@ -85,28 +89,20 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
             {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </Button>
 
-          {walletConnected && (
+          {isConnected && address && (
             <Card className="px-3 py-1.5 bg-card border-border">
               <div className="flex items-center gap-2 text-xs">
                 <div className="flex items-center gap-1">
                   <Wifi className={`w-3 h-3 ${connectionInfo.color}`} />
-                  <span className="text-muted-foreground">{connectionInfo.speed}</span>
+                  <span className="text-muted-foreground">USDC: ${balance.toFixed(2)}</span>
                 </div>
                 <div className="w-px h-3 bg-border" />
-                <span className="font-mono text-foreground">0x1234...5678</span>
+                <span className="font-mono text-foreground">{address.slice(0, 6)}...{address.slice(-4)}</span>
               </div>
             </Card>
           )}
 
-          <Button
-            variant={walletConnected ? "secondary" : "default"}
-            size="sm"
-            onClick={() => setWalletConnected(!walletConnected)}
-            className="h-8"
-          >
-            <Wallet className="w-4 h-4 mr-2" />
-            {walletConnected ? "Connected" : "Connect Wallet"}
-          </Button>
+          <ConnectButton />
         </div>
       </div>
     </header>

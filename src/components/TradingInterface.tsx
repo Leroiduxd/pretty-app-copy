@@ -11,9 +11,12 @@ interface TradingInterfaceProps {
   price: number;
   change: number;
   changePercent: number;
+  high24h?: number;
+  low24h?: number;
+  pairId?: number;
 }
 
-export const TradingInterface = ({ symbol, price, change, changePercent }: TradingInterfaceProps) => {
+export const TradingInterface = ({ symbol, price, change, changePercent, high24h = 245.81, low24h = 229.85, pairId }: TradingInterfaceProps) => {
   const [orderSize, setOrderSize] = useState("10");
   const [leverage, setLeverage] = useState("1");
   const [leverageInput, setLeverageInput] = useState("1");
@@ -21,8 +24,6 @@ export const TradingInterface = ({ symbol, price, change, changePercent }: Tradi
   const [selectedIndicator, setSelectedIndicator] = useState("");
   const [askPrice] = useState(price * 1.001);
   const [bidPrice] = useState(price * 0.999);
-  const [high24h] = useState(price * 1.032);
-  const [low24h] = useState(price * 0.965);
   const [stopLoss, setStopLoss] = useState("");
   const [takeProfit, setTakeProfit] = useState("");
   const [showStopLoss, setShowStopLoss] = useState(false);

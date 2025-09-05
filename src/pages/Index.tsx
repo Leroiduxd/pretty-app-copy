@@ -2,6 +2,8 @@ import { StockList } from "@/components/StockList";
 import { TradingInterface } from "@/components/TradingInterface";
 import { Header } from "@/components/Header";
 import { PositionsPanel } from "@/components/PositionsPanel";
+import { LightweightChart } from "@/components/LightweightChart";
+import { useWebSocket } from "@/hooks/useWebSocket";
 import { useState, useEffect } from "react";
 
 // Sample stock data
@@ -24,10 +26,39 @@ const stocksData = [
 
 const Index = () => {
   const [selectedStock, setSelectedStock] = useState("AAPL_USD");
+  const [selectedPairId, setSelectedPairId] = useState<number>(6004);
   const [showPositions, setShowPositions] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
   
-  const currentStock = stocksData.find(stock => stock.symbol === selectedStock) || stocksData[0];
+  const { data: wsData, isConnected } = useWebSocket('wss://wss.brokex.trade:8443');
+  
+  // Convert WebSocket data to stocks format and merge with static data
+  const stocksFromWS = Object.keys(wsData).map(key => {
+    const asset = wsData[key];
+    const instrument = asset.instruments[0];
+    return {
+      symbol: instrument.tradingPair,
+      name: asset.name,
+      price: instrument.currentPrice,
+      change: instrument["24h_change"],
+      changePercent: ((instrument.currentPrice - (instrument.currentPrice - instrument["24h_change"])) / (instrument.currentPrice - instrument["24h_change"])) * 100,
+      id: asset.id,
+      high24h: instrument["24h_high"],
+      low24h: instrument["24h_low"],
+    };
+  });
+  
+  // Use WebSocket data if available, otherwise fall back to static data
+  const stocks = stocksFromWS.length > 0 ? stocksFromWS : stocksData;
+  const currentStock = stocks.find(stock => stock.symbol === selectedStock) || stocks[0];
+
+  const handleSelectStock = (symbol: string) => {
+    setSelectedStock(symbol);
+    const selectedAsset = stocks.find(stock => stock.symbol === symbol);
+    if (selectedAsset && 'id' in selectedAsset) {
+      setSelectedPairId(selectedAsset.id as number);
+    }
+  };
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode);
@@ -43,16 +74,25 @@ const Index = () => {
       
       <div className="flex flex-1 overflow-hidden">
         <StockList 
-          stocks={stocksData}
+          stocks={stocks}
           selectedStock={selectedStock}
-          onSelectStock={setSelectedStock}
+          onSelectStock={handleSelectStock}
         />
-        <TradingInterface 
-          symbol={currentStock.symbol}
-          price={currentStock.price}
-          change={currentStock.change}
-          changePercent={currentStock.changePercent}
-        />
+        <div className="flex flex-col flex-1">
+          <LightweightChart 
+            pairId={selectedPairId}
+            theme={isDarkMode ? 'dark' : 'light'}
+          />
+          <TradingInterface 
+            symbol={currentStock.symbol}
+            price={currentStock.price}
+            change={currentStock.change}
+            changePercent={currentStock.changePercent}
+            high24h={'high24h' in currentStock ? currentStock.high24h as number : 245.81}
+            low24h={'low24h' in currentStock ? currentStock.low24h as number : 229.85}
+            pairId={selectedPairId}
+          />
+        </div>
       </div>
 
       <PositionsPanel 
