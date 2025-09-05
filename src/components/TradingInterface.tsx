@@ -134,7 +134,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
             </div>
           </div>
           
-          <div className="flex-1 p-4 relative overflow-hidden">
+          <div className="flex-1 p-2 relative overflow-hidden">
             {/* Real-time Chart */}
             {chartLoading ? (
               <div className="flex items-center justify-center h-full">
@@ -143,8 +143,8 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
             ) : chartData.length > 0 ? (
               <LightweightChart 
                 data={chartData} 
-                width={800} 
-                height={400} 
+                width={undefined} 
+                height={undefined} 
               />
             ) : (
               <div className="flex items-center justify-center h-full">
@@ -156,7 +156,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
       </div>
 
       {/* Trading Panel */}
-      <div className="w-96 p-4 bg-card border-l border-border overflow-y-auto">
+      <div className="w-80 p-3 bg-card border-l border-border overflow-y-auto">
         <div className="space-y-4">
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm text-muted-foreground">{symbol}</span>

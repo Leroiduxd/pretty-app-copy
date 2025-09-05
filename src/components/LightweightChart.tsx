@@ -15,7 +15,7 @@ interface LightweightChartProps {
   height?: number;
 }
 
-export const LightweightChart = ({ data, width = 800, height = 400 }: LightweightChartProps) => {
+export const LightweightChart = ({ data, width, height }: LightweightChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const seriesRef = useRef<any>(null);
@@ -42,18 +42,27 @@ export const LightweightChart = ({ data, width = 800, height = 400 }: Lightweigh
           timeVisible: true,
           secondsVisible: false,
         },
-        width,
-        height,
+        handleScroll: {
+          mouseWheel: true,
+          pressedMouseMove: true,
+        },
+        handleScale: {
+          axisPressedMouseMove: true,
+          mouseWheel: true,
+          pinch: true,
+        },
+        width: width || chartContainerRef.current.clientWidth,
+        height: height || chartContainerRef.current.clientHeight,
       });
 
       // Use the CORRECT syntax from the working repo: addSeries(CandlestickSeries, options)
       const candlestickSeries = chart.addSeries(CandlestickSeries, {
-        upColor: '#22c55e',
+        upColor: '#3b82f6',
         downColor: '#ef4444',
         borderDownColor: '#ef4444',
-        borderUpColor: '#22c55e',
+        borderUpColor: '#3b82f6',
         wickDownColor: '#ef4444',
-        wickUpColor: '#22c55e',
+        wickUpColor: '#3b82f6',
       });
 
       chartRef.current = chart;
@@ -102,8 +111,8 @@ export const LightweightChart = ({ data, width = 800, height = 400 }: Lightweigh
   }, [data]);
 
   return (
-    <div className="w-full relative">
-      <div ref={chartContainerRef} className="w-full" />
+    <div className="w-full h-full relative">
+      <div ref={chartContainerRef} className="w-full h-full" />
       {data.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-muted-foreground">Aucune donnée disponible</div>
