@@ -5,22 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, TrendingUp, Plus } from "lucide-react";
 import { useState } from "react";
-import { useAccount } from 'wagmi';
-import { useUSDCBalance } from '@/hooks/useUSDCBalance';
 
 interface TradingInterfaceProps {
   symbol: string;
   price: number;
   change: number;
   changePercent: number;
-  high24h?: number;
-  low24h?: number;
-  pairId?: number;
 }
 
-export const TradingInterface = ({ symbol, price, change, changePercent, high24h = 245.81, low24h = 229.85, pairId }: TradingInterfaceProps) => {
-  const { address } = useAccount();
-  const { balance } = useUSDCBalance(address);
+export const TradingInterface = ({ symbol, price, change, changePercent }: TradingInterfaceProps) => {
   const [orderSize, setOrderSize] = useState("10");
   const [leverage, setLeverage] = useState("1");
   const [leverageInput, setLeverageInput] = useState("1");
@@ -28,13 +21,15 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
   const [selectedIndicator, setSelectedIndicator] = useState("");
   const [askPrice] = useState(price * 1.001);
   const [bidPrice] = useState(price * 0.999);
+  const [high24h] = useState(price * 1.032);
+  const [low24h] = useState(price * 0.965);
   const [stopLoss, setStopLoss] = useState("");
   const [takeProfit, setTakeProfit] = useState("");
   const [showStopLoss, setShowStopLoss] = useState(false);
   const [showTakeProfit, setShowTakeProfit] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState("1H");
   
-  const availableBalance = balance;
+  const availableBalance = 25847.32;
   
   const percentageButtons = [25, 50, 75, 100];
   const leverageOptions = ["1", "5", "10", "25"];
@@ -257,14 +252,14 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
             <div>
               <div className="flex items-center justify-between text-xs mb-2">
                 <span className="text-muted-foreground">Available Balance</span>
-                <span className="text-foreground font-medium">${balance.toFixed(2)} USDC</span>
+                <span className="text-foreground font-medium">$25,847.32 USDC</span>
               </div>
             </div>
             
             <div>
               <div className="flex items-center justify-between text-xs mb-2">
                 <span className="text-muted-foreground">Order Size (USDC)</span>
-                <span className="text-foreground">Max: ${Math.floor(balance)}</span>
+                <span className="text-foreground">Max: $25,847</span>
               </div>
               <Input
                 type="number"
@@ -280,7 +275,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
                     variant="outline"
                     size="sm"
                     className="text-xs border-border hover:bg-muted h-7"
-                    onClick={() => setOrderSize((balance * percent / 100).toString())}
+                    onClick={() => setOrderSize((availableBalance * percent / 100).toString())}
                   >
                     {percent}%
                   </Button>
@@ -402,7 +397,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
               
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Buying Power</span>
-                <span className="text-blue-500 font-medium">${(balance * parseFloat(leverage)).toFixed(2)}</span>
+                <span className="text-blue-500 font-medium">${(25847.32 * parseFloat(leverage)).toFixed(2)}</span>
               </div>
             </div>
             
