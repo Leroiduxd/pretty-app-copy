@@ -86,7 +86,7 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
-      <div className="fixed right-0 top-0 h-full w-[600px] bg-background border-l border-border shadow-xl flex flex-col">
+      <div className="fixed right-0 top-0 h-full w-[600px] bg-background border-l border-border shadow-xl">
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="text-lg font-semibold text-foreground">Trading Dashboard</h2>
           <Button variant="ghost" size="sm" onClick={onClose} className="w-8 h-8 p-0">
@@ -94,15 +94,15 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
           </Button>
         </div>
 
-        <div className="p-4 flex-1 min-h-0 overflow-hidden">
-          <Tabs defaultValue="positions" className="w-full flex flex-col h-full">
+        <div className="p-4">
+          <Tabs defaultValue="positions" className="w-full">
             <TabsList className="grid w-full grid-cols-3 bg-muted">
               <TabsTrigger value="positions">Open Positions</TabsTrigger>
               <TabsTrigger value="orders">Orders</TabsTrigger>
               <TabsTrigger value="history">History</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="positions" className="space-y-3 mt-4 flex-1 overflow-y-auto">
+            <TabsContent value="positions" className="space-y-3 mt-4">
               {isLoading ? (
                 <div className="text-center text-muted-foreground py-8">Loading positions...</div>
               ) : openPositions.length === 0 ? (
@@ -172,7 +172,7 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
               )}
             </TabsContent>
 
-            <TabsContent value="orders" className="space-y-3 mt-4 flex-1 overflow-y-auto">
+            <TabsContent value="orders" className="space-y-3 mt-4">
               {openOrders.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No open orders</div>
               ) : (
@@ -230,7 +230,7 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
               )}
             </TabsContent>
 
-            <TabsContent value="history" className="space-y-3 mt-4 flex-1 overflow-y-auto">
+            <TabsContent value="history" className="space-y-3 mt-4">
               {closedPositions.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No closed positions</div>
               ) : (
