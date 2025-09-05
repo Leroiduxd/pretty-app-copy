@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useAccount, useReadContract } from 'wagmi';
+import { readContract } from '@wagmi/core';
 import { formatUnits } from 'viem';
 import { pharosTestnet } from '@/lib/wagmi';
+import { useWebSocket } from '@/hooks/useWebSocket';
+import { config as wagmiConfig } from '@/lib/wagmi';
 
 const CORE_CONTRACT_ADDRESS = '0x34f89ca5a1c6dc4eb67dfe0af5b621185df32854' as const;
 
@@ -160,7 +163,7 @@ export const usePositions = () => {
     args: address ? [address] : undefined,
     chainId: pharosTestnet.id,
     query: { enabled: !!address && isConnected }
-  });
+  } as any);
 
   // Fetch order IDs
   const { data: orderIds } = useReadContract({
@@ -182,133 +185,104 @@ export const usePositions = () => {
     query: { enabled: !!address && isConnected }
   });
 
+  const { data: wsData } = useWebSocket("wss://wss.brokex.trade:8443");
+
+  // Map WSS ids to pair names and live prices
+  useEffect(() => {
+    if (!wsData || Object.keys(wsData).length === 0) return;
+    idToPair.clear();
+    Object.values(wsData as any).forEach((payload: any) => {
+      const item = payload?.instruments?.[0];
+      const id = Number(payload?.id);
+      if (item && !Number.isNaN(id)) {
+        idToPair.set(id, String(item.tradingPair).toUpperCase());
+        const price = parseFloat(item.currentPrice || '0');
+        if (!Number.isNaN(price)) {
+          lastPrices[id] = price;
+        }
+      }
+    });
+  }, [wsData]);
+
   // Fetch individual open positions
   useEffect(() => {
-    if (!openIds || openIds.length === 0) {
+    const ids = (openIds as readonly bigint[]) || [];
+    if (!ids || ids.length === 0) {
       setOpenPositions([]);
       return;
     }
+
+    let cancelled = false;
 
     const fetchOpenPositions = async () => {
       setIsLoading(true);
       try {
         const positions: OpenPosition[] = [];
-        
-        for (const id of openIds) {
+        for (const id of ids) {
           try {
-            // Use individual contract calls for each position
-            const { data: openData } = await fetch('https://testnet.dplabs-internal.com', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                jsonrpc: '2.0',
-                id: 1,
-                method: 'eth_call',
-                params: [{
-                  to: CORE_CONTRACT_ADDRESS,
-                  data: '0x5c3c7af5' + id.toString(16).padStart(64, '0') // getOpenById selector
-                }, 'latest']
-              })
-            }).then(res => res.json());
+            const openData: any = await readContract(wagmiConfig, {
+              address: CORE_CONTRACT_ADDRESS,
+              abi: CORE_CONTRACT_ABI,
+              functionName: 'getOpenById',
+              args: [id],
+              chainId: pharosTestnet.id,
+            });
+            if (!openData) continue;
 
-            if (openData?.result && openData.result !== '0x') {
-              // Decode the result - this is a simplified version
-              // In production, you'd use proper ABI decoding
-              const result = openData.result;
-              
-              // For now, create a contract call using wagmi
-              const response = await fetch('https://testnet.dplabs-internal.com', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  jsonrpc: '2.0',
-                  id: 1,
-                  method: 'eth_call',
-                  params: [{
-                    to: CORE_CONTRACT_ADDRESS,
-                    data: '0x5c3c7af5' + id.toString(16).padStart(64, '0')
-                  }, 'latest']
-                })
-              });
-              
-              const contractResult = await response.json();
-              
-              if (contractResult?.result && contractResult.result !== '0x') {
-                // This should be properly decoded using the ABI
-                // For now, we'll use the structure from the contract
-                const assetIndex = Number(id) % 30; // Use reasonable asset index
-                const symbol = idToPair.get(assetIndex) || `ASSET_${assetIndex}`;
-                const currentPrice = lastPrices[assetIndex] || 0;
-                
-                // Mock data structure matching contract format
-                const mockPosition = {
-                  id: id,
-                  trader: address || '',
-                  assetIndex: assetIndex,
-                  isLong: Number(id) % 2 === 0,
-                  leverage: BigInt(10),
-                  openPrice: BigInt(50000 * 1e18),
-                  sizeUsd: BigInt(1000 * 1e6),
-                  timestamp: BigInt(Math.floor(Date.now() / 1000) - 3600),
-                  liquidationPrice: BigInt(45000 * 1e18),
-                  stopLossPrice: BigInt(0),
-                  takeProfitPrice: BigInt(0)
-                };
-                
-                // Convert from on-chain format
-                const openPrice = Number(formatUnits(mockPosition.openPrice, 18));
-                const sizeUsd = Number(formatUnits(mockPosition.sizeUsd, 6));
-                const leverage = Number(mockPosition.leverage);
-                const liquidationPrice = Number(formatUnits(mockPosition.liquidationPrice, 18));
-                const stopLossPrice = Number(formatUnits(mockPosition.stopLossPrice, 18));
-                const takeProfitPrice = Number(formatUnits(mockPosition.takeProfitPrice, 18));
-                
-                // Calculate PnL only if we have current price
-                let pnlUsd = 0;
-                let pnlPercent = 0;
-                const usedMargin = sizeUsd / leverage;
-                
-                if (currentPrice > 0) {
-                  const dir = mockPosition.isLong ? 1 : -1;
-                  pnlUsd = sizeUsd * ((currentPrice / openPrice - 1) * dir);
-                  pnlPercent = (pnlUsd / usedMargin) * 100;
-                }
+            const assetIndex = Number(openData.assetIndex);
+            const symbol = idToPair.get(assetIndex) || `ASSET_${assetIndex}`;
+            const currentPrice = lastPrices[assetIndex] || 0;
 
-                positions.push({
-                  id: mockPosition.id,
-                  trader: mockPosition.trader,
-                  assetIndex,
-                  isLong: mockPosition.isLong,
-                  leverage,
-                  openPrice,
-                  sizeUsd,
-                  timestamp: Number(mockPosition.timestamp),
-                  liquidationPrice,
-                  stopLossPrice,
-                  takeProfitPrice,
-                  symbol,
-                  currentPrice,
-                  pnl: pnlUsd,
-                  pnlPercent,
-                  margin: usedMargin
-                });
-              }
+            const openPrice = Number(formatUnits(openData.openPrice, 18));
+            const sizeUsd = Number(formatUnits(openData.sizeUsd, 6));
+            const leverage = Number(openData.leverage);
+            const liquidationPrice = Number(formatUnits(openData.liquidationPrice, 18));
+            const stopLossPrice = Number(formatUnits(openData.stopLossPrice, 18));
+            const takeProfitPrice = Number(formatUnits(openData.takeProfitPrice, 18));
+
+            let pnlUsd = 0;
+            let pnlPercent = 0;
+            const usedMargin = leverage ? sizeUsd / leverage : 0;
+            if (currentPrice > 0 && openPrice > 0 && usedMargin > 0) {
+              const dir = openData.isLong ? 1 : -1;
+              pnlUsd = sizeUsd * ((currentPrice / openPrice - 1) * dir);
+              pnlPercent = (pnlUsd / usedMargin) * 100;
             }
-          } catch (error) {
-            console.error(`Error fetching position ${id}:`, error);
+
+            positions.push({
+              id: openData.id,
+              trader: openData.trader,
+              assetIndex,
+              isLong: openData.isLong,
+              leverage,
+              openPrice,
+              sizeUsd,
+              timestamp: Number(openData.timestamp),
+              liquidationPrice,
+              stopLossPrice,
+              takeProfitPrice,
+              symbol,
+              currentPrice,
+              pnl: pnlUsd,
+              pnlPercent,
+              margin: usedMargin,
+            });
+          } catch (err) {
+            console.error(`Error reading position ${id.toString()}:`, err);
           }
         }
-        
-        setOpenPositions(positions);
+        if (!cancelled) setOpenPositions(positions);
       } catch (error) {
         console.error('Error fetching open positions:', error);
+        if (!cancelled) setOpenPositions([]);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
 
     fetchOpenPositions();
-  }, [openIds, address]);
+    return () => { cancelled = true; };
+  }, [openIds, wsData]);
 
   // Fetch individual orders
   useEffect(() => {
