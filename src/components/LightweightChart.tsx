@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
-import { createChart } from 'lightweight-charts';
+import { createChart, CandlestickSeries } from 'lightweight-charts';
 import { Button } from '@/components/ui/button';
 
 interface ChartProps {
@@ -67,7 +67,7 @@ export const LightweightChart = ({ pairId, theme }: ChartProps) => {
       ...getThemeOptions(theme === 'dark'),
     });
 
-    const candlestickSeries = (chart as any).addCandlestickSeries({
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#3b82f6', // Blue for bullish
       downColor: '#ef4444', // Red for bearish
       borderVisible: false,
