@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { useAccount, useWriteContract, useConfig } from 'wagmi';
+import { useAccount, useWriteContract, useConfig, useSwitchChain } from 'wagmi';
+import { pharosTestnet } from '@/lib/wagmi';
 import { parseUnits } from 'viem';
 import { toast } from "sonner";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
@@ -48,9 +49,12 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
   const [orderType, setOrderType] = useState("market");
   const [orderSide, setOrderSide] = useState<"long" | "short">("long");
   const [isLoading, setIsLoading] = useState(false);
+  const [showStopLoss, setShowStopLoss] = useState(false);
+  const [showTakeProfit, setShowTakeProfit] = useState(false);
 
   const { writeContract } = useWriteContract();
-  const { isConnected } = useAccount();
+  const { isConnected, chainId } = useAccount();
+  const { switchChain } = useSwitchChain();
   const config = useConfig();
   const { tokenBalance, usdBalance } = useTokenBalance();
   
@@ -71,6 +75,16 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
     if (!isConnected) {
       toast.error("Please connect your wallet");
       return;
+    }
+
+    // Switch to Pharos network if not already connected
+    if (chainId !== pharosTestnet.id) {
+      try {
+        await switchChain({ chainId: pharosTestnet.id });
+      } catch (error) {
+        toast.error("Please switch to Pharos Testnet");
+        return;
+      }
     }
     
     if (!orderSize || parseFloat(orderSize) <= 0) {
@@ -194,7 +208,7 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
               <Input
                 type="number"
                 placeholder="Target price"
-                value={limitPrice}
+                value={limitPrice || price.toString()}
                 onChange={(e) => setLimitPrice(e.target.value)}
                 className="bg-input border-border text-foreground text-sm h-8"
               />
@@ -203,13 +217,6 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
         </Tabs>
         
         <div className="space-y-4">
-          {/* Available Balance */}
-          <div>
-            <div className="flex items-center justify-between text-xs mb-2">
-              <span className="text-muted-foreground">Available Balance</span>
-              <span className="text-foreground font-medium">${usdBalance} USDC</span>
-            </div>
-          </div>
           
           {/* Order Size */}
           <div>
@@ -253,29 +260,67 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
             />
           </div>
 
-          {/* Stop Loss */}
-          <div>
-            <div className="text-xs text-muted-foreground mb-2">Stop Loss (Optional)</div>
-            <Input
-              type="number"
-              placeholder="Stop loss price"
-              value={stopLoss}
-              onChange={(e) => setStopLoss(e.target.value)}
-              className="bg-input border-border text-foreground text-sm h-8"
-            />
+          {/* Stop Loss & Take Profit Toggles */}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (showStopLoss) {
+                  setStopLoss("");
+                  setShowStopLoss(false);
+                } else {
+                  setShowStopLoss(true);
+                }
+              }}
+              className="text-xs h-8 flex-1"
+            >
+              {showStopLoss ? "Remove SL" : "Add Stop Loss"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (showTakeProfit) {
+                  setTakeProfit("");
+                  setShowTakeProfit(false);
+                } else {
+                  setShowTakeProfit(true);
+                }
+              }}
+              className="text-xs h-8 flex-1"
+            >
+              {showTakeProfit ? "Remove TP" : "Add Take Profit"}
+            </Button>
           </div>
+
+          {/* Stop Loss Input */}
+          {showStopLoss && (
+            <div>
+              <div className="text-xs text-muted-foreground mb-2">Stop Loss Price</div>
+              <Input
+                type="number"
+                placeholder="Stop loss price"
+                value={stopLoss}
+                onChange={(e) => setStopLoss(e.target.value)}
+                className="bg-input border-border text-foreground text-sm h-8"
+              />
+            </div>
+          )}
           
-          {/* Take Profit */}
-          <div>
-            <div className="text-xs text-muted-foreground mb-2">Take Profit (Optional)</div>
-            <Input
-              type="number"
-              placeholder="Take profit price"
-              value={takeProfit}
-              onChange={(e) => setTakeProfit(e.target.value)}
-              className="bg-input border-border text-foreground text-sm h-8"
-            />
-          </div>
+          {/* Take Profit Input */}
+          {showTakeProfit && (
+            <div>
+              <div className="text-xs text-muted-foreground mb-2">Take Profit Price</div>
+              <Input
+                type="number"
+                placeholder="Take profit price"
+                value={takeProfit}
+                onChange={(e) => setTakeProfit(e.target.value)}
+                className="bg-input border-border text-foreground text-sm h-8"
+              />
+            </div>
+          )}
 
           {/* Trading Info */}
           <div className="space-y-3 pt-2 border-t border-border">
