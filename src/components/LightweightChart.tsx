@@ -20,6 +20,15 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
   const chartRef = useRef<any>(null);
   const seriesRef = useRef<any>(null);
 
+  // Format prices based on number of digits before decimal
+  const formatPrice = (value: number) => {
+    if (value === 0) return "0.00";
+    const integerPart = Math.floor(Math.abs(value)).toString().length;
+    if (integerPart === 1) return value.toFixed(5);
+    if (integerPart === 2) return value.toFixed(3);
+    return value.toFixed(2);
+  };
+
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
@@ -75,6 +84,10 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
         borderUpColor: '#3b82f6',
         wickDownColor: '#ef4444',
         wickUpColor: '#3b82f6',
+        priceFormat: {
+          type: 'custom',
+          formatter: (price: number) => formatPrice(price),
+        },
       });
 
       chartRef.current = chart;
