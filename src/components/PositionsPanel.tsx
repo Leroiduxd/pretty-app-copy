@@ -108,7 +108,8 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
               ) : openPositions.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No open positions</div>
               ) : (
-                openPositions.map((position) => (
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {openPositions.map((position) => (
                   <Card key={position.id.toString()} className="p-4 bg-card border-border">
                     <div className="flex items-center justify-between mb-3">
                       <div>
@@ -168,7 +169,8 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
                       </div>
                     </div>
                   </Card>
-                ))
+                  ))}
+                </div>
               )}
             </TabsContent>
 
@@ -176,7 +178,8 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
               {openOrders.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No open orders</div>
               ) : (
-                openOrders.map((order) => (
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {openOrders.map((order) => (
                   <Card key={order.id.toString()} className="p-4 bg-card border-border">
                     <div className="flex items-center justify-between mb-3">
                       <div>
@@ -226,7 +229,8 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
                       </div>
                     </div>
                   </Card>
-                ))
+                  ))}
+                </div>
               )}
             </TabsContent>
 
@@ -234,7 +238,8 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
               {closedPositions.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No closed positions</div>
               ) : (
-                closedPositions.map((trade, index) => (
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {closedPositions.map((trade, index) => (
                   <Card key={index} className="p-4 bg-card border-border">
                     <div className="flex items-center justify-between mb-3">
                       <div>
@@ -283,7 +288,8 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
                       </div>
                     </div>
                   </Card>
-                ))
+                  ))}
+                </div>
               )}
             </TabsContent>
           </Tabs>
