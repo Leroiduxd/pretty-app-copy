@@ -22,6 +22,8 @@ const pharosTestnet = defineChain({
   testnet: true,
 });
 
+export { pharosTestnet };
+
 export const config = getDefaultConfig({
   appName: 'Brokex Protocol',
   projectId: 'YOUR_PROJECT_ID', // Get from WalletConnect Cloud

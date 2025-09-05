@@ -10,6 +10,15 @@ interface StockListProps {
 export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
   const { data: wsData, isConnected, error } = useWebSocket("wss://wss.brokex.trade:8443");
 
+  // Format prices based on number of digits before decimal
+  const formatPrice = (value: number) => {
+    if (value === 0) return "0.00";
+    const integerPart = Math.floor(Math.abs(value)).toString().length;
+    if (integerPart === 1) return value.toFixed(5);
+    if (integerPart === 2) return value.toFixed(3);
+    return value.toFixed(2);
+  };
+
   const stocks = useMemo(() => {
     if (!wsData || Object.keys(wsData).length === 0) return [];
 
@@ -81,8 +90,8 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
                   {/* ID retiré de l'UI selon demande */}
                 </div>
                 <div className="text-right">
-                  <div className="font-medium text-foreground text-sm">{stock.price.toFixed(2)}</div>
-                  <div className={`text-xs ${stock.changePercent >= 0 ? 'text-success' : 'text-danger'}`}>
+                  <div className="font-medium text-foreground text-sm">{formatPrice(stock.price)}</div>
+                  <div className={`text-xs ${stock.changePercent >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
                     {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
                   </div>
                 </div>

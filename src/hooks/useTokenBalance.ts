@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAccount, useReadContract } from 'wagmi';
 import { formatUnits } from 'viem';
+import { pharosTestnet } from '@/lib/wagmi';
 
 const TOKEN_ADDRESS = '0x78ac5e2d8a78a8b8e6d10c7b7274b03c10c91cef';
 const TOKEN_DECIMALS = 6;
@@ -25,6 +26,7 @@ export const useTokenBalance = () => {
     abi: erc20ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
+    chainId: pharosTestnet.id,
     query: {
       enabled: Boolean(address && isConnected),
       refetchInterval: 10000, // Refetch every 10 seconds

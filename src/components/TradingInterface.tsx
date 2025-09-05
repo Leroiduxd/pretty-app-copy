@@ -32,11 +32,34 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
   const [selectedTimeframe, setSelectedTimeframe] = useState("1H");
   
   const { usdBalance } = useTokenBalance();
+  
+  // Mapping timeframes to intervals in seconds
+  const getTimeframeInterval = (timeframe: string) => {
+    switch (timeframe) {
+      case "1M": return 60;
+      case "5M": return 300;
+      case "15M": return 900;
+      case "1H": return 3600;
+      case "4H": return 14400;
+      case "1D": return 86400;
+      default: return 3600;
+    }
+  };
+  
   const { formattedData: chartData, loading: chartLoading } = useChartData({ 
     pairId, 
-    interval: 3600 // 1 hour
+    interval: getTimeframeInterval(selectedTimeframe)
   });
   
+  // Format prices based on number of digits before decimal
+  const formatPrice = (value: number) => {
+    if (value === 0) return "0.00";
+    const integerPart = Math.floor(Math.abs(value)).toString().length;
+    if (integerPart === 1) return value.toFixed(5);
+    if (integerPart === 2) return value.toFixed(3);
+    return value.toFixed(2);
+  };
+
   // Use WebSocket prices with 0 spread
   const askPrice = price;
   const bidPrice = price;
@@ -71,7 +94,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
               <div className="flex items-center gap-4">
                 <h2 className="text-xl font-bold text-foreground">{symbol}</h2>
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-bold text-foreground">${price.toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-foreground">${formatPrice(price)}</span>
                   <span className={`text-sm ${change >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
                     {change >= 0 ? '+' : ''}{changePercent.toFixed(2)}%
                   </span>
@@ -128,8 +151,8 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
                 ))}
               </div>
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <span>24H High: <span className="text-foreground font-medium">${high24hValue.toFixed(2)}</span></span>
-                <span>24H Low: <span className="text-foreground font-medium">${low24hValue.toFixed(2)}</span></span>
+                <span>24H High: <span className="text-foreground font-medium">${formatPrice(high24hValue)}</span></span>
+                <span>24H Low: <span className="text-foreground font-medium">${formatPrice(low24hValue)}</span></span>
               </div>
             </div>
           </div>
@@ -160,17 +183,17 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
         <div className="space-y-4">
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm text-muted-foreground">{symbol}</span>
-            <span className="text-lg font-bold text-foreground">${price.toFixed(2)}</span>
+            <span className="text-lg font-bold text-foreground">${formatPrice(price)}</span>
           </div>
           
           <div className="grid grid-cols-2 gap-4 text-xs mb-4">
             <div>
               <span className="text-muted-foreground">Ask Price</span>
-              <div className="text-foreground font-medium">${askPrice.toFixed(2)}</div>
+              <div className="text-foreground font-medium">${formatPrice(askPrice)}</div>
             </div>
             <div>
               <span className="text-muted-foreground">Bid Price</span>
-              <div className="text-foreground font-medium">${bidPrice.toFixed(2)}</div>
+              <div className="text-foreground font-medium">${formatPrice(bidPrice)}</div>
             </div>
           </div>
           
