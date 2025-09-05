@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { createChart, ColorType } from 'lightweight-charts';
+import { createChart, CandlestickSeries, ColorType } from 'lightweight-charts';
 
 interface ChartData {
   time: number;
@@ -24,21 +24,21 @@ export const LightweightChart = ({ data, width = 800, height = 400 }: Lightweigh
     if (!chartContainerRef.current) return;
 
     try {
-      // Create chart with proper configuration
+      // Create chart with proper configuration - based on working repo
       const chart = createChart(chartContainerRef.current, {
         layout: {
           background: { type: ColorType.Solid, color: 'transparent' },
-          textColor: '#d1d5db',
+          textColor: 'hsl(var(--foreground))',
         },
         grid: {
-          vertLines: { color: '#374151' },
-          horzLines: { color: '#374151' },
+          vertLines: { color: 'hsl(var(--border))' },
+          horzLines: { color: 'hsl(var(--border))' },
         },
         rightPriceScale: {
-          borderColor: '#374151',
+          borderColor: 'hsl(var(--border))',
         },
         timeScale: {
-          borderColor: '#374151',
+          borderColor: 'hsl(var(--border))',
           timeVisible: true,
           secondsVisible: false,
         },
@@ -46,8 +46,8 @@ export const LightweightChart = ({ data, width = 800, height = 400 }: Lightweigh
         height,
       });
 
-      // Use the correct API for adding a candlestick series
-      const candlestickSeries = (chart as any).addCandlestickSeries({
+      // Use the CORRECT syntax from the working repo: addSeries(CandlestickSeries, options)
+      const candlestickSeries = chart.addSeries(CandlestickSeries, {
         upColor: '#22c55e',
         downColor: '#ef4444',
         borderDownColor: '#ef4444',
@@ -61,16 +61,6 @@ export const LightweightChart = ({ data, width = 800, height = 400 }: Lightweigh
 
     } catch (error) {
       console.error('Error creating chart:', error);
-      // If candlestick fails, create a fallback line chart
-      try {
-        const lineSeries = (chartRef.current as any).addLineSeries({
-          color: '#2563eb',
-          lineWidth: 2,
-        });
-        seriesRef.current = lineSeries;
-      } catch (fallbackError) {
-        console.error('Fallback chart creation failed:', fallbackError);
-      }
     }
 
     // Cleanup function
@@ -90,9 +80,9 @@ export const LightweightChart = ({ data, width = 800, height = 400 }: Lightweigh
   useEffect(() => {
     if (seriesRef.current && data.length > 0) {
       try {
-        // Format data for the chart
+        // Format data correctly for lightweight-charts v5
         const formattedData = data.map(item => ({
-          time: item.time as any,
+          time: item.time,
           open: item.open,
           high: item.high,
           low: item.low,
@@ -107,27 +97,9 @@ export const LightweightChart = ({ data, width = 800, height = 400 }: Lightweigh
         }
       } catch (error) {
         console.error('Error setting chart data:', error);
-        // Fallback: try setting as line data using close prices
-        try {
-          const lineData = data.map(item => ({
-            time: item.time as any,
-            value: item.close,
-          }));
-          seriesRef.current.setData(lineData);
-        } catch (fallbackError) {
-          console.error('Fallback data setting failed:', fallbackError);
-        }
       }
     }
   }, [data]);
-
-  if (!chartContainerRef) {
-    return (
-      <div className="w-full h-96 flex items-center justify-center">
-        <div className="text-muted-foreground">Erreur lors du chargement du graphique</div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full relative">
