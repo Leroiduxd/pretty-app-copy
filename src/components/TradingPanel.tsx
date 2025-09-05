@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useAccount, useWriteContract, useConfig } from 'wagmi';
 import { parseUnits } from 'viem';
 import { toast } from "sonner";
+import { useTokenBalance } from "@/hooks/useTokenBalance";
 
 interface TradingPanelProps {
   symbol: string;
@@ -44,17 +45,16 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
   const [limitPrice, setLimitPrice] = useState("");
   const [stopLoss, setStopLoss] = useState("");
   const [takeProfit, setTakeProfit] = useState("");
-  const [showStopLoss, setShowStopLoss] = useState(false);
-  const [showTakeProfit, setShowTakeProfit] = useState(false);
   const [orderType, setOrderType] = useState("market");
+  const [orderSide, setOrderSide] = useState<"long" | "short">("long");
   const [isLoading, setIsLoading] = useState(false);
 
   const { writeContract } = useWriteContract();
   const { isConnected } = useAccount();
   const config = useConfig();
+  const { tokenBalance, usdBalance } = useTokenBalance();
   
   const percentageButtons = [25, 50, 75, 100];
-  const leverageOptions = ["1", "5", "10", "25"];
 
   const fetchProof = async (idx: number): Promise<string> => {
     try {
@@ -67,7 +67,7 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
     }
   };
 
-  const handleTrade = async (isLong: boolean) => {
+  const executeTrade = async () => {
     if (!isConnected) {
       toast.error("Please connect your wallet");
       return;
@@ -84,6 +84,7 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
       const lev = parseInt(leverage);
       const slPrice = stopLoss ? parseUnits(stopLoss, 18) : 0n; // * 10^18
       const tpPrice = takeProfit ? parseUnits(takeProfit, 18) : 0n; // * 10^18
+      const isLong = orderSide === "long";
 
       if (orderType === "market") {
         // Open Market Position
@@ -139,7 +140,10 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
     }
   };
 
-  console.log("TradingPanel rendered with:", { symbol, price, assetId });
+  const marginRequired = parseFloat(orderSize) / parseFloat(leverage);
+  const liquidationPrice = orderSide === "long" ? price * 0.85 : price * 1.15;
+  const estimatedCommission = parseFloat(orderSize) * 0.001;
+  const buyingPower = parseFloat(usdBalance) * parseFloat(leverage);
 
   return (
     <div className="w-96 p-4 bg-card border-l border-border overflow-y-auto">
@@ -149,29 +153,33 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
           <span className="text-lg font-bold text-foreground">${price.toFixed(2)}</span>
         </div>
         
+        {/* BUY/SELL Selection */}
         <div className="grid grid-cols-2 gap-2">
           <Button 
-            onClick={() => {
-              console.log("BUY button clicked");
-              handleTrade(true);
-            }}
-            disabled={isLoading}
-            className="bg-success hover:bg-success/90 text-success-foreground font-semibold h-12"
+            onClick={() => setOrderSide("long")}
+            variant={orderSide === "long" ? "default" : "outline"}
+            className={`font-semibold h-12 ${
+              orderSide === "long" 
+                ? "bg-success hover:bg-success/90 text-success-foreground" 
+                : "border-success text-success hover:bg-success/10"
+            }`}
           >
-            {isLoading ? "Loading..." : "BUY"}
+            BUY / LONG
           </Button>
           <Button 
-            onClick={() => {
-              console.log("SELL button clicked");
-              handleTrade(false);
-            }}
-            disabled={isLoading}
-            className="bg-danger hover:bg-danger/90 text-danger-foreground font-semibold h-12"
+            onClick={() => setOrderSide("short")}
+            variant={orderSide === "short" ? "default" : "outline"}
+            className={`font-semibold h-12 ${
+              orderSide === "short" 
+                ? "bg-danger hover:bg-danger/90 text-danger-foreground" 
+                : "border-danger text-danger hover:bg-danger/10"
+            }`}
           >
-            {isLoading ? "Loading..." : "SELL"}
+            SELL / SHORT
           </Button>
         </div>
         
+        {/* Order Type Tabs */}
         <Tabs value={orderType} onValueChange={setOrderType} className="mb-4">
           <TabsList className="grid grid-cols-2 w-full bg-muted">
             <TabsTrigger value="market" className="data-[state=active]:bg-background text-xs">Market</TabsTrigger>
@@ -182,10 +190,10 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
           </TabsContent>
           <TabsContent value="limit" className="mt-2">
             <div className="space-y-2">
-              <div className="text-xs text-muted-foreground">Set custom price</div>
+              <div className="text-xs text-muted-foreground">Set target price</div>
               <Input
                 type="number"
-                placeholder="Limit price"
+                placeholder="Target price"
                 value={limitPrice}
                 onChange={(e) => setLimitPrice(e.target.value)}
                 className="bg-input border-border text-foreground text-sm h-8"
@@ -195,17 +203,19 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
         </Tabs>
         
         <div className="space-y-4">
+          {/* Available Balance */}
           <div>
             <div className="flex items-center justify-between text-xs mb-2">
               <span className="text-muted-foreground">Available Balance</span>
-              <span className="text-foreground font-medium">$25,847.32 USDC</span>
+              <span className="text-foreground font-medium">${usdBalance} USDC</span>
             </div>
           </div>
           
+          {/* Order Size */}
           <div>
             <div className="flex items-center justify-between text-xs mb-2">
               <span className="text-muted-foreground">Order Size (USDC)</span>
-              <span className="text-foreground">Max: $25,847</span>
+              <span className="text-foreground">Max: ${usdBalance}</span>
             </div>
             <Input
               type="number"
@@ -221,7 +231,7 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
                   variant="outline"
                   size="sm"
                   className="text-xs border-border hover:bg-muted h-7"
-                  onClick={() => setOrderSize((price * percent / 100).toString())}
+                  onClick={() => setOrderSize((parseFloat(usdBalance) * percent / 100).toString())}
                 >
                   {percent}%
                 </Button>
@@ -229,99 +239,83 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
             </div>
           </div>
           
+          {/* Leverage Input */}
           <div>
             <div className="text-xs text-muted-foreground mb-2">Leverage</div>
-            <div className="grid grid-cols-5 gap-1">
-              {leverageOptions.map((lev) => (
-                <Button
-                  key={lev}
-                  variant={leverage === lev ? "default" : "outline"}
-                  size="sm"
-                  className={`text-xs h-8 ${
-                    leverage === lev 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'border-border hover:bg-muted'
-                  }`}
-                  onClick={() => setLeverage(lev)}
-                >
-                  {lev}x
-                </Button>
-              ))}
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs border-border hover:bg-muted h-8"
-              >
-                MAX
-              </Button>
-            </div>
+            <Input
+              type="number"
+              placeholder="Enter leverage (1-100)"
+              value={leverage}
+              onChange={(e) => setLeverage(e.target.value)}
+              min="1"
+              max="100"
+              className="bg-input border-border text-foreground h-9"
+            />
           </div>
 
+          {/* Stop Loss */}
+          <div>
+            <div className="text-xs text-muted-foreground mb-2">Stop Loss (Optional)</div>
+            <Input
+              type="number"
+              placeholder="Stop loss price"
+              value={stopLoss}
+              onChange={(e) => setStopLoss(e.target.value)}
+              className="bg-input border-border text-foreground text-sm h-8"
+            />
+          </div>
+          
+          {/* Take Profit */}
+          <div>
+            <div className="text-xs text-muted-foreground mb-2">Take Profit (Optional)</div>
+            <Input
+              type="number"
+              placeholder="Take profit price"
+              value={takeProfit}
+              onChange={(e) => setTakeProfit(e.target.value)}
+              className="bg-input border-border text-foreground text-sm h-8"
+            />
+          </div>
+
+          {/* Trading Info */}
           <div className="space-y-3 pt-2 border-t border-border">
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Margin Required</span>
-              <span className="text-foreground font-medium">${(parseFloat(orderSize) / parseFloat(leverage)).toFixed(2)}</span>
+              <span className="text-foreground font-medium">${marginRequired.toFixed(2)}</span>
             </div>
             
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Liquidation Price</span>
-              <span className="text-danger font-medium">${(price * 0.85).toFixed(2)}</span>
+              <span className="text-danger font-medium">${liquidationPrice.toFixed(2)}</span>
             </div>
             
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Est. Commission</span>
-              <span className="text-foreground font-medium">${(parseFloat(orderSize) * 0.001).toFixed(2)}</span>
+              <span className="text-foreground font-medium">${estimatedCommission.toFixed(2)}</span>
             </div>
             
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Buying Power</span>
-              <span className="text-success font-medium">${(25847.32 * parseFloat(leverage)).toFixed(2)}</span>
+              <span className="text-success font-medium">${buyingPower.toFixed(2)}</span>
             </div>
           </div>
           
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">Take Profit</span>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-                onClick={() => setShowTakeProfit(!showTakeProfit)}
-              >
-                {showTakeProfit ? "-" : "+"}
-              </Button>
-            </div>
-            {showTakeProfit && (
-              <Input
-                type="number"
-                placeholder="Take profit price"
-                value={takeProfit}
-                onChange={(e) => setTakeProfit(e.target.value)}
-                className="bg-input border-border text-foreground text-sm h-8"
-              />
-            )}
-            
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">Stop Loss</span>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-                onClick={() => setShowStopLoss(!showStopLoss)}
-              >
-                {showStopLoss ? "-" : "+"}
-              </Button>
-            </div>
-            {showStopLoss && (
-              <Input
-                type="number"
-                placeholder="Stop loss price"
-                value={stopLoss}
-                onChange={(e) => setStopLoss(e.target.value)}
-                className="bg-input border-border text-foreground text-sm h-8"
-              />
-            )}
-          </div>
+          {/* Execute Button */}
+          <Button 
+            onClick={executeTrade}
+            disabled={isLoading}
+            className={`w-full font-semibold h-12 ${
+              orderSide === "long" 
+                ? "bg-success hover:bg-success/90 text-success-foreground" 
+                : "bg-danger hover:bg-danger/90 text-danger-foreground"
+            }`}
+          >
+            {isLoading ? "Loading..." : 
+              orderType === "market" 
+                ? `Open Position at $${price.toFixed(2)}` 
+                : `Place Order at $${limitPrice || "0.00"}`
+            }
+          </Button>
           
           <div className="text-xs text-muted-foreground text-center">
             {orderType === "market" 
