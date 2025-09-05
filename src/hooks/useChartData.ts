@@ -48,13 +48,21 @@ export const useChartData = ({ pairId, interval = 3600 }: UseChartDataProps) => 
 
   // Convert data to lightweight-charts format
   const formatDataForChart = () => {
+    if (!data || data.length === 0) return [];
+    
     return data.map(item => ({
-      time: Math.floor(parseInt(item.time) / 1000) as any, // Convert to seconds and cast as Time
+      time: Math.floor(parseInt(item.time) / 1000), // Convert to seconds timestamp
       open: parseFloat(item.open),
       high: parseFloat(item.high),
       low: parseFloat(item.low),
       close: parseFloat(item.close),
-    })).sort((a, b) => a.time - b.time);
+    })).filter(item => 
+      !isNaN(item.time) && 
+      !isNaN(item.open) && 
+      !isNaN(item.high) && 
+      !isNaN(item.low) && 
+      !isNaN(item.close)
+    ).sort((a, b) => a.time - b.time);
   };
 
   return {
