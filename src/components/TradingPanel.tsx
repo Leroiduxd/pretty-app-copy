@@ -139,6 +139,8 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
     }
   };
 
+  console.log("TradingPanel rendered with:", { symbol, price, assetId });
+
   return (
     <div className="w-96 p-4 bg-card border-l border-border overflow-y-auto">
       <div className="space-y-4">
@@ -149,14 +151,20 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
         
         <div className="grid grid-cols-2 gap-2">
           <Button 
-            onClick={() => handleTrade(true)}
+            onClick={() => {
+              console.log("BUY button clicked");
+              handleTrade(true);
+            }}
             disabled={isLoading}
             className="bg-success hover:bg-success/90 text-success-foreground font-semibold h-12"
           >
             {isLoading ? "Loading..." : "BUY"}
           </Button>
           <Button 
-            onClick={() => handleTrade(false)}
+            onClick={() => {
+              console.log("SELL button clicked");
+              handleTrade(false);
+            }}
             disabled={isLoading}
             className="bg-danger hover:bg-danger/90 text-danger-foreground font-semibold h-12"
           >
