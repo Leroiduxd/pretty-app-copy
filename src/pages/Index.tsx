@@ -2,7 +2,7 @@ import { StockList } from "@/components/StockList";
 import { TradingInterface } from "@/components/TradingInterface";
 import { Header } from "@/components/Header";
 import { PositionsPanel } from "@/components/PositionsPanel";
-import { Chart } from "@/components/Chart";
+import { TradingChart } from "@/components/TradingChart";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useState, useEffect } from "react";
 
@@ -79,9 +79,8 @@ const Index = () => {
           onSelectStock={handleSelectStock}
         />
         <div className="flex flex-col flex-1">
-          <Chart 
+          <TradingChart 
             pairId={selectedPairId}
-            intervalSec={300}
             theme={isDarkMode ? 'dark' : 'light'}
           />
           <TradingInterface 
