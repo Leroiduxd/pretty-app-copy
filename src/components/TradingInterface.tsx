@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BarChart, TrendingUp, Plus } from "lucide-react";
 import { useState } from "react";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
+import { LightweightChart } from "./LightweightChart";
+import { useChartData } from "@/hooks/useChartData";
 
 interface TradingInterfaceProps {
   symbol: string;
@@ -14,9 +16,10 @@ interface TradingInterfaceProps {
   changePercent: number;
   high24h?: number;
   low24h?: number;
+  pairId?: string;
 }
 
-export const TradingInterface = ({ symbol, price, change, changePercent, high24h, low24h }: TradingInterfaceProps) => {
+export const TradingInterface = ({ symbol, price, change, changePercent, high24h, low24h, pairId }: TradingInterfaceProps) => {
   const [orderSize, setOrderSize] = useState("10");
   const [leverage, setLeverage] = useState("1");
   const [leverageInput, setLeverageInput] = useState("1");
@@ -29,6 +32,10 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
   const [selectedTimeframe, setSelectedTimeframe] = useState("1H");
   
   const { usdBalance } = useTokenBalance();
+  const { formattedData: chartData, loading: chartLoading } = useChartData({ 
+    pairId, 
+    interval: 3600 // 1 hour
+  });
   
   // Use WebSocket prices with 0 spread
   const askPrice = price;
@@ -128,79 +135,22 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
           </div>
           
           <div className="flex-1 p-4 relative overflow-hidden">
-            {/* Chart Grid Background */}
-            <div className="absolute inset-4 opacity-20">
-              <svg className="w-full h-full">
-                {/* Horizontal grid lines */}
-                {[...Array(8)].map((_, i) => (
-                  <line
-                    key={`h-${i}`}
-                    x1="0"
-                    y1={`${(i * 100) / 7}%`}
-                    x2="100%"
-                    y2={`${(i * 100) / 7}%`}
-                    stroke="hsl(var(--border))"
-                    strokeWidth="1"
-                  />
-                ))}
-                {/* Vertical grid lines */}
-                {[...Array(12)].map((_, i) => (
-                  <line
-                    key={`v-${i}`}
-                    x1={`${(i * 100) / 11}%`}
-                    y1="0"
-                    x2={`${(i * 100) / 11}%`}
-                    y2="100%"
-                    stroke="hsl(var(--border))"
-                    strokeWidth="1"
-                  />
-                ))}
-              </svg>
-            </div>
-            
-            {/* Simulated Candlestick Chart */}
-            <div className="relative h-full flex items-end justify-center">
-              <div className="flex items-end gap-1 h-full">
-                {[...Array(50)].map((_, i) => {
-                  const isGreen = Math.random() > 0.5;
-                  const height = 20 + Math.random() * 60;
-                  
-                  if (chartType === "lines") {
-                    return (
-                      <div
-                        key={i}
-                        className="w-1 bg-blue-500 opacity-80"
-                        style={{ height: `${height}%` }}
-                      />
-                    );
-                  }
-                  
-                  return (
-                    <div
-                      key={i}
-                      className={`w-2 ${isGreen ? 'bg-blue-500' : 'bg-red-500'} opacity-80`}
-                      style={{ height: `${height}%` }}
-                    />
-                  );
-                })}
+            {/* Real-time Chart */}
+            {chartLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-muted-foreground">Chargement du graphique...</div>
               </div>
-            </div>
-            
-            {/* Price labels on right */}
-            <div className="absolute right-0 top-0 h-full flex flex-col justify-between text-xs text-muted-foreground py-4">
-              {[240, 239, 238, 237, 236, 235, 234, 233].map((priceLabel) => (
-                <span key={priceLabel}>{priceLabel}.00</span>
-              ))}
-            </div>
-            
-            {/* Time labels on bottom */}
-            <div className="absolute bottom-0 left-4 right-16 flex justify-between text-xs text-muted-foreground">
-              <span>16:03</span>
-              <span>18:04</span>
-              <span>15:33</span>
-              <span>18:00</span>
-              <span>20:01</span>
-            </div>
+            ) : chartData.length > 0 ? (
+              <LightweightChart 
+                data={chartData} 
+                width={800} 
+                height={400} 
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-muted-foreground">Aucune donnée disponible pour ce graphique</div>
+              </div>
+            )}
           </div>
         </Card>
       </div>

@@ -8,6 +8,7 @@ import { useWebSocket } from "@/hooks/useWebSocket";
 
 const Index = () => {
   const [selectedStock, setSelectedStock] = useState("AAPL_USD");
+  const [selectedPairId, setSelectedPairId] = useState<string>("0");
   const [showPositions, setShowPositions] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const { data: wsData } = useWebSocket("wss://wss.brokex.trade:8443");
@@ -45,11 +46,18 @@ const Index = () => {
     if (wsData && Object.keys(wsData).length > 0 && selectedStock === "AAPL_USD") {
       const firstStock = Object.values(wsData)[0];
       const firstItem = firstStock?.instruments?.[0];
-      if (firstItem) {
+      const firstPairKey = Object.keys(wsData)[0];
+      if (firstItem && firstPairKey) {
         setSelectedStock(firstItem.tradingPair.toUpperCase());
+        setSelectedPairId(firstPairKey);
       }
     }
   }, [wsData, selectedStock]);
+
+  const handleStockSelect = (symbol: string, pairId: string) => {
+    setSelectedStock(symbol);
+    setSelectedPairId(pairId);
+  };
 
   return (
     <RainbowKitProvider theme={isDarkMode ? darkTheme() : lightTheme()}>
@@ -63,7 +71,7 @@ const Index = () => {
         <div className="flex flex-1 overflow-hidden">
           <StockList 
             selectedStock={selectedStock}
-            onSelectStock={setSelectedStock}
+            onSelectStock={handleStockSelect}
           />
           <TradingInterface 
             symbol={currentStockData.symbol}
@@ -72,6 +80,7 @@ const Index = () => {
             changePercent={currentStockData.changePercent}
             high24h={currentStockData.high24h}
             low24h={currentStockData.low24h}
+            pairId={selectedPairId}
           />
         </div>
 

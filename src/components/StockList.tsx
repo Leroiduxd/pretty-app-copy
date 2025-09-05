@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 interface StockListProps {
   selectedStock: string;
-  onSelectStock: (symbol: string) => void;
+  onSelectStock: (symbol: string, pairId: string) => void;
 }
 
 export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
@@ -29,7 +29,8 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
         high24h: parseFloat(item["24h_high"]),
         low24h: parseFloat(item["24h_low"]),
         timestamp: item.timestamp,
-        id: payload.id
+        id: payload.id,
+        pairId: pairKey // Add the pair key for chart API
       };
     }).filter(Boolean);
   }, [wsData]);
@@ -74,8 +75,8 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
               className={`p-2.5 cursor-pointer transition-colors hover:bg-muted border-0 ${
                 selectedStock === stock.symbol ? 'bg-primary/10 border border-primary/20' : 'bg-transparent'
               }`}
-              onClick={() => onSelectStock(stock.symbol)}
-            >
+                onClick={() => onSelectStock(stock.symbol, stock.pairId)}
+              >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-foreground text-sm">{stock.symbol}</div>
