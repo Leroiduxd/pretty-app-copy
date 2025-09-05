@@ -89,20 +89,30 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
             {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </Button>
 
-          {isConnected && address && (
-            <Card className="px-3 py-1.5 bg-card border-border">
-              <div className="flex items-center gap-2 text-xs">
-                <div className="flex items-center gap-1">
-                  <Wifi className={`w-3 h-3 ${connectionInfo.color}`} />
-                  <span className="text-muted-foreground">USDC: ${balance.toFixed(2)}</span>
-                </div>
-                <div className="w-px h-3 bg-border" />
-                <span className="font-mono text-foreground">{address.slice(0, 6)}...{address.slice(-4)}</span>
-              </div>
-            </Card>
+          {isConnected && address ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 font-mono text-xs"
+            >
+              <Wallet className="w-3 h-3 mr-2" />
+              {address.slice(0, 6)}...{address.slice(-4)}
+            </Button>
+          ) : (
+            <ConnectButton.Custom>
+              {({ openConnectModal }) => (
+                <Button
+                  onClick={openConnectModal}
+                  variant="default"
+                  size="sm"
+                  className="h-8"
+                >
+                  <Wallet className="w-4 h-4 mr-2" />
+                  Connecter le portefeuille
+                </Button>
+              )}
+            </ConnectButton.Custom>
           )}
-
-          <ConnectButton />
         </div>
       </div>
     </header>

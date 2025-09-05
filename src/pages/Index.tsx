@@ -85,7 +85,7 @@ const Index = () => {
             pairId={selectedPairId}
             theme={isDarkMode ? 'dark' : 'light'}
           />
-          <TradingInterface 
+          <TradingInterface
             symbol={currentStock.symbol}
             price={currentStock.price}
             change={currentStock.change}
