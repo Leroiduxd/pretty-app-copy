@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAccount, useWriteContract, useConfig, useSwitchChain } from 'wagmi';
 import { pharosTestnet } from '@/lib/wagmi';
 import { parseUnits } from 'viem';
@@ -51,6 +51,13 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showStopLoss, setShowStopLoss] = useState(false);
   const [showTakeProfit, setShowTakeProfit] = useState(false);
+
+  // Update limit price when price or symbol changes
+  useEffect(() => {
+    if (price) {
+      setLimitPrice(price.toFixed(2));
+    }
+  }, [price, symbol]);
 
   const { writeContract } = useWriteContract();
   const { isConnected, chainId } = useAccount();
