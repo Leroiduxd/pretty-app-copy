@@ -306,9 +306,9 @@ export const usePositions = () => {
             limitBucketId: BigInt(0)
           };
 
-          const assetIndex = mockOrder.assetIndex;
-          const symbol = idToPair.get(assetIndex) || `ASSET_${assetIndex}`;
-          const currentPrice = lastPrices[assetIndex] || 51000;
+           const assetIndex = mockOrder.assetIndex;
+           const symbol = idToPair.get(assetIndex) || `ASSET_${assetIndex}`;
+           const currentPrice = lastPrices[assetIndex] || 51000;
           
           orders.push({
             id: mockOrder.id,

@@ -95,14 +95,14 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
         </div>
 
         <div className="p-4">
-          <Tabs defaultValue="positions" className="w-full">
+          <Tabs defaultValue="positions" className="w-full flex flex-col h-full">
             <TabsList className="grid w-full grid-cols-3 bg-muted">
               <TabsTrigger value="positions">Open Positions</TabsTrigger>
               <TabsTrigger value="orders">Orders</TabsTrigger>
               <TabsTrigger value="history">History</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="positions" className="space-y-3 mt-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+            <TabsContent value="positions" className="space-y-3 mt-4 flex-1 overflow-y-auto">
               {isLoading ? (
                 <div className="text-center text-muted-foreground py-8">Loading positions...</div>
               ) : openPositions.length === 0 ? (
@@ -172,7 +172,7 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
               )}
             </TabsContent>
 
-            <TabsContent value="orders" className="space-y-3 mt-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+            <TabsContent value="orders" className="space-y-3 mt-4 flex-1 overflow-y-auto">
               {openOrders.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No open orders</div>
               ) : (
@@ -230,7 +230,7 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
               )}
             </TabsContent>
 
-            <TabsContent value="history" className="space-y-3 mt-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+            <TabsContent value="history" className="space-y-3 mt-4 flex-1 overflow-y-auto">
               {closedPositions.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No closed positions</div>
               ) : (
