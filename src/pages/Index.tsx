@@ -3,6 +3,7 @@ import { TradingInterface } from "@/components/TradingInterface";
 import { Header } from "@/components/Header";
 import { PositionsPanel } from "@/components/PositionsPanel";
 import { useState, useEffect } from "react";
+import { RainbowKitProvider, darkTheme, lightTheme } from '@rainbow-me/rainbowkit';
 
 // Sample stock data
 const stocksData = [
@@ -34,32 +35,34 @@ const Index = () => {
   }, [isDarkMode]);
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
-      <Header 
-        onTogglePositions={() => setShowPositions(!showPositions)}
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
-      />
-      
-      <div className="flex flex-1 overflow-hidden">
-        <StockList 
-          stocks={stocksData}
-          selectedStock={selectedStock}
-          onSelectStock={setSelectedStock}
+    <RainbowKitProvider theme={isDarkMode ? darkTheme() : lightTheme()}>
+      <div className="h-screen bg-background flex flex-col overflow-hidden">
+        <Header 
+          onTogglePositions={() => setShowPositions(!showPositions)}
+          isDarkMode={isDarkMode}
+          onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
         />
-        <TradingInterface 
-          symbol={currentStock.symbol}
-          price={currentStock.price}
-          change={currentStock.change}
-          changePercent={currentStock.changePercent}
+        
+        <div className="flex flex-1 overflow-hidden">
+          <StockList 
+            stocks={stocksData}
+            selectedStock={selectedStock}
+            onSelectStock={setSelectedStock}
+          />
+          <TradingInterface 
+            symbol={currentStock.symbol}
+            price={currentStock.price}
+            change={currentStock.change}
+            changePercent={currentStock.changePercent}
+          />
+        </div>
+
+        <PositionsPanel 
+          isOpen={showPositions}
+          onClose={() => setShowPositions(false)}
         />
       </div>
-
-      <PositionsPanel 
-        isOpen={showPositions}
-        onClose={() => setShowPositions(false)}
-      />
-    </div>
+    </RainbowKitProvider>
   );
 };
 
