@@ -134,7 +134,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
             </div>
           </div>
           
-          <div className="flex-1 p-2 relative overflow-hidden">
+          <div className="flex-1 relative overflow-hidden">
             {/* Real-time Chart */}
             {chartLoading ? (
               <div className="flex items-center justify-center h-full">

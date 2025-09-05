@@ -31,25 +31,40 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
           textColor: 'hsl(var(--foreground))',
         },
         grid: {
-          vertLines: { color: 'hsl(var(--border))' },
-          horzLines: { color: 'hsl(var(--border))' },
+          vertLines: { 
+            color: 'rgba(42, 46, 57, 0.06)',
+            style: 0,
+            visible: true,
+          },
+          horzLines: { 
+            color: 'rgba(42, 46, 57, 0.06)',
+            style: 0,
+            visible: true,
+          },
         },
         rightPriceScale: {
-          borderColor: 'hsl(var(--border))',
+          borderColor: 'rgba(197, 203, 206, 0.4)',
+          textColor: 'hsl(var(--foreground))',
         },
         timeScale: {
-          borderColor: 'hsl(var(--border))',
+          borderColor: 'rgba(197, 203, 206, 0.4)',
           timeVisible: true,
           secondsVisible: false,
         },
         handleScroll: {
           mouseWheel: true,
           pressedMouseMove: true,
+          horzTouchDrag: true,
+          vertTouchDrag: true,
         },
         handleScale: {
           axisPressedMouseMove: true,
           mouseWheel: true,
           pinch: true,
+          axisDoubleClickReset: true,
+        },
+        crosshair: {
+          mode: 0,
         },
         width: width || chartContainerRef.current.clientWidth,
         height: height || chartContainerRef.current.clientHeight,

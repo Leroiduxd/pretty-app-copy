@@ -58,9 +58,6 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
           <span className="text-muted-foreground">SYMBOL</span>
           <span className="text-muted-foreground">LAST/CHANGE</span>
         </div>
-        <div className="text-xs text-muted-foreground mt-1">
-          {isConnected ? '🟢 Connecté' : '🔴 Déconnecté'}
-        </div>
       </div>
       
       <div className="space-y-0.5 p-2">
