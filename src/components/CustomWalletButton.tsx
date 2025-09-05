@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Wallet, Wifi, Copy, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useDisconnect } from 'wagmi';
+import { useTokenBalance } from '@/hooks/useTokenBalance';
 
 interface CustomWalletButtonProps {
   isDarkMode: boolean;
@@ -13,6 +14,7 @@ interface CustomWalletButtonProps {
 export const CustomWalletButton = ({ isDarkMode }: CustomWalletButtonProps) => {
   const { toast } = useToast();
   const { disconnect } = useDisconnect();
+  const { tokenBalance, usdBalance } = useTokenBalance();
   
   const getConnectionStatus = () => {
     const statuses = ["good", "medium", "poor"];
@@ -130,7 +132,8 @@ export const CustomWalletButton = ({ isDarkMode }: CustomWalletButtonProps) => {
                             </div>
                             <div>
                               <p className="font-medium text-foreground">{account.displayName}</p>
-                              <p className="text-sm text-muted-foreground">0 ETH</p>
+                              <p className="text-sm text-muted-foreground">{parseFloat(tokenBalance).toFixed(2)} PHRS</p>
+                              <p className="text-xs text-muted-foreground">${usdBalance} USD</p>
                             </div>
                           </div>
                         </div>

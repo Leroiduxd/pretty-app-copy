@@ -4,35 +4,52 @@ import { Header } from "@/components/Header";
 import { PositionsPanel } from "@/components/PositionsPanel";
 import { useState, useEffect } from "react";
 import { RainbowKitProvider, darkTheme, lightTheme } from '@rainbow-me/rainbowkit';
-
-// Sample stock data
-const stocksData = [
-  { symbol: "AAPL_USD", name: "APPLE INC.", price: 238.19, change: 3.87, changePercent: 1.62 },
-  { symbol: "AMZN_USD", name: "AMAZON", price: 225.83, change: 2.72, changePercent: 1.20 },
-  { symbol: "COIN_USD", name: "COINBASE", price: 302.51, change: 30.67, changePercent: 2.27 },
-  { symbol: "GOOGL_USD", name: "ALPHABET INC.", price: 231.75, change: -0.60, changePercent: -2.86 },
-  { symbol: "GME_USD", name: "GAMESTOP CORP.", price: 22.95, change: -0.30, changePercent: -4.32 },
-  { symbol: "INTC_USD", name: "INTEL CORPORATION", price: 23.99, change: -0.39, changePercent: -1.62 },
-  { symbol: "KO_USD", name: "COCA-COLA CO", price: 69.00, change: 1.65, changePercent: 2.39 },
-  { symbol: "MCD_USD", name: "MCDONALD'S CORP", price: 315.90, change: 3.62, changePercent: 1.22 },
-  { symbol: "MSFT_USD", name: "MICROSOFT CORP", price: 503.68, change: 5.13, changePercent: 1.02 },
-  { symbol: "IBM_USD", name: "IBM", price: 244.15, change: 6.00, changePercent: 2.08 },
-  { symbol: "META_USD", name: "META PLATFORMS INC.", price: 737.07, change: 55.53, changePercent: 8.75 },
-  { symbol: "NVDA_USD", name: "NVIDIA CORP", price: 170.71, change: 33.47, changePercent: 2.03 },
-  { symbol: "TSLA_USD", name: "TESLA INC", price: 333.92, change: 14.08, changePercent: 4.39 },
-  { symbol: "AUD_USD", name: "AUD", price: 0.6544, change: -0.0012, changePercent: -0.18 },
-];
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 const Index = () => {
   const [selectedStock, setSelectedStock] = useState("AAPL_USD");
   const [showPositions, setShowPositions] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const { data: wsData } = useWebSocket("wss://wss.brokex.trade:8443");
   
-  const currentStock = stocksData.find(stock => stock.symbol === selectedStock) || stocksData[0];
+  // Get current stock data from WebSocket
+  const currentStock = Object.entries(wsData || {}).find(([pairKey, payload]) => {
+    const item = payload?.instruments?.[0];
+    return item?.tradingPair.toUpperCase() === selectedStock;
+  });
+
+  const currentStockData = currentStock 
+    ? {
+        symbol: currentStock[1]?.instruments?.[0]?.tradingPair.toUpperCase() || selectedStock,
+        price: parseFloat(currentStock[1]?.instruments?.[0]?.currentPrice || "0"),
+        change: parseFloat(currentStock[1]?.instruments?.[0]?.["24h_change"] || "0"),
+        changePercent: parseFloat(currentStock[1]?.instruments?.[0]?.["24h_change"] || "0"),
+        high24h: parseFloat(currentStock[1]?.instruments?.[0]?.["24h_high"] || "0"),
+        low24h: parseFloat(currentStock[1]?.instruments?.[0]?.["24h_low"] || "0"),
+      }
+    : {
+        symbol: selectedStock,
+        price: 0,
+        change: 0,
+        changePercent: 0,
+        high24h: 0,
+        low24h: 0,
+      };
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
+
+  useEffect(() => {
+    // Auto-select first available stock when WebSocket data loads
+    if (wsData && Object.keys(wsData).length > 0 && selectedStock === "AAPL_USD") {
+      const firstStock = Object.values(wsData)[0];
+      const firstItem = firstStock?.instruments?.[0];
+      if (firstItem) {
+        setSelectedStock(firstItem.tradingPair.toUpperCase());
+      }
+    }
+  }, [wsData, selectedStock]);
 
   return (
     <RainbowKitProvider theme={isDarkMode ? darkTheme() : lightTheme()}>
@@ -45,15 +62,16 @@ const Index = () => {
         
         <div className="flex flex-1 overflow-hidden">
           <StockList 
-            stocks={stocksData}
             selectedStock={selectedStock}
             onSelectStock={setSelectedStock}
           />
           <TradingInterface 
-            symbol={currentStock.symbol}
-            price={currentStock.price}
-            change={currentStock.change}
-            changePercent={currentStock.changePercent}
+            symbol={currentStockData.symbol}
+            price={currentStockData.price}
+            change={currentStockData.change}
+            changePercent={currentStockData.changePercent}
+            high24h={currentStockData.high24h}
+            low24h={currentStockData.low24h}
           />
         </div>
 
