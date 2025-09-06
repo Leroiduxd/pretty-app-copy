@@ -33,10 +33,10 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
     if (!chartContainerRef.current) return;
 
     try {
-      // Theme-aware colors
+      // Theme-aware colors - Fixed for light mode visibility
       const isDark = document.documentElement.classList.contains('dark') || window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(42, 46, 57, 0.1)';
-      const borderColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(42, 46, 57, 0.2)';
+      const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+      const borderColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)';
       const textColor = isDark ? '#ffffff' : '#000000';
 
       // Create chart with proper configuration - based on working repo
@@ -138,7 +138,7 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
       <div ref={chartContainerRef} className="w-full h-full" />
       {data.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-muted-foreground">Aucune donnée disponible</div>
+          <div className="text-muted-foreground">No data available</div>
         </div>
       )}
       {/* TradingView logo with theme awareness */}
