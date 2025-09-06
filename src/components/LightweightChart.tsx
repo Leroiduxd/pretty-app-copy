@@ -35,9 +35,9 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
     try {
       // Theme-aware colors - Fixed for light mode visibility
       const isDark = document.documentElement.classList.contains('dark') || window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-      const borderColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)';
-      const textColor = isDark ? '#ffffff' : '#000000';
+      const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)';
+      const borderColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.25)';
+      const textColor = isDark ? '#ffffff' : '#374151';
 
       // Create chart with proper configuration - based on working repo
       const chart = createChart(chartContainerRef.current, {
