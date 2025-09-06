@@ -52,8 +52,8 @@ export const useTokenApproval = () => {
 
   useEffect(() => {
     if (allowance) {
-      // Check if allowance is greater than a reasonable amount (e.g., 1000 tokens)
-      const minAllowance = parseUnits('1000', 6); // 1000 tokens with 6 decimals
+      // Check if allowance is greater than 10,000 USD (assuming 1:1 ratio)
+      const minAllowance = parseUnits('10000', 6); // 10,000 tokens with 6 decimals
       setIsApproved(allowance >= minAllowance);
     }
   }, [allowance]);
