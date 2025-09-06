@@ -35,14 +35,15 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
     try {
       // Theme-aware colors
       const isDark = document.documentElement.classList.contains('dark') || window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(42, 46, 57, 0.12)';
-      const borderColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(197, 203, 206, 0.4)';
+      const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(42, 46, 57, 0.1)';
+      const borderColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(42, 46, 57, 0.2)';
+      const textColor = isDark ? '#ffffff' : '#000000';
 
       // Create chart with proper configuration - based on working repo
       const chart = createChart(chartContainerRef.current, {
         layout: {
           background: { type: ColorType.Solid, color: 'transparent' },
-          textColor: 'hsl(var(--foreground))',
+          textColor: textColor,
         },
         grid: {
           vertLines: { color: gridColor, style: 0, visible: true },
@@ -50,12 +51,14 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
         },
         rightPriceScale: {
           borderColor: borderColor,
-          textColor: 'hsl(var(--foreground))',
+          textColor: textColor,
+          visible: true,
         },
         timeScale: {
           borderColor: borderColor,
           timeVisible: true,
           secondsVisible: false,
+          visible: true,
         },
         handleScroll: {
           mouseWheel: true,
@@ -138,6 +141,25 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
           <div className="text-muted-foreground">Aucune donnée disponible</div>
         </div>
       )}
+      {/* TradingView logo with theme awareness */}
+      <div className="absolute bottom-2 left-2 opacity-50">
+        <svg 
+          width="71" 
+          height="16" 
+          viewBox="0 0 71 16" 
+          fill="none" 
+          className={document.documentElement.classList.contains('dark') || window.matchMedia('(prefers-color-scheme: dark)').matches ? 'text-white' : 'text-black'}
+        >
+          <path 
+            d="M2.5 0h66c1.4 0 2.5 1.1 2.5 2.5v11c0 1.4-1.1 2.5-2.5 2.5h-66C1.1 16 0 14.9 0 13.5v-11C0 1.1 1.1 0 2.5 0z" 
+            fill="currentColor"
+          />
+          <path 
+            d="M8.89 4.03l-1.23.49v7.91h1.23V4.03zm2.84 3.92v4.48h1.23V7.95c0-.98.78-1.77 1.77-1.77.98 0 1.77.78 1.77 1.77v4.48h1.23V7.95c0-1.65-1.35-3-3-3s-3 1.35-3 3zm12.04-3.92c-1.65 0-3 1.35-3 3v1.99c0 1.65 1.35 3 3 3 1.17 0 2.19-.68 2.68-1.67l-1.1-.44c-.29.58-.88.98-1.58.98-.98 0-1.77-.78-1.77-1.77V8.12c0-.98.78-1.77 1.77-1.77.7 0 1.28.4 1.58.98l1.1-.44c-.49-.99-1.51-1.67-2.68-1.67zm8.13 0c-1.65 0-3 1.35-3 3v1.99c0 1.65 1.35 3 3 3s3-1.35 3-3V7.03c0-1.65-1.35-3-3-3zm1.77 4.99c0 .98-.78 1.77-1.77 1.77s-1.77-.78-1.77-1.77V7.03c0-.98.78-1.77 1.77-1.77s1.77.78 1.77 1.77v1.99zm6.36-4.99c-1.65 0-3 1.35-3 3v1.99c0 1.65 1.35 3 3 3 1.17 0 2.19-.68 2.68-1.67l-1.1-.44c-.29.58-.88.98-1.58.98-.98 0-1.77-.78-1.77-1.77V8.12c0-.98.78-1.77 1.77-1.77.7 0 1.28.4 1.58.98l1.1-.44c-.49-.99-1.51-1.67-2.68-1.67zm7.2 0l-2.37 7.95h1.28l.53-1.77h2.47l.53 1.77h1.28l-2.37-7.95h-1.35zm.68 2.22l.89 2.96h-1.78l.89-2.96zm7.38-2.22l-2.37 7.95h1.28l.53-1.77h2.47l.53 1.77h1.28l-2.37-7.95h-1.35zm.68 2.22l.89 2.96h-1.78l.89-2.96zm8.13-2.22c-1.65 0-3 1.35-3 3v1.99c0 1.65 1.35 3 3 3s3-1.35 3-3V7.03c0-1.65-1.35-3-3-3zm1.77 4.99c0 .98-.78 1.77-1.77 1.77s-1.77-.78-1.77-1.77V7.03c0-.98.78-1.77 1.77-1.77s1.77.78 1.77 1.77v1.99z" 
+            fill={document.documentElement.classList.contains('dark') || window.matchMedia('(prefers-color-scheme: dark)').matches ? '#000' : '#fff'}
+          />
+        </svg>
+      </div>
     </div>
   );
 };

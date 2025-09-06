@@ -4,18 +4,47 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WagmiProvider } from 'wagmi';
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import { config } from './lib/wagmi';
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import '@rainbow-me/rainbowkit/styles.css';
+import { useEffect, useState } from 'react';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <WagmiProvider config={config}>
-    <QueryClientProvider client={queryClient}>
-      <RainbowKitProvider>
+const App = () => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    // Check system theme preference
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const updateTheme = (e: MediaQueryListEvent | MediaQueryList) => {
+      const isDark = e.matches;
+      setIsDarkMode(isDark);
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+
+    // Set initial theme
+    updateTheme(mediaQuery);
+
+    // Listen for changes
+    mediaQuery.addEventListener('change', updateTheme);
+
+    return () => mediaQuery.removeEventListener('change', updateTheme);
+  }, []);
+
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider 
+          theme={isDarkMode ? darkTheme() : undefined}
+        >
         <TooltipProvider>
           <Toaster />
           <Sonner />
@@ -30,6 +59,7 @@ const App = () => (
       </RainbowKitProvider>
     </QueryClientProvider>
   </WagmiProvider>
-);
+  );
+};
 
 export default App;

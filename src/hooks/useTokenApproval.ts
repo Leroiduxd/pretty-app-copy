@@ -43,8 +43,8 @@ export const useTokenApproval = () => {
     args: address ? [address, SPENDER_ADDRESS] : undefined,
     chainId: pharosTestnet.id,
     query: {
-      enabled: Boolean(address && isConnected),
-      refetchInterval: 5000, // Refetch every 5 seconds
+      enabled: Boolean(address && isConnected), // Only check when connected
+      refetchInterval: isConnected ? 5000 : false, // Only refetch when connected
     },
   });
 
