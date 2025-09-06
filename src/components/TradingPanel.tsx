@@ -8,6 +8,7 @@ import { pharosTestnet } from '@/lib/wagmi';
 import { parseUnits } from 'viem';
 import { toast } from "sonner";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
+import { useTokenApproval } from "@/hooks/useTokenApproval";
 
 interface TradingPanelProps {
   symbol: string;
@@ -64,6 +65,7 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
   const { switchChain } = useSwitchChain();
   const config = useConfig();
   const { tokenBalance, usdBalance } = useTokenBalance();
+  const { isApproved, isApproving, approve } = useTokenApproval();
   
   const percentageButtons = [25, 50, 75, 100];
 
@@ -354,18 +356,22 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
           
           {/* Execute Button */}
           <Button 
-            onClick={executeTrade}
-            disabled={isLoading}
+            onClick={isApproved ? executeTrade : approve}
+            disabled={isLoading || isApproving}
             className={`w-full font-semibold h-12 ${
-              orderSide === "long" 
-                ? "bg-success hover:bg-success/90 text-success-foreground" 
-                : "bg-danger hover:bg-danger/90 text-danger-foreground"
+              !isApproved
+                ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                : orderSide === "long" 
+                  ? "bg-success hover:bg-success/90 text-success-foreground" 
+                  : "bg-danger hover:bg-danger/90 text-danger-foreground"
             }`}
           >
-            {isLoading ? "Loading..." : 
-              orderType === "market" 
-                ? `Open Position at $${price.toFixed(2)}` 
-                : `Place Order at $${limitPrice || "0.00"}`
+            {isApproving ? "Approving..." :
+             !isApproved ? "Approve Token" :
+             isLoading ? "Loading..." : 
+             orderType === "market" 
+               ? `Open Position at $${price.toFixed(2)}` 
+               : `Place Order at $${limitPrice || "0.00"}`
             }
           </Button>
           

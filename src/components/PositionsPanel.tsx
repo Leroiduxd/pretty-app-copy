@@ -238,11 +238,12 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
               )}
             </TabsContent>
 
-            <TabsContent value="history" className="space-y-3 mt-4">
+            <TabsContent value="history" className="mt-4 flex-1 overflow-hidden">
               {closedPositions.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No closed positions</div>
               ) : (
-                <div className="space-y-3 max-h-96 overflow-y-auto">
+                <ScrollArea className="h-full">
+                  <div className="space-y-3 pr-2 pb-4">
                   {closedPositions.map((trade, index) => (
                   <Card key={index} className="p-4 bg-card border-border">
                     <div className="flex items-center justify-between mb-3">
@@ -293,7 +294,8 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
                     </div>
                   </Card>
                   ))}
-                </div>
+                  </div>
+                </ScrollArea>
               )}
             </TabsContent>
           </Tabs>
