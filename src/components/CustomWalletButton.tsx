@@ -6,6 +6,7 @@ import { Wallet, Wifi, Copy, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useDisconnect } from 'wagmi';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
+import { useLatency } from '@/hooks/useLatency';
 
 interface CustomWalletButtonProps {
   isDarkMode: boolean;
@@ -15,31 +16,16 @@ export const CustomWalletButton = ({ isDarkMode }: CustomWalletButtonProps) => {
   const { toast } = useToast();
   const { disconnect } = useDisconnect();
   const { tokenBalance, usdBalance } = useTokenBalance();
-  
-  const getConnectionStatus = () => {
-    const statuses = ["good", "medium", "poor"];
-    const status = statuses[Math.floor(Math.random() * statuses.length)];
-    const colors = {
-      good: "text-connection-good",
-      medium: "text-connection-medium",
-      poor: "text-connection-poor"
-    };
-    const speeds = {
-      good: "~12ms",
-      medium: "~45ms", 
-      poor: "~120ms"
-    };
-    return { status, color: colors[status as keyof typeof colors], speed: speeds[status as keyof typeof speeds] };
-  };
+  const { latency, status, color } = useLatency();
 
-  const connectionInfo = getConnectionStatus();
+  const getDisplayLatency = () => `~${latency}ms`;
 
   const copyAddress = async (address: string) => {
     try {
       await navigator.clipboard.writeText(address);
       toast({
-        title: "Adresse copiée",
-        description: "L'adresse du wallet a été copiée dans le presse-papier",
+        title: "Address copied",
+        description: "Wallet address has been copied to clipboard",
       });
     } catch (err) {
       console.error('Failed to copy address:', err);
@@ -71,8 +57,8 @@ export const CustomWalletButton = ({ isDarkMode }: CustomWalletButtonProps) => {
               <Card className="px-3 py-1.5 bg-card border-border">
                 <div className="flex items-center gap-2 text-xs">
                   <div className="flex items-center gap-1">
-                    <Wifi className={`w-3 h-3 ${connectionInfo.color}`} />
-                    <span className="text-muted-foreground">{connectionInfo.speed}</span>
+                    <Wifi className={`w-3 h-3 ${color}`} />
+                    <span className="text-muted-foreground">{getDisplayLatency()}</span>
                   </div>
                   <div className="w-px h-3 bg-border" />
                   <span className="font-mono text-foreground">
@@ -146,7 +132,7 @@ export const CustomWalletButton = ({ isDarkMode }: CustomWalletButtonProps) => {
                             onClick={() => copyAddress(account.address)}
                           >
                             <Copy className="w-4 h-4 mr-2" />
-                            Copier l'adresse
+                            Copy Address
                           </Button>
                           
                           <Button
@@ -156,7 +142,7 @@ export const CustomWalletButton = ({ isDarkMode }: CustomWalletButtonProps) => {
                             onClick={() => disconnect()}
                           >
                             <LogOut className="w-4 h-4 mr-2" />
-                            Déconnecter
+                            Disconnect
                           </Button>
                         </div>
                       </div>
