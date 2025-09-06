@@ -16,6 +16,17 @@ const queryClient = new QueryClient();
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  // Mobile detection and redirect
+  useEffect(() => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                     window.innerWidth <= 768;
+    
+    if (isMobile) {
+      window.location.href = 'https://mobile.brokex.trade';
+      return;
+    }
+  }, []);
+
   useEffect(() => {
     // Check system theme preference
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
