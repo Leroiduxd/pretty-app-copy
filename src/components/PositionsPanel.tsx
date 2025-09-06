@@ -3,11 +3,11 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { X } from "lucide-react";
 import { usePositions } from "@/hooks/usePositions";
 import { useWriteContract } from 'wagmi';
 import { toast } from "sonner";
-
 interface PositionsPanelProps {
   isOpen: boolean;
   onClose: () => void;
@@ -86,7 +86,7 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
-      <div className="fixed right-0 top-0 h-full w-[600px] bg-background border-l border-border shadow-xl">
+      <div className="fixed right-0 top-0 h-full w-[600px] bg-background border-l border-border shadow-xl flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="text-lg font-semibold text-foreground">Trading Dashboard</h2>
           <Button variant="ghost" size="sm" onClick={onClose} className="w-8 h-8 p-0">
@@ -94,21 +94,22 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
           </Button>
         </div>
 
-        <div className="p-4">
-          <Tabs defaultValue="positions" className="w-full">
+        <div className="p-4 flex-1 flex flex-col overflow-hidden">
+          <Tabs defaultValue="positions" className="w-full flex-1 flex flex-col overflow-hidden">
             <TabsList className="grid w-full grid-cols-3 bg-muted">
               <TabsTrigger value="positions">Open Positions</TabsTrigger>
               <TabsTrigger value="orders">Orders</TabsTrigger>
               <TabsTrigger value="history">History</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="positions" className="space-y-3 mt-4">
+            <TabsContent value="positions" className="mt-4 flex-1 overflow-hidden">
               {isLoading ? (
                 <div className="text-center text-muted-foreground py-8">Loading positions...</div>
               ) : openPositions.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No open positions</div>
               ) : (
-                <div className="space-y-3 max-h-96 overflow-y-auto">
+                <ScrollArea className="h-full">
+                  <div className="space-y-3 pr-2 pb-4">
                   {openPositions.map((position) => (
                   <Card key={position.id.toString()} className="p-4 bg-card border-border">
                     <div className="flex items-center justify-between mb-3">
@@ -171,66 +172,69 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
                   </Card>
                   ))}
                 </div>
+                </ScrollArea>
               )}
             </TabsContent>
 
-            <TabsContent value="orders" className="space-y-3 mt-4">
+            <TabsContent value="orders" className="mt-4 flex-1 overflow-hidden">
               {openOrders.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No open orders</div>
               ) : (
-                <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {openOrders.map((order) => (
-                  <Card key={order.id.toString()} className="p-4 bg-card border-border">
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-foreground">{order.symbol}</span>
-                          <Badge variant="outline" className="text-xs">
-                            {order.isLong ? "LONG" : "SHORT"}
-                          </Badge>
+                <ScrollArea className="h-full">
+                  <div className="space-y-3 pr-2 pb-4">
+                    {openOrders.map((order) => (
+                    <Card key={order.id.toString()} className="p-4 bg-card border-border">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium text-foreground">{order.symbol}</span>
+                            <Badge variant="outline" className="text-xs">
+                              {order.isLong ? "LONG" : "SHORT"}
+                            </Badge>
+                          </div>
+                          <div className="text-xs text-muted-foreground">ID: {order.id.toString()}</div>
                         </div>
-                        <div className="text-xs text-muted-foreground">ID: {order.id.toString()}</div>
+                        <Button 
+                          size="sm" 
+                          variant="destructive" 
+                          className="h-7 px-2 text-xs"
+                          onClick={() => handleCancelOrder(order.id)}
+                          disabled={loadingActions[`cancel-${order.id.toString()}`]}
+                        >
+                          {loadingActions[`cancel-${order.id.toString()}`] ? "Canceling..." : "Cancel Order"}
+                        </Button>
                       </div>
-                      <Button 
-                        size="sm" 
-                        variant="destructive" 
-                        className="h-7 px-2 text-xs"
-                        onClick={() => handleCancelOrder(order.id)}
-                        disabled={loadingActions[`cancel-${order.id.toString()}`]}
-                      >
-                        {loadingActions[`cancel-${order.id.toString()}`] ? "Canceling..." : "Cancel Order"}
-                      </Button>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-3 text-xs">
-                      <div>
-                        <div className="text-muted-foreground">Order Date</div>
-                        <div className="text-foreground">{new Date(order.timestamp * 1000).toLocaleString()}</div>
+                      
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                          <div className="text-muted-foreground">Order Date</div>
+                          <div className="text-foreground">{new Date(order.timestamp * 1000).toLocaleString()}</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground">Target Price</div>
+                          <div className="text-foreground">${order.orderPrice.toFixed(2)}</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground">Market Price</div>
+                          <div className="text-foreground">${order.currentPrice.toFixed(2)}</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground">Size USD</div>
+                          <div className="text-foreground">${order.sizeUsd.toFixed(2)}</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground">Leverage</div>
+                          <div className="text-foreground">{order.leverage}x</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground">Type</div>
+                          <div className="text-foreground">Limit Order</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-muted-foreground">Target Price</div>
-                        <div className="text-foreground">${order.orderPrice.toFixed(2)}</div>
-                      </div>
-                      <div>
-                        <div className="text-muted-foreground">Market Price</div>
-                        <div className="text-foreground">${order.currentPrice.toFixed(2)}</div>
-                      </div>
-                      <div>
-                        <div className="text-muted-foreground">Size USD</div>
-                        <div className="text-foreground">${order.sizeUsd.toFixed(2)}</div>
-                      </div>
-                      <div>
-                        <div className="text-muted-foreground">Leverage</div>
-                        <div className="text-foreground">{order.leverage}x</div>
-                      </div>
-                      <div>
-                        <div className="text-muted-foreground">Type</div>
-                        <div className="text-foreground">Limit Order</div>
-                      </div>
-                    </div>
-                  </Card>
-                  ))}
-                </div>
+                    </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
               )}
             </TabsContent>
 
