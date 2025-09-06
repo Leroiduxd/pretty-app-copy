@@ -205,28 +205,25 @@ export const usePositions = () => {
     });
   }, [wsData]);
 
-  // Fetch individual open positions
+  // Fetch individual open positions progressively
   useEffect(() => {
     const ids = (openIds as readonly bigint[]) || [];
-    if (!ids || ids.length === 0) {
-      setOpenPositions([]);
-      return;
-    }
-
     let cancelled = false;
 
-    const fetchOpenPositions = async () => {
+    const fetchSequentially = async () => {
+      if (!publicClient) return;
       setIsLoading(true);
-      if (!publicClient) { setIsLoading(false); return; }
+      setOpenPositions([]);
       try {
-        const positions: OpenPosition[] = [];
         for (const id of ids) {
+          if (cancelled) break;
           try {
             const openData: any = await (publicClient as any).readContract({
               address: CORE_CONTRACT_ADDRESS,
               abi: CORE_CONTRACT_ABI,
               functionName: 'getOpenById',
-              args: [id]
+              args: [id],
+              chainId: pharosTestnet.id,
             } as any);
             if (!openData) continue;
 
@@ -250,7 +247,7 @@ export const usePositions = () => {
               pnlPercent = (pnlUsd / usedMargin) * 100;
             }
 
-            positions.push({
+            const position: OpenPosition = {
               id: openData.id,
               trader: openData.trader,
               assetIndex,
@@ -267,23 +264,57 @@ export const usePositions = () => {
               pnl: pnlUsd,
               pnlPercent,
               margin: usedMargin,
-            });
+            };
+
+            if (!cancelled) {
+              setOpenPositions((prev) => {
+                const exists = prev.some((p) => p.id === position.id);
+                if (exists) {
+                  return prev.map((p) => (p.id === position.id ? position : p));
+                }
+                return [...prev, position];
+              });
+            }
           } catch (err) {
             console.error(`Error reading position ${id.toString()}:`, err);
           }
         }
-        if (!cancelled) setOpenPositions(positions);
-      } catch (error) {
-        console.error('Error fetching open positions:', error);
-        if (!cancelled) setOpenPositions([]);
       } finally {
         if (!cancelled) setIsLoading(false);
       }
     };
 
-    fetchOpenPositions();
-    return () => { cancelled = true; };
-  }, [openIds, wsData]);
+    if (!ids || ids.length === 0) {
+      setOpenPositions([]);
+      return;
+    }
+
+    fetchSequentially();
+    return () => {
+      cancelled = true;
+    };
+  }, [openIds, publicClient]);
+
+  // Update PnL and price live from WebSocket without re-fetching on-chain
+  useEffect(() => {
+    if (!wsData) return;
+    setOpenPositions((prev) => {
+      if (!prev || prev.length === 0) return prev;
+      return prev.map((p) => {
+        const symbol = idToPair.get(p.assetIndex) || `ASSET_${p.assetIndex}`;
+        const currentPrice = lastPrices[p.assetIndex] || 0;
+        let pnlUsd = p.pnl;
+        let pnlPercent = p.pnlPercent;
+        const usedMargin = p.margin || (p.leverage ? p.sizeUsd / p.leverage : 0);
+        if (currentPrice > 0 && p.openPrice > 0 && usedMargin > 0) {
+          const dir = p.isLong ? 1 : -1;
+          pnlUsd = p.sizeUsd * ((currentPrice / p.openPrice - 1) * dir);
+          pnlPercent = (pnlUsd / usedMargin) * 100;
+        }
+        return { ...p, symbol, currentPrice, pnl: pnlUsd, pnlPercent, margin: usedMargin };
+      });
+    });
+  }, [wsData]);
 
   // Fetch individual orders
   useEffect(() => {
