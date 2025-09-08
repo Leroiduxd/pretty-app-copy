@@ -76,44 +76,27 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
           </div>
         ) : (
           stocks.map((stock) => (
-            <div
+            <Card
               key={stock.symbol}
-              className={`group relative overflow-hidden rounded-lg cursor-pointer transition-all duration-200 ease-out ${
-                selectedStock === stock.symbol 
-                  ? 'bg-primary/10 border border-primary/30 shadow-sm' 
-                  : 'bg-card/50 hover:bg-card border border-border/50 hover:border-border hover:shadow-sm'
+              className={`p-2.5 cursor-pointer transition-colors hover:bg-muted border-0 ${
+                selectedStock === stock.symbol ? 'bg-primary/10 border border-primary/20' : 'bg-transparent'
               }`}
-              onClick={() => onSelectStock(stock.symbol, stock.pairId)}
-            >
-              <div className="relative p-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <div className="font-semibold text-foreground text-sm tracking-wide">{stock.symbol}</div>
-                      {selectedStock === stock.symbol && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                      )}
-                    </div>
-                    <div className="text-xs text-muted-foreground/80 truncate mt-0.5 font-medium">{stock.name}</div>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <div className="font-bold text-foreground text-sm tabular-nums">{formatPrice(stock.price)}</div>
-                    <div className={`text-xs font-semibold tabular-nums px-1.5 py-0.5 rounded-md ${
-                      stock.changePercent >= 0 
-                        ? 'text-success bg-success/10' 
-                        : 'text-danger bg-danger/10'
-                    }`}>
-                      {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
-                    </div>
+                onClick={() => onSelectStock(stock.symbol, stock.pairId)}
+              >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium text-foreground text-sm">{stock.symbol}</div>
+                  <div className="text-xs text-muted-foreground truncate">{stock.name}</div>
+                  {/* ID retiré de l'UI selon demande */}
+                </div>
+                <div className="text-right">
+                  <div className="font-medium text-foreground text-sm">{formatPrice(stock.price)}</div>
+                  <div className={`text-xs ${stock.changePercent >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
+                    {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
                   </div>
                 </div>
-                
-                {/* Subtle hover effect line */}
-                <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary to-pro-accent transition-all duration-200 ${
-                  selectedStock === stock.symbol ? 'w-full opacity-100' : 'w-0 group-hover:w-full opacity-70'
-                }`} />
               </div>
-            </div>
+            </Card>
           ))
         )}
       </div>
