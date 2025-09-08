@@ -20,6 +20,7 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const seriesRef = useRef<any>(null);
+  const averagePriceSeriesRef = useRef<any>(null);
 
   // Format prices based on number of digits before decimal
   const formatPrice = (value: number) => {
@@ -106,8 +107,23 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
         });
       }
 
+      // Add Average Price indicator as a line series
+      const averagePriceSeries = chart.addSeries(LineSeries, {
+        color: '#FF6B35',
+        lineWidth: 1,
+        lineStyle: 2, // Dashed line
+        priceLineVisible: false,
+        lastValueVisible: false,
+        crosshairMarkerVisible: false,
+        priceFormat: {
+          type: 'custom',
+          formatter: (price: number) => formatPrice(price),
+        },
+      });
+
       chartRef.current = chart;
       seriesRef.current = series;
+      averagePriceSeriesRef.current = averagePriceSeries;
 
     } catch (error) {
       console.error('Error creating chart:', error);
@@ -123,6 +139,7 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
         }
         chartRef.current = null;
         seriesRef.current = null;
+        averagePriceSeriesRef.current = null;
       }
     };
   }, [width, height, chartType]);
@@ -150,6 +167,25 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
         }
 
         seriesRef.current.setData(formattedData);
+
+        // Calculate and set average price data
+        if (averagePriceSeriesRef.current && formattedData.length > 0) {
+          const averagePriceData = formattedData.map((item: any) => {
+            // Calculate average price (High + Low + Close) / 3
+            const avgPrice = chartType === "lines" 
+              ? item.value // For line charts, use the value itself
+              : (data.find(d => d.time === item.time)!.high + 
+                 data.find(d => d.time === item.time)!.low + 
+                 data.find(d => d.time === item.time)!.close) / 3;
+            
+            return {
+              time: item.time,
+              value: avgPrice,
+            };
+          });
+          
+          averagePriceSeriesRef.current.setData(averagePriceData);
+        }
       } catch (error) {
         console.error('Error setting chart data:', error);
       }

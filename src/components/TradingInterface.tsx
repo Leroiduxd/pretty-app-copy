@@ -162,7 +162,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
             {/* Real-time Chart */}
             {chartLoading ? (
               <div className="flex items-center justify-center h-full">
-                <div className="text-muted-foreground">Chargement du graphique...</div>
+                <div className="text-muted-foreground">Loading chart...</div>
               </div>
             ) : chartData.length > 0 ? (
               <LightweightChart 
@@ -173,7 +173,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
               />
             ) : (
               <div className="flex items-center justify-center h-full">
-                <div className="text-muted-foreground">Aucune donnée disponible pour ce graphique</div>
+                <div className="text-muted-foreground">No chart data available</div>
               </div>
             )}
           </div>
