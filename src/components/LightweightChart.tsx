@@ -21,6 +21,7 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
   const chartRef = useRef<any>(null);
   const seriesRef = useRef<any>(null);
   const averagePriceSeriesRef = useRef<any>(null);
+  const medianPriceSeriesRef = useRef<any>(null);
 
   // Format prices based on number of digits before decimal
   const formatPrice = (value: number) => {
@@ -121,9 +122,24 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
         },
       });
 
+      // Add Median Price indicator as a line series
+      const medianPriceSeries = chart.addSeries(LineSeries, {
+        color: '#8B5CF6',
+        lineWidth: 1,
+        lineStyle: 1, // Dotted line
+        priceLineVisible: false,
+        lastValueVisible: false,
+        crosshairMarkerVisible: false,
+        priceFormat: {
+          type: 'custom',
+          formatter: (price: number) => formatPrice(price),
+        },
+      });
+
       chartRef.current = chart;
       seriesRef.current = series;
       averagePriceSeriesRef.current = averagePriceSeries;
+      medianPriceSeriesRef.current = medianPriceSeries;
 
     } catch (error) {
       console.error('Error creating chart:', error);
@@ -140,6 +156,7 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
         chartRef.current = null;
         seriesRef.current = null;
         averagePriceSeriesRef.current = null;
+        medianPriceSeriesRef.current = null;
       }
     };
   }, [width, height, chartType]);
@@ -185,6 +202,24 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
           });
           
           averagePriceSeriesRef.current.setData(averagePriceData);
+        }
+
+        // Calculate and set median price data
+        if (medianPriceSeriesRef.current && formattedData.length > 0) {
+          const medianPriceData = formattedData.map((item: any) => {
+            // Calculate median price (High + Low) / 2
+            const medianPrice = chartType === "lines" 
+              ? item.value // For line charts, use the value itself
+              : (data.find(d => d.time === item.time)!.high + 
+                 data.find(d => d.time === item.time)!.low) / 2;
+            
+            return {
+              time: item.time,
+              value: medianPrice,
+            };
+          });
+          
+          medianPriceSeriesRef.current.setData(medianPriceData);
         }
       } catch (error) {
         console.error('Error setting chart data:', error);
