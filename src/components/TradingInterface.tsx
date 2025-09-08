@@ -168,7 +168,8 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
               <LightweightChart 
                 data={chartData} 
                 width={undefined} 
-                height={undefined} 
+                height={undefined}
+                chartType={chartType}
               />
             ) : (
               <div className="flex items-center justify-center h-full">

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { createChart, CandlestickSeries, ColorType } from 'lightweight-charts';
+import { createChart, CandlestickSeries, LineSeries, ColorType } from 'lightweight-charts';
 
 interface ChartData {
   time: number;
@@ -13,9 +13,10 @@ interface LightweightChartProps {
   data: ChartData[];
   width?: number;
   height?: number;
+  chartType?: string;
 }
 
-export const LightweightChart = ({ data, width, height }: LightweightChartProps) => {
+export const LightweightChart = ({ data, width, height, chartType = "candlesticks" }: LightweightChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const seriesRef = useRef<any>(null);
@@ -79,22 +80,34 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
         height: height || chartContainerRef.current.clientHeight,
       });
 
-      // Use the CORRECT syntax from the working repo: addSeries(CandlestickSeries, options)
-      const candlestickSeries = chart.addSeries(CandlestickSeries, {
-        upColor: '#3b82f6',
-        downColor: '#ef4444',
-        borderDownColor: '#ef4444',
-        borderUpColor: '#3b82f6',
-        wickDownColor: '#ef4444',
-        wickUpColor: '#3b82f6',
-        priceFormat: {
-          type: 'custom',
-          formatter: (price: number) => formatPrice(price),
-        },
-      });
+      // Create series based on chart type
+      let series;
+      if (chartType === "lines") {
+        series = chart.addSeries(LineSeries, {
+          color: '#3b82f6',
+          lineWidth: 2,
+          priceFormat: {
+            type: 'custom',
+            formatter: (price: number) => formatPrice(price),
+          },
+        });
+      } else {
+        series = chart.addSeries(CandlestickSeries, {
+          upColor: '#3b82f6',
+          downColor: '#ef4444',
+          borderDownColor: '#ef4444',
+          borderUpColor: '#3b82f6',
+          wickDownColor: '#ef4444',
+          wickUpColor: '#3b82f6',
+          priceFormat: {
+            type: 'custom',
+            formatter: (price: number) => formatPrice(price),
+          },
+        });
+      }
 
       chartRef.current = chart;
-      seriesRef.current = candlestickSeries;
+      seriesRef.current = series;
 
     } catch (error) {
       console.error('Error creating chart:', error);
@@ -112,26 +125,36 @@ export const LightweightChart = ({ data, width, height }: LightweightChartProps)
         seriesRef.current = null;
       }
     };
-  }, [width, height]);
+  }, [width, height, chartType]);
 
   useEffect(() => {
     if (seriesRef.current && data.length > 0) {
       try {
-        // Format data correctly for lightweight-charts v5
-        const formattedData = data.map(item => ({
-          time: item.time,
-          open: item.open,
-          high: item.high,
-          low: item.low,
-          close: item.close,
-        }));
+        // Format data based on chart type
+        let formattedData;
+        if (chartType === "lines") {
+          // For line charts, use only close price and time
+          formattedData = data.map(item => ({
+            time: item.time,
+            value: item.close,
+          }));
+        } else {
+          // For candlestick charts, use all OHLC data
+          formattedData = data.map(item => ({
+            time: item.time,
+            open: item.open,
+            high: item.high,
+            low: item.low,
+            close: item.close,
+          }));
+        }
 
         seriesRef.current.setData(formattedData);
       } catch (error) {
         console.error('Error setting chart data:', error);
       }
     }
-  }, [data]);
+  }, [data, chartType]);
 
   return (
     <div className="w-full h-full relative">

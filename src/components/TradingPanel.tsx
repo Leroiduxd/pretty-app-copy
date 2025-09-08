@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
-import { useAccount, useWriteContract, useConfig, useSwitchChain } from 'wagmi';
+import { useAccount, useWriteContract, useConfig, useSwitchChain, useWaitForTransactionReceipt } from 'wagmi';
 import { pharosTestnet } from '@/lib/wagmi';
 import { parseUnits } from 'viem';
 import { toast } from "sonner";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
 import { useTokenApproval } from "@/hooks/useTokenApproval";
+import { ExternalLink } from "lucide-react";
 
 interface TradingPanelProps {
   symbol: string;
@@ -52,6 +53,7 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showStopLoss, setShowStopLoss] = useState(false);
   const [showTakeProfit, setShowTakeProfit] = useState(false);
+  const [lastTxHash, setLastTxHash] = useState<string | null>(null);
 
   // Update limit price when price or symbol changes
   useEffect(() => {
@@ -60,12 +62,45 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
     }
   }, [price, symbol]);
 
-  const { writeContract } = useWriteContract();
+  const { writeContract, data: txHash } = useWriteContract();
   const { isConnected, chainId } = useAccount();
   const { switchChain } = useSwitchChain();
   const config = useConfig();
   const { tokenBalance, usdBalance } = useTokenBalance();
   const { isApproved, isApproving, approve } = useTokenApproval();
+  
+  // Watch for transaction confirmation
+  const { isLoading: txPending, isSuccess: txSuccess } = useWaitForTransactionReceipt({
+    hash: lastTxHash as `0x${string}`,
+  });
+
+  // Handle transaction success
+  useEffect(() => {
+    if (txSuccess && lastTxHash) {
+      const explorerUrl = `https://testnet.pharosscan.xyz/tx/${lastTxHash}`;
+      toast.success(
+        <div className="flex items-center gap-2">
+          <span>Transaction confirmée!</span>
+          <a 
+            href={explorerUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-blue-500 hover:text-blue-700 underline"
+          >
+            Voir <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>
+      );
+      setLastTxHash(null);
+    }
+  }, [txSuccess, lastTxHash]);
+
+  // Update last transaction hash when new transaction is submitted
+  useEffect(() => {
+    if (txHash) {
+      setLastTxHash(txHash);
+    }
+  }, [txHash]);
   
   const percentageButtons = [25, 50, 75, 100];
 
