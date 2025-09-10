@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Moon, Sun, BarChart3 } from "lucide-react";
 import { CustomWalletButton } from "./CustomWalletButton";
+import { ReportBugModal } from "./ReportBugModal";
 
 interface HeaderProps {
   onTogglePositions: () => void;
@@ -44,6 +45,8 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
           >
             Faucet
           </Button>
+          
+          <ReportBugModal />
         </div>
 
         <div className="flex items-center gap-4">
