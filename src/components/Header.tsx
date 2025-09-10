@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Moon, Sun, BarChart3 } from "lucide-react";
 import { CustomWalletButton } from "./CustomWalletButton";
 import { ReportBugModal } from "./ReportBugModal";
+import { FaucetModal } from "./FaucetModal";
 
 interface HeaderProps {
   onTogglePositions: () => void;
@@ -37,14 +38,7 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
             </SelectContent>
           </Select>
           
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 text-xs"
-            onClick={() => window.open('https://brokex.trade/faucet', '_blank')}
-          >
-            Faucet
-          </Button>
+          <FaucetModal />
           
           <ReportBugModal />
         </div>
