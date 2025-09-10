@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Bug, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAccount } from "wagmi";
+import { supabase } from "@/integrations/supabase/client";
 
 export const ReportBugModal = () => {
   const [open, setOpen] = useState(false);
@@ -13,6 +15,7 @@ export const ReportBugModal = () => {
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { address } = useAccount();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,20 +28,48 @@ export const ReportBugModal = () => {
       return;
     }
 
+    if (!address) {
+      toast({
+        title: "Error",
+        description: "Please connect your wallet to submit a bug report",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     
-    // Simulate submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Bug Report Submitted",
-      description: "Thank you for your feedback. We'll review your report.",
-    });
-    
-    setContact("");
-    setDescription("");
-    setOpen(false);
-    setIsSubmitting(false);
+    try {
+      const { error } = await supabase
+        .from('bug_reports')
+        .insert({
+          wallet_address: address,
+          contact_method: contact.trim(),
+          complaint: description.trim()
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Bug Report Submitted",
+        description: "Thank you for your feedback. We'll review your report.",
+      });
+      
+      setContact("");
+      setDescription("");
+      setOpen(false);
+    } catch (error) {
+      console.error('Error submitting bug report:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit bug report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
