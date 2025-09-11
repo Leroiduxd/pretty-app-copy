@@ -30,7 +30,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
   const [takeProfit, setTakeProfit] = useState("");
   const [showStopLoss, setShowStopLoss] = useState(false);
   const [showTakeProfit, setShowTakeProfit] = useState(false);
-  const [selectedTimeframe, setSelectedTimeframe] = useState("1H");
+  const [selectedTimeframe, setSelectedTimeframe] = useState("5M");
   
   const { usdBalance } = useTokenBalance();
   
