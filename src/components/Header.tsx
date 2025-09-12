@@ -5,6 +5,7 @@ import { Moon, Sun, BarChart3 } from "lucide-react";
 import { CustomWalletButton } from "./CustomWalletButton";
 import { ReportBugModal } from "./ReportBugModal";
 import { FaucetModal } from "./FaucetModal";
+import { LPVaultModal } from "./LPVaultModal";
 
 interface HeaderProps {
   onTogglePositions: () => void;
@@ -39,6 +40,8 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
           </Select>
           
           <FaucetModal />
+          
+          <LPVaultModal />
           
           <ReportBugModal />
         </div>
