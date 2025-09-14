@@ -23,7 +23,14 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
     <header className="bg-header-bg border-b border-border px-4 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h1 className="text-xl font-bold text-foreground">Brokex Protocol</h1>
+          <a 
+            href="https://brokex.trade" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-xl font-bold text-foreground hover:text-primary transition-colors cursor-pointer"
+          >
+            Brokex Protocol
+          </a>
           
           <Select value={selectedNetwork} onValueChange={setSelectedNetwork}>
             <SelectTrigger className="w-40 h-8 bg-card border-border">

@@ -56,13 +56,21 @@ const Index = () => {
   }, [wsData, selectedStock]);
 
   useEffect(() => {
-    // Hide loading screen after WebSocket connects and has data
+    // Hide loading screen only when stocks list is ready with data
     if (isConnected && wsData && Object.keys(wsData).length > 0) {
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 1000); // Minimum loading time for better UX
+      // Check if we have actual stock data with valid instruments
+      const hasValidStocks = Object.values(wsData).some(payload => 
+        payload?.instruments?.[0]?.tradingPair && 
+        payload?.instruments?.[0]?.currentPrice
+      );
       
-      return () => clearTimeout(timer);
+      if (hasValidStocks) {
+        const timer = setTimeout(() => {
+          setIsLoading(false);
+        }, 800); // Minimum loading time for better UX
+        
+        return () => clearTimeout(timer);
+      }
     }
   }, [isConnected, wsData]);
 
