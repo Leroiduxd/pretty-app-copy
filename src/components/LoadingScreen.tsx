@@ -13,23 +13,9 @@ export const LoadingScreen = () => {
 
   return (
     <div className="h-screen bg-background flex flex-col items-center justify-center relative">
-      {/* Loading content */}
-      <div className="flex flex-col items-center space-y-6">
-        {/* Logo/Brand */}
-        <div className="text-4xl font-bold text-foreground">
-          Brokex
-        </div>
-        
-        {/* Loading animation */}
-        <div className="flex space-x-1">
-          <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-          <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-          <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-        </div>
-        
-        <div className="text-sm text-muted-foreground">
-          Loading{dots}
-        </div>
+      {/* Loading bar */}
+      <div className="w-64 h-1 bg-muted rounded-full overflow-hidden">
+        <div className="h-full bg-primary animate-pulse"></div>
       </div>
 
       {/* Footer */}
