@@ -47,7 +47,7 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
   if (error) {
     return (
       <div className="w-72 h-full bg-card border-r border-border p-4">
-        <div className="text-red-500">Erreur de connexion WebSocket</div>
+        <div className="text-red-500">WebSocket connection error</div>
       </div>
     );
   }
@@ -55,7 +55,7 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
   if (!isConnected) {
     return (
       <div className="w-72 h-full bg-card border-r border-border p-4">
-        <div className="text-muted-foreground">Connexion en cours...</div>
+        <div className="text-muted-foreground">Connecting...</div>
       </div>
     );
   }
@@ -72,7 +72,7 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
       <div className="space-y-0.5 p-2">
         {stocks.length === 0 ? (
           <div className="text-muted-foreground text-center py-8">
-            Aucune donnée disponible
+            No data available
           </div>
         ) : (
           stocks.map((stock) => (
