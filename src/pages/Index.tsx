@@ -2,6 +2,7 @@ import { StockList } from "@/components/StockList";
 import { TradingInterface } from "@/components/TradingInterface";
 import { Header } from "@/components/Header";
 import { PositionsPanel } from "@/components/PositionsPanel";
+import { LoadingScreen } from "@/components/LoadingScreen";
 import { useState, useEffect } from "react";
 import { RainbowKitProvider, darkTheme, lightTheme } from '@rainbow-me/rainbowkit';
 import { useWebSocket } from "@/hooks/useWebSocket";
@@ -11,7 +12,8 @@ const Index = () => {
   const [selectedPairId, setSelectedPairId] = useState<string>("0");
   const [showPositions, setShowPositions] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const { data: wsData } = useWebSocket("wss://wss.brokex.trade:8443");
+  const [isLoading, setIsLoading] = useState(true);
+  const { data: wsData, isConnected } = useWebSocket("wss://wss.brokex.trade:8443");
   
   // Get current stock data from WebSocket
   const currentStock = Object.entries(wsData || {}).find(([pairKey, payload]) => {
@@ -53,10 +55,26 @@ const Index = () => {
     }
   }, [wsData, selectedStock]);
 
+  useEffect(() => {
+    // Hide loading screen after WebSocket connects and has data
+    if (isConnected && wsData && Object.keys(wsData).length > 0) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 1000); // Minimum loading time for better UX
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isConnected, wsData]);
+
   const handleStockSelect = (symbol: string, pairId: string) => {
     setSelectedStock(symbol);
     setSelectedPairId(pairId);
   };
+
+  
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <RainbowKitProvider theme={isDarkMode ? darkTheme() : lightTheme()}>
