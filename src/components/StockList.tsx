@@ -75,28 +75,32 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
             No data available
           </div>
         ) : (
-          stocks.map((stock) => (
-            <Card
-              key={stock.symbol}
-              className={`p-2.5 cursor-pointer transition-colors hover:bg-muted border-0 ${
-                selectedStock === stock.symbol ? 'bg-primary/10 border border-primary/20' : 'bg-transparent'
-              }`}
+          stocks.map((stock, index) => (
+            <div key={stock.symbol}>
+              <Card
+                className={`p-2.5 cursor-pointer transition-colors hover:bg-muted border-0 ${
+                  selectedStock === stock.symbol ? 'bg-primary/10 border border-primary/20' : 'bg-transparent'
+                }`}
                 onClick={() => onSelectStock(stock.symbol, stock.pairId)}
               >
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-foreground text-sm">{stock.symbol}</div>
-                  <div className="text-xs text-muted-foreground truncate">{stock.name}</div>
-                  {/* ID retiré de l'UI selon demande */}
-                </div>
-                <div className="text-right">
-                  <div className="font-medium text-foreground text-sm">{formatPrice(stock.price)}</div>
-                  <div className={`text-xs ${stock.changePercent >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
-                    {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium text-foreground text-sm">{stock.symbol}</div>
+                    <div className="text-xs text-muted-foreground truncate">{stock.name}</div>
+                    {/* ID retiré de l'UI selon demande */}
+                  </div>
+                  <div className="text-right">
+                    <div className="font-medium text-foreground text-sm">{formatPrice(stock.price)}</div>
+                    <div className={`text-xs ${stock.changePercent >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
+                      {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+              {index < stocks.length - 1 && (
+                <div className="h-px bg-border/50 mx-2" />
+              )}
+            </div>
           ))
         )}
       </div>

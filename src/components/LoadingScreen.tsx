@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 
 export const LoadingScreen = () => {
-  const [dots, setDots] = useState('');
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setDots(prev => prev.length >= 3 ? '' : prev + '.');
-    }, 500);
+      setProgress(prev => {
+        if (prev >= 100) return 0; // Reset when complete
+        return prev + 2;
+      });
+    }, 50);
 
     return () => clearInterval(interval);
   }, []);
@@ -15,7 +18,10 @@ export const LoadingScreen = () => {
     <div className="h-screen bg-background flex flex-col items-center justify-center relative">
       {/* Loading bar */}
       <div className="w-64 h-1 bg-muted rounded-full overflow-hidden">
-        <div className="h-full bg-primary animate-pulse"></div>
+        <div 
+          className="h-full bg-primary transition-all duration-300 ease-out" 
+          style={{ width: `${progress}%` }}
+        ></div>
       </div>
 
       {/* Footer */}
