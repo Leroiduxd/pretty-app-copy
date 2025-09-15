@@ -50,7 +50,7 @@ export const useChartData = ({ pairId, interval = 3600 }: UseChartDataProps) => 
   const formatDataForChart = () => {
     if (!data || data.length === 0) return [];
     
-    return data.map(item => ({
+    const formattedData = data.map(item => ({
       time: Math.floor(parseInt(item.time) / 1000), // Convert to seconds timestamp
       open: parseFloat(item.open),
       high: parseFloat(item.high),
@@ -63,6 +63,19 @@ export const useChartData = ({ pairId, interval = 3600 }: UseChartDataProps) => 
       !isNaN(item.low) && 
       !isNaN(item.close)
     ).sort((a, b) => a.time - b.time);
+
+    // Filter out consecutive candles with identical OHLC values
+    return formattedData.filter((item, index) => {
+      if (index === 0) return true; // Always keep the first candle
+      
+      const prevItem = formattedData[index - 1];
+      return !(
+        item.open === prevItem.open &&
+        item.high === prevItem.high &&
+        item.low === prevItem.low &&
+        item.close === prevItem.close
+      );
+    });
   };
 
   return {
