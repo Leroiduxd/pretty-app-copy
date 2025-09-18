@@ -105,8 +105,8 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
           </Button>
         </div>
 
-        <div className="p-4 flex-1 flex flex-col overflow-hidden">
-          <Tabs defaultValue="positions" className="w-full flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Tabs defaultValue="positions" className="w-full flex-1 flex flex-col overflow-hidden px-4">
             <TabsList className="grid w-full grid-cols-3 bg-muted">
               <TabsTrigger value="positions">Open Positions</TabsTrigger>
               <TabsTrigger value="orders">Orders</TabsTrigger>
@@ -253,16 +253,7 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
               {closedPositions.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No closed positions</div>
               ) : (
-                <div className="flex flex-col h-full">
-                  <div className="px-3 py-2 border-b border-border bg-muted/10">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">Total Closed PnL:</span>
-                      <span className={`font-medium ${totalClosedPnL >= 0 ? 'text-success' : 'text-danger'}`}>
-                        {totalClosedPnL >= 0 ? '+' : ''}${totalClosedPnL.toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                  <ScrollArea className="flex-1">
+                <ScrollArea className="h-full">
                   <div className="space-y-3 pr-2 pb-4">
                   {closedPositions.map((trade, index) => (
                   <Card key={index} className="p-4 bg-card border-border">
@@ -315,8 +306,7 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
                   </Card>
                   ))}
                   </div>
-                  </ScrollArea>
-                </div>
+                </ScrollArea>
               )}
             </TabsContent>
           </Tabs>
