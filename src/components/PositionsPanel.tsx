@@ -38,6 +38,12 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
   const { writeContract } = useWriteContract();
   const [loadingActions, setLoadingActions] = useState<{ [key: string]: boolean }>({});
 
+  // Calculate total PnL for open positions
+  const totalOpenPnL = openPositions.reduce((total, position) => total + position.pnl, 0);
+  
+  // Calculate total PnL for closed positions
+  const totalClosedPnL = closedPositions.reduce((total, position) => total + position.pnl, 0);
+
   const handleClosePosition = async (openId: bigint) => {
     const key = `close-${openId.toString()}`;
     setLoadingActions(prev => ({ ...prev, [key]: true }));
@@ -92,6 +98,24 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
           <Button variant="ghost" size="sm" onClick={onClose} className="w-8 h-8 p-0">
             <X className="w-4 h-4" />
           </Button>
+        </div>
+
+        {/* PnL Summary */}
+        <div className="p-4 border-b border-border bg-muted/20">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center">
+              <div className="text-xs text-muted-foreground mb-1">Total Open PnL</div>
+              <div className={`text-lg font-semibold ${totalOpenPnL >= 0 ? 'text-success' : 'text-danger'}`}>
+                ${totalOpenPnL >= 0 ? '+' : ''}${totalOpenPnL.toFixed(2)}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-xs text-muted-foreground mb-1">Total Closed PnL</div>
+              <div className={`text-lg font-semibold ${totalClosedPnL >= 0 ? 'text-success' : 'text-danger'}`}>
+                ${totalClosedPnL >= 0 ? '+' : ''}${totalClosedPnL.toFixed(2)}
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="p-4 flex-1 flex flex-col overflow-hidden">
