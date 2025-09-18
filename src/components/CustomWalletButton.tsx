@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useDisconnect } from 'wagmi';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { useLatency } from '@/hooks/useLatency';
+import { usePositions } from '@/hooks/usePositions';
 
 interface CustomWalletButtonProps {
   isDarkMode: boolean;
@@ -17,6 +18,9 @@ export const CustomWalletButton = ({ isDarkMode }: CustomWalletButtonProps) => {
   const { disconnect } = useDisconnect();
   const { tokenBalance, usdBalance } = useTokenBalance();
   const { latency, status, color } = useLatency();
+  const { openPositions } = usePositions();
+  
+  const totalOpenPnL = openPositions.reduce((total, position) => total + position.pnl, 0);
 
   const getDisplayLatency = () => `~${latency}ms`;
 
@@ -61,8 +65,8 @@ export const CustomWalletButton = ({ isDarkMode }: CustomWalletButtonProps) => {
                     <span className="text-muted-foreground">{getDisplayLatency()}</span>
                   </div>
                   <div className="w-px h-3 bg-border" />
-                  <span className="font-mono text-foreground">
-                    {account.displayName}
+                  <span className={`font-medium ${totalOpenPnL >= 0 ? 'text-success' : 'text-danger'}`}>
+                    {totalOpenPnL >= 0 ? '+' : ''}${totalOpenPnL.toFixed(2)}
                   </span>
                 </div>
               </Card>

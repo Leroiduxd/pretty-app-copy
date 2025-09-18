@@ -94,28 +94,15 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
       <div className="fixed right-0 top-0 h-full w-[600px] bg-background border-l border-border shadow-xl flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">Trading Dashboard</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-semibold text-foreground">Trading Dashboard</h2>
+            <div className={`text-sm font-medium ${totalOpenPnL >= 0 ? 'text-success' : 'text-danger'}`}>
+              {totalOpenPnL >= 0 ? '+' : ''}${totalOpenPnL.toFixed(2)}
+            </div>
+          </div>
           <Button variant="ghost" size="sm" onClick={onClose} className="w-8 h-8 p-0">
             <X className="w-4 h-4" />
           </Button>
-        </div>
-
-        {/* PnL Summary */}
-        <div className="p-4 border-b border-border bg-muted/20">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center">
-              <div className="text-xs text-muted-foreground mb-1">Total Open PnL</div>
-              <div className={`text-lg font-semibold ${totalOpenPnL >= 0 ? 'text-success' : 'text-danger'}`}>
-                ${totalOpenPnL >= 0 ? '+' : ''}${totalOpenPnL.toFixed(2)}
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-xs text-muted-foreground mb-1">Total Closed PnL</div>
-              <div className={`text-lg font-semibold ${totalClosedPnL >= 0 ? 'text-success' : 'text-danger'}`}>
-                ${totalClosedPnL >= 0 ? '+' : ''}${totalClosedPnL.toFixed(2)}
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="p-4 flex-1 flex flex-col overflow-hidden">
@@ -266,7 +253,16 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
               {closedPositions.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No closed positions</div>
               ) : (
-                <ScrollArea className="h-full">
+                <div className="flex flex-col h-full">
+                  <div className="px-3 py-2 border-b border-border bg-muted/10">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Total Closed PnL:</span>
+                      <span className={`font-medium ${totalClosedPnL >= 0 ? 'text-success' : 'text-danger'}`}>
+                        {totalClosedPnL >= 0 ? '+' : ''}${totalClosedPnL.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                  <ScrollArea className="flex-1">
                   <div className="space-y-3 pr-2 pb-4">
                   {closedPositions.map((trade, index) => (
                   <Card key={index} className="p-4 bg-card border-border">
@@ -319,7 +315,8 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
                   </Card>
                   ))}
                   </div>
-                </ScrollArea>
+                  </ScrollArea>
+                </div>
               )}
             </TabsContent>
           </Tabs>
