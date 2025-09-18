@@ -92,7 +92,7 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
             <div key={stock.symbol}>
               <Card
                 className={`p-2.5 cursor-pointer transition-colors hover:bg-muted border-0 ${
-                  selectedStock === stock.symbol ? 'bg-primary/10 border border-primary/20' : 'bg-transparent'
+                  selectedStock === stock.symbol ? 'bg-muted border border-border' : 'bg-transparent'
                 }`}
                 onClick={() => onSelectStock(stock.symbol, stock.pairId)}
               >
