@@ -1,6 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { useWebSocket, WebSocketData } from "@/hooks/useWebSocket";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { Search } from "lucide-react";
+import { StockSearchModal } from "./StockSearchModal";
 
 interface StockListProps {
   selectedStock: string;
@@ -9,6 +11,7 @@ interface StockListProps {
 
 export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
   const { data: wsData, isConnected, error } = useWebSocket("wss://wss.brokex.trade:8443");
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   // Format prices based on number of digits before decimal
   const formatPrice = (value: number) => {
@@ -61,13 +64,23 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
   }
 
   return (
-    <div className="w-72 h-full bg-card border-r border-border overflow-y-auto">
-      <div className="p-3 border-b border-border">
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">SYMBOL</span>
-          <span className="text-muted-foreground">LAST/CHANGE</span>
+    <>
+      <div className="w-72 h-full bg-card border-r border-border overflow-y-auto">
+        <div className="sticky top-0 z-10 bg-card p-3 border-b border-border">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">SYMBOL</span>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">LAST/CHANGE</span>
+              <button
+                onClick={() => setIsSearchModalOpen(true)}
+                className="p-1 hover:bg-muted rounded transition-colors"
+                title="Search assets"
+              >
+                <Search size={12} className="text-muted-foreground" />
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
       
       <div className="space-y-0.5 p-2">
         {stocks.length === 0 ? (
@@ -104,6 +117,15 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
           ))
         )}
       </div>
-    </div>
+      </div>
+      
+      <StockSearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        stocks={stocks}
+        onSelectStock={onSelectStock}
+        formatPrice={formatPrice}
+      />
+    </>
   );
 };
