@@ -105,7 +105,7 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
           </Button>
         </div>
 
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden pt-4">
           <Tabs defaultValue="positions" className="w-full flex-1 flex flex-col overflow-hidden px-4">
             <TabsList className="grid w-full grid-cols-3 bg-muted">
               <TabsTrigger value="positions">Open Positions</TabsTrigger>
