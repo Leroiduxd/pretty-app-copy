@@ -54,19 +54,7 @@ const App = () => {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider 
-          theme={isDarkMode ? darkTheme({
-            accentColor: '#000000',
-            accentColorForeground: 'white',
-            borderRadius: 'medium',
-            fontStack: 'system',
-            overlayBlur: 'small',
-          }) : lightTheme({
-            accentColor: '#ffffff',
-            accentColorForeground: 'black',
-            borderRadius: 'medium',
-            fontStack: 'system',
-            overlayBlur: 'small',
-          })}
+          theme={isDarkMode ? darkTheme() : lightTheme()}
           locale="en-US"
         >
         <TooltipProvider>
