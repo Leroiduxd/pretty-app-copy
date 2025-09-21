@@ -67,7 +67,7 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
             setMyRank(rankData.me);
 
             // Fetch window around me
-            const aroundResponse = await fetch(`https://competition.brokex.trade/api/around/${address}?before=5&after=5`);
+            const aroundResponse = await fetch(`https://competition.brokex.trade/api/around/${address}?before=10&after=10`);
             if (aroundResponse.ok) {
               const aroundData: AroundResponse = await aroundResponse.json();
               setAroundMe(aroundData.window);
@@ -94,14 +94,14 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
   }, [open, address, isConnected]);
 
   const getRankIcon = (rank: number) => {
-    if (rank === 1) return <Trophy className="w-4 h-4 text-yellow-500" />;
+    if (rank === 1) return <Trophy className="w-4 h-4 text-blue-500" />;
     if (rank === 2) return <Medal className="w-4 h-4 text-gray-400" />;
     if (rank === 3) return <Medal className="w-4 h-4 text-amber-600" />;
     return <span className="w-4 h-4 flex items-center justify-center text-xs font-bold">#{rank}</span>;
   };
 
   const getRankColor = (pnl: number) => {
-    return pnl >= 0 ? "text-green-500" : "text-red-500";
+    return pnl >= 0 ? "text-blue-500" : "text-red-500";
   };
 
   return (

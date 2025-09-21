@@ -19,6 +19,7 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
   const [faucetOpen, setFaucetOpen] = useState(false);
   const [reportBugOpen, setReportBugOpen] = useState(false);
   const [competitionOpen, setCompetitionOpen] = useState(false);
+  const [lastUsedTool, setLastUsedTool] = useState<'faucet' | 'bug' | 'competition'>('faucet');
 
   const networks = [
     { value: "pharos", label: "Pharos Testnet", color: "text-blue-500" },
@@ -53,21 +54,38 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="flex items-center gap-2 h-8">
-                Tools
+                {lastUsedTool === 'faucet' && (
+                  <>
+                    <Droplets className="h-4 w-4" />
+                    Faucet
+                  </>
+                )}
+                {lastUsedTool === 'bug' && (
+                  <>
+                    <Bug className="h-4 w-4" />
+                    Report Bug
+                  </>
+                )}
+                {lastUsedTool === 'competition' && (
+                  <>
+                    <Trophy className="h-4 w-4" />
+                    Competition
+                  </>
+                )}
                 <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-48 bg-popover border-border z-50">
-              <DropdownMenuItem onClick={() => setFaucetOpen(true)} className="cursor-pointer">
+              <DropdownMenuItem onClick={() => { setFaucetOpen(true); setLastUsedTool('faucet'); }} className="cursor-pointer">
                 <Droplets className="h-4 w-4 mr-2" />
                 Faucet
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setReportBugOpen(true)} className="cursor-pointer">
+              <DropdownMenuItem onClick={() => { setReportBugOpen(true); setLastUsedTool('bug'); }} className="cursor-pointer">
                 <Bug className="h-4 w-4 mr-2" />
                 Report Bug
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setCompetitionOpen(true)} className="cursor-pointer">
-                <Trophy className="h-4 w-4 mr-2" />
+              <DropdownMenuItem onClick={() => { setCompetitionOpen(true); setLastUsedTool('competition'); }} className="cursor-pointer">
+                <Trophy className="h-4 w-4 mr-2 text-blue-500" />
                 Competition
               </DropdownMenuItem>
             </DropdownMenuContent>
