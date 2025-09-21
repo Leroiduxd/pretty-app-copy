@@ -31,15 +31,23 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
 
       const change = parseFloat(item["24h_change"]);
       const price = parseFloat(item.currentPrice);
+      const high24h = parseFloat(item["24h_high"]);
+      const low24h = parseFloat(item["24h_low"]);
+      
+      // Calculate if price is closer to high or low to determine sign
+      const distanceToHigh = Math.abs(price - high24h);
+      const distanceToLow = Math.abs(price - low24h);
+      const isPositive = distanceToHigh < distanceToLow;
+      const signedChangePercent = isPositive ? Math.abs(change) : -Math.abs(change);
 
         return {
           symbol: item.tradingPair.toUpperCase(),
           name: payload.name || item.tradingPair.toUpperCase(),
           price: price,
-          change: change,
-          changePercent: change,
-          high24h: parseFloat(item["24h_high"]),
-          low24h: parseFloat(item["24h_low"]),
+          change: signedChangePercent,
+          changePercent: signedChangePercent,
+          high24h: high24h,
+          low24h: low24h,
           timestamp: item.timestamp,
           id: payload.id,
           pairId: String(payload.id) // Utiliser l'ID pour l'API chart

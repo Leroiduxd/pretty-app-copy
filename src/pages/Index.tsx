@@ -22,14 +22,27 @@ const Index = () => {
   });
 
   const currentStockData = currentStock 
-    ? {
-        symbol: currentStock[1]?.instruments?.[0]?.tradingPair.toUpperCase() || selectedStock,
-        price: parseFloat(currentStock[1]?.instruments?.[0]?.currentPrice || "0"),
-        change: parseFloat(currentStock[1]?.instruments?.[0]?.["24h_change"] || "0"),
-        changePercent: parseFloat(currentStock[1]?.instruments?.[0]?.["24h_change"] || "0"),
-        high24h: parseFloat(currentStock[1]?.instruments?.[0]?.["24h_high"] || "0"),
-        low24h: parseFloat(currentStock[1]?.instruments?.[0]?.["24h_low"] || "0"),
-      }
+    ? (() => {
+        const price = parseFloat(currentStock[1]?.instruments?.[0]?.currentPrice || "0");
+        const rawChange = parseFloat(currentStock[1]?.instruments?.[0]?.["24h_change"] || "0");
+        const high24h = parseFloat(currentStock[1]?.instruments?.[0]?.["24h_high"] || "0");
+        const low24h = parseFloat(currentStock[1]?.instruments?.[0]?.["24h_low"] || "0");
+        
+        // Calculate if price is closer to high or low to determine sign
+        const distanceToHigh = Math.abs(price - high24h);
+        const distanceToLow = Math.abs(price - low24h);
+        const isPositive = distanceToHigh < distanceToLow;
+        const signedChange = isPositive ? Math.abs(rawChange) : -Math.abs(rawChange);
+        
+        return {
+          symbol: currentStock[1]?.instruments?.[0]?.tradingPair.toUpperCase() || selectedStock,
+          price: price,
+          change: signedChange,
+          changePercent: signedChange,
+          high24h: high24h,
+          low24h: low24h,
+        };
+      })()
     : {
         symbol: selectedStock,
         price: 0,
