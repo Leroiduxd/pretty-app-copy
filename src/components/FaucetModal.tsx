@@ -24,8 +24,16 @@ const ABI = [
   }
 ] as const;
 
-export const FaucetModal = () => {
-  const [open, setOpen] = useState(false);
+interface FaucetModalProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export const FaucetModal = ({ open: controlledOpen, onOpenChange }: FaucetModalProps = {}) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
   const { toast } = useToast();
   const { address, isConnected } = useAccount();
   
@@ -93,12 +101,14 @@ export const FaucetModal = () => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="flex items-center gap-2">
-          <Droplets className="h-4 w-4" />
-          Faucet
-        </Button>
-      </DialogTrigger>
+      {controlledOpen === undefined && (
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm" className="flex items-center gap-2">
+            <Droplets className="h-4 w-4" />
+            Faucet
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

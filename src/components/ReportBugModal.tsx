@@ -9,8 +9,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useAccount } from "wagmi";
 import { supabase } from "@/integrations/supabase/client";
 
-export const ReportBugModal = () => {
-  const [open, setOpen] = useState(false);
+interface ReportBugModalProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export const ReportBugModal = ({ open: controlledOpen, onOpenChange }: ReportBugModalProps = {}) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
   const [contact, setContact] = useState("");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -65,16 +73,18 @@ export const ReportBugModal = () => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 text-xs"
-        >
-          <Bug className="w-3 h-3 mr-1" />
-          Report Bug
-        </Button>
-      </DialogTrigger>
+      {controlledOpen === undefined && (
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs"
+          >
+            <Bug className="w-3 h-3 mr-1" />
+            Report Bug
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-[500px] bg-card border-border">
         <DialogHeader>
           <DialogTitle className="text-foreground flex items-center gap-2">

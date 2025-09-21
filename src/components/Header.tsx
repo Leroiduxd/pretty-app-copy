@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Moon, Sun, BarChart3 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Moon, Sun, BarChart3, ChevronDown, Droplets, Bug, Trophy } from "lucide-react";
 import { CustomWalletButton } from "./CustomWalletButton";
 import { ReportBugModal } from "./ReportBugModal";
 import { FaucetModal } from "./FaucetModal";
+import { CompetitionModal } from "./CompetitionModal";
 
 interface HeaderProps {
   onTogglePositions: () => void;
@@ -14,6 +16,9 @@ interface HeaderProps {
 
 export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: HeaderProps) => {
   const [selectedNetwork, setSelectedNetwork] = useState("pharos");
+  const [faucetOpen, setFaucetOpen] = useState(false);
+  const [reportBugOpen, setReportBugOpen] = useState(false);
+  const [competitionOpen, setCompetitionOpen] = useState(false);
 
   const networks = [
     { value: "pharos", label: "Pharos Testnet", color: "text-blue-500" },
@@ -45,9 +50,32 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
             </SelectContent>
           </Select>
           
-          <FaucetModal />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center gap-2 h-8">
+                Tools
+                <ChevronDown className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48 bg-popover border-border z-50">
+              <DropdownMenuItem onClick={() => setFaucetOpen(true)} className="cursor-pointer">
+                <Droplets className="h-4 w-4 mr-2" />
+                Faucet
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setReportBugOpen(true)} className="cursor-pointer">
+                <Bug className="h-4 w-4 mr-2" />
+                Report Bug
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setCompetitionOpen(true)} className="cursor-pointer">
+                <Trophy className="h-4 w-4 mr-2" />
+                Competition
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
-          <ReportBugModal />
+          <FaucetModal open={faucetOpen} onOpenChange={setFaucetOpen} />
+          <ReportBugModal open={reportBugOpen} onOpenChange={setReportBugOpen} />
+          <CompetitionModal open={competitionOpen} onOpenChange={setCompetitionOpen} />
         </div>
 
         <div className="flex items-center gap-4">
