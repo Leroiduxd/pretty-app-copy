@@ -43,6 +43,15 @@ const Index = () => {
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
 
+  // Update page title with selected stock and price
+  useEffect(() => {
+    if (currentStockData.symbol && currentStockData.price > 0) {
+      document.title = `${currentStockData.symbol} ${currentStockData.price.toFixed(2)}`;
+    } else {
+      document.title = "Brokex Protocol";
+    }
+  }, [currentStockData.symbol, currentStockData.price]);
+
   useEffect(() => {
     // Auto-select first available stock when WebSocket data loads
     if (wsData && Object.keys(wsData).length > 0 && selectedStock === "AAPL_USD") {
