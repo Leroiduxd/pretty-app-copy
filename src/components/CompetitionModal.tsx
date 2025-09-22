@@ -110,28 +110,28 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-sm text-muted-foreground mb-1">Trader Address</div>
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <div className="text-sm text-muted-foreground">Trader Address</div>
                     <div className="font-mono text-sm">{myRank.trader}</div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm text-muted-foreground mb-1">Total PnL</div>
+                  <div className="flex flex-col text-center">
+                    <div className="text-sm text-muted-foreground">Total PnL</div>
                     <div className={`text-lg font-semibold ${getRankColor(myRank.total_pnl_x6)}`}>
                       {formatPnL(myRank.total_pnl_x6)}
                     </div>
                   </div>
-                </div>
-                <div className="text-center mt-4">
-                  <div className="text-2xl font-bold text-primary">#{myRank.rank}</div>
-                  <div className="text-sm text-muted-foreground">Current Rank</div>
+                  <div className="flex flex-col text-right">
+                    <div className="text-sm text-muted-foreground">Current Rank</div>
+                    <div className="text-2xl font-bold text-primary">#{myRank.rank}</div>
+                  </div>
                 </div>
               </div>
             )}
 
             {/* Leaderboard Section */}
             <div className="bg-card">
-              <div className="p-4 border-b bg-card sticky top-0 z-5">
+              <div className="px-4 py-3 border-b bg-card sticky top-0 z-5">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold">Top 100 Leaderboard</h3>
                   {!isConnected && (
