@@ -131,7 +131,7 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
 
             {/* Leaderboard Section */}
             <div className="bg-card">
-              <div className="px-4 py-3 border-b bg-card sticky top-0 z-5">
+              <div className="px-4 pt-2 pb-3 border-b bg-card sticky top-0 z-5">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold">Top 100 Leaderboard</h3>
                   {!isConnected && (
@@ -147,14 +147,14 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
                 </div>
               </div>
               <div className="max-h-96 overflow-y-auto">
-                {topTraders.map((trader) => (
+                {topTraders.map((trader, index) => (
                   <div
                     key={trader.trader}
                     className={`flex items-center justify-between p-4 border-b last:border-b-0 hover:bg-muted/30 transition-colors ${
                       isConnected && trader.trader.toLowerCase() === address?.toLowerCase() 
                         ? 'bg-primary/5 border-primary/20' 
                         : ''
-                    }`}
+                    } ${index === topTraders.length - 1 ? 'pb-6' : ''}`}
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-10 text-center">
