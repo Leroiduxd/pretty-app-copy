@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Trophy, Target, Loader2 } from "lucide-react";
+import { Trophy, Loader2, X } from "lucide-react";
 import { useAccount } from "wagmi";
 
 interface RankEntry {
@@ -88,30 +88,27 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-blue-500" />
-            Trading Competition
-          </DialogTitle>
-        </DialogHeader>
-        
+      <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-hidden p-0">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-6 h-6 animate-spin mr-2" />
             Loading competition data...
           </div>
         ) : (
-          <div className="space-y-4">
-            {/* User Stats Section */}
+          <>
+            {/* User Stats Section - Fixed/Sticky */}
             {isConnected && myRank && (
-              <div className="bg-card border rounded-lg p-6">
+              <div className="bg-card border-b p-6 sticky top-0 z-10">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold">My Performance</h3>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-primary">#{myRank.rank}</div>
-                    <div className="text-sm text-muted-foreground">Rank</div>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setOpen(false)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -125,16 +122,32 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
                     </div>
                   </div>
                 </div>
+                <div className="text-center mt-4">
+                  <div className="text-2xl font-bold text-primary">#{myRank.rank}</div>
+                  <div className="text-sm text-muted-foreground">Current Rank</div>
+                </div>
               </div>
             )}
 
             {/* Leaderboard Section */}
-            <div className="bg-card border rounded-lg">
-              <div className="p-4 border-b">
-                <h3 className="text-lg font-semibold">Top 100 Leaderboard</h3>
+            <div className="bg-card">
+              <div className="p-4 border-b bg-card sticky top-0 z-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">Top 100 Leaderboard</h3>
+                  {!isConnected && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setOpen(false)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
               <div className="max-h-96 overflow-y-auto">
-                {topTraders.map((trader, index) => (
+                {topTraders.map((trader) => (
                   <div
                     key={trader.trader}
                     className={`flex items-center justify-between p-4 border-b last:border-b-0 hover:bg-muted/30 transition-colors ${
@@ -163,13 +176,13 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
 
             {/* Not Connected Message */}
             {!isConnected && (
-              <div className="bg-card border rounded-lg p-8 text-center">
+              <div className="bg-card p-8 text-center">
                 <div className="text-muted-foreground">
                   Connect your wallet to see your ranking and performance
                 </div>
               </div>
             )}
-          </div>
+          </>
         )}
       </DialogContent>
     </Dialog>
