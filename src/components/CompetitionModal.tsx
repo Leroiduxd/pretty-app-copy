@@ -96,67 +96,81 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6">
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin mr-2" />
-              Loading competition data...
-            </div>
-          ) : (
-            <>
-              {/* My Rank Section */}
-              {isConnected && myRank && (
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-2 flex items-center gap-2">
-                    <Target className="w-4 h-4" />
-                    My Ranking
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="w-8 text-center text-sm font-medium">#{myRank.rank}</span>
-                      <span className="font-mono text-sm">{myRank.trader}</span>
-                    </div>
-                    <span className={`font-medium ${getRankColor(myRank.total_pnl_x6)}`}>
-                      {formatPnL(myRank.total_pnl_x6)}
-                    </span>
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-6 h-6 animate-spin mr-2" />
+            Loading competition data...
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* User Stats Section */}
+            {isConnected && myRank && (
+              <div className="bg-card border rounded-lg p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">My Performance</h3>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-primary">#{myRank.rank}</div>
+                    <div className="text-sm text-muted-foreground">Rank</div>
                   </div>
                 </div>
-              )}
-
-              {/* Top 100 Section */}
-              <div>
-                <h3 className="font-semibold mb-3">Top 100 Traders</h3>
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {topTraders.map((trader) => (
-                    <div
-                      key={trader.trader}
-                      className={`flex items-center justify-between p-3 rounded-md border ${
-                        isConnected && trader.trader.toLowerCase() === address?.toLowerCase() 
-                          ? 'bg-primary/10 border-primary/20' 
-                          : 'hover:bg-muted/50'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-8 text-center text-sm font-medium">#{trader.rank}</span>
-                        <span className="font-mono text-sm">{trader.trader}</span>
-                      </div>
-                      <span className={`font-medium ${getRankColor(trader.total_pnl_x6)}`}>
-                        {formatPnL(trader.total_pnl_x6)}
-                      </span>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">Trader Address</div>
+                    <div className="font-mono text-sm">{myRank.trader}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-muted-foreground mb-1">Total PnL</div>
+                    <div className={`text-lg font-semibold ${getRankColor(myRank.total_pnl_x6)}`}>
+                      {formatPnL(myRank.total_pnl_x6)}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
+            )}
 
-              {/* Not Connected Message */}
-              {!isConnected && (
-                <div className="text-center py-4 text-muted-foreground">
-                  Connect your wallet to see your ranking
+            {/* Leaderboard Section */}
+            <div className="bg-card border rounded-lg">
+              <div className="p-4 border-b">
+                <h3 className="text-lg font-semibold">Top 100 Leaderboard</h3>
+              </div>
+              <div className="max-h-96 overflow-y-auto">
+                {topTraders.map((trader, index) => (
+                  <div
+                    key={trader.trader}
+                    className={`flex items-center justify-between p-4 border-b last:border-b-0 hover:bg-muted/30 transition-colors ${
+                      isConnected && trader.trader.toLowerCase() === address?.toLowerCase() 
+                        ? 'bg-primary/5 border-primary/20' 
+                        : ''
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 text-center">
+                        <span className={`text-sm font-semibold ${
+                          trader.rank <= 3 ? 'text-primary' : 'text-muted-foreground'
+                        }`}>
+                          #{trader.rank}
+                        </span>
+                      </div>
+                      <div className="font-mono text-sm">{trader.trader}</div>
+                    </div>
+                    <div className={`text-sm font-semibold ${getRankColor(trader.total_pnl_x6)}`}>
+                      {formatPnL(trader.total_pnl_x6)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Not Connected Message */}
+            {!isConnected && (
+              <div className="bg-card border rounded-lg p-8 text-center">
+                <div className="text-muted-foreground">
+                  Connect your wallet to see your ranking and performance
                 </div>
-              )}
-            </>
-          )}
-        </div>
+              </div>
+            )}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
