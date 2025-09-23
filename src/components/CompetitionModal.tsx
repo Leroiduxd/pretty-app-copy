@@ -97,7 +97,7 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
         ) : (
           <>
             {/* Header with close button */}
-            <div className="px-4 pt-2 pb-3 bg-card sticky top-0 z-10">
+            <div className="px-4 pt-2 pb-0 bg-card sticky top-0 z-10">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold">Top 500 Leaderboard</h3>
                 <Button
@@ -113,7 +113,7 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
 
             {/* User's rank - always visible and sticky */}
             {isConnected && myRank ? (
-              <div className="bg-primary/5 border-primary/20 p-4 sticky top-14 z-5">
+              <div className="bg-primary/5 p-4 sticky top-14 z-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-10 text-center">
@@ -139,13 +139,13 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
             {/* Leaderboard Section */}
             <div className="bg-card">
               <div className="max-h-96 overflow-y-auto">
-                {/* Top 100 traders */}
+                {/* Top 500 traders */}
                 {topTraders.map((trader, index) => (
                   <div
                     key={trader.trader}
-                    className={`flex items-center justify-between p-4 border-b last:border-b-0 hover:bg-muted/30 transition-colors ${
+                    className={`flex items-center justify-between p-4 hover:bg-muted/30 transition-colors ${
                       isConnected && trader.trader.toLowerCase() === address?.toLowerCase() 
-                        ? 'bg-primary/5 border-primary/20' 
+                        ? 'bg-primary/5' 
                         : ''
                     } ${index === topTraders.length - 1 ? 'pb-6' : ''}`}
                   >
