@@ -40,8 +40,8 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
   const fetchCompetitionData = async () => {
     setLoading(true);
     try {
-      // Fetch top 100 traders
-      const topResponse = await fetch('https://competition.brokex.trade/api/top?limit=100');
+      // Fetch top 500 traders
+      const topResponse = await fetch('https://competition.brokex.trade/api/top?limit=500');
       if (topResponse.ok) {
         const topData: TopResponse = await topResponse.json();
         setTopTraders(topData.top);
@@ -97,9 +97,9 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
         ) : (
           <>
             {/* Header with close button */}
-            <div className="px-4 pt-2 pb-3 border-b bg-card sticky top-0 z-10">
+            <div className="px-4 pt-2 pb-3 bg-card sticky top-0 z-10">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Top 100 Leaderboard</h3>
+                <h3 className="text-lg font-semibold">Top 500 Leaderboard</h3>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -113,7 +113,7 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
 
             {/* User's rank - always visible and sticky */}
             {isConnected && myRank ? (
-              <div className="bg-primary/5 border-b border-primary/20 p-4 sticky top-14 z-5">
+              <div className="bg-primary/5 border-primary/20 p-4 sticky top-14 z-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-10 text-center">
@@ -131,7 +131,7 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
                 </div>
               </div>
             ) : !isConnected ? (
-              <div className="bg-muted/20 border-b p-4 sticky top-14 z-5 text-center text-muted-foreground">
+              <div className="bg-muted/20 p-4 sticky top-14 z-5 text-center text-muted-foreground">
                 Please connect your wallet to see your rank
               </div>
             ) : null}
