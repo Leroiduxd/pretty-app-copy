@@ -96,41 +96,45 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
           </div>
         ) : (
           <>
-            {/* Leaderboard Section */}
-            <div className="bg-card">
-              <div className="px-4 pt-2 pb-3 border-b bg-card sticky top-0 z-5">
+            {/* Header with close button */}
+            <div className="px-4 pt-2 pb-3 border-b bg-card sticky top-0 z-10">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">Top 100 Leaderboard</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setOpen(false)}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* User's rank - always visible and sticky */}
+            {myRank && (
+              <div className="bg-primary/5 border-b border-primary/20 p-4 sticky top-14 z-5">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">Top 100 Leaderboard</h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setOpen(false)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 text-center">
+                      <span className={`text-sm font-semibold ${
+                        myRank.rank <= 3 ? 'text-primary' : 'text-muted-foreground'
+                      }`}>
+                        #{myRank.rank}
+                      </span>
+                    </div>
+                    <div className="font-mono text-sm">{myRank.trader}</div>
+                  </div>
+                  <div className={`text-sm font-semibold ${getRankColor(myRank.total_pnl_x6)}`}>
+                    {formatPnL(myRank.total_pnl_x6)}
+                  </div>
                 </div>
               </div>
+            )}
+
+            {/* Leaderboard Section */}
+            <div className="bg-card">
               <div className="max-h-96 overflow-y-auto">
-                {/* User's rank first if connected and has rank */}
-                {isConnected && myRank && (
-                  <div className="flex items-center justify-between p-4 border-b bg-primary/5 border-primary/20 hover:bg-primary/10 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 text-center">
-                        <span className={`text-sm font-semibold ${
-                          myRank.rank <= 3 ? 'text-primary' : 'text-muted-foreground'
-                        }`}>
-                          #{myRank.rank}
-                        </span>
-                      </div>
-                      <div className="font-mono text-sm">{myRank.trader}</div>
-                    </div>
-                    <div className={`text-sm font-semibold ${getRankColor(myRank.total_pnl_x6)}`}>
-                      {formatPnL(myRank.total_pnl_x6)}
-                    </div>
-                  </div>
-                )}
-                
                 {/* Top 100 traders */}
                 {topTraders.map((trader, index) => (
                   <div
