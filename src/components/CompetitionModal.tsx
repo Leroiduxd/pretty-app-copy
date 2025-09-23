@@ -40,8 +40,8 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
   const fetchCompetitionData = async () => {
     setLoading(true);
     try {
-      // Fetch top 500 traders
-      const topResponse = await fetch('https://competition.brokex.trade/api/top?limit=500');
+      // Fetch top 100 traders
+      const topResponse = await fetch('https://competition.brokex.trade/api/top?limit=100');
       if (topResponse.ok) {
         const topData: TopResponse = await topResponse.json();
         setTopTraders(topData.top);
@@ -97,9 +97,9 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
         ) : (
           <>
             {/* Header with close button */}
-            <div className="px-4 py-3 bg-card sticky top-0 z-10">
+            <div className="px-4 pt-2 pb-3 border-b bg-card sticky top-0 z-10">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Top 500 Leaderboard</h3>
+                <h3 className="text-lg font-semibold">Top 100 Leaderboard</h3>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -112,8 +112,8 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
             </div>
 
             {/* User's rank - always visible and sticky */}
-            {isConnected && myRank ? (
-              <div className="bg-primary/5 border-primary/20 p-4 sticky top-12 z-5">
+            {myRank && (
+              <div className="bg-primary/5 border-b border-primary/20 p-4 sticky top-14 z-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-10 text-center">
@@ -130,11 +130,7 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
                   </div>
                 </div>
               </div>
-            ) : !isConnected ? (
-              <div className="bg-muted/20 p-4 sticky top-12 z-5 text-center text-muted-foreground">
-                Please connect your wallet to see your rank
-              </div>
-            ) : null}
+            )}
 
             {/* Leaderboard Section */}
             <div className="bg-card">
@@ -166,6 +162,15 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
                 ))}
               </div>
             </div>
+
+            {/* Not Connected Message */}
+            {!isConnected && (
+              <div className="bg-card p-8 text-center">
+                <div className="text-muted-foreground">
+                  Connect your wallet to see your ranking and performance
+                </div>
+              </div>
+            )}
           </>
         )}
       </DialogContent>
