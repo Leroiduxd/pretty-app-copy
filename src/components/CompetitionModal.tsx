@@ -112,7 +112,7 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
             </div>
 
             {/* User's rank - always visible and sticky */}
-            {myRank && (
+            {isConnected && myRank ? (
               <div className="bg-primary/5 border-b border-primary/20 p-4 sticky top-14 z-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -130,7 +130,11 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
                   </div>
                 </div>
               </div>
-            )}
+            ) : !isConnected ? (
+              <div className="bg-muted/20 border-b p-4 sticky top-14 z-5 text-center text-muted-foreground">
+                Please connect your wallet to see your rank
+              </div>
+            ) : null}
 
             {/* Leaderboard Section */}
             <div className="bg-card">
@@ -162,15 +166,6 @@ export const CompetitionModal = ({ open: controlledOpen, onOpenChange }: Competi
                 ))}
               </div>
             </div>
-
-            {/* Not Connected Message */}
-            {!isConnected && (
-              <div className="bg-card p-8 text-center">
-                <div className="text-muted-foreground">
-                  Connect your wallet to see your ranking and performance
-                </div>
-              </div>
-            )}
           </>
         )}
       </DialogContent>
