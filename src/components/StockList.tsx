@@ -80,16 +80,7 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
       }
     });
 
-    // Remove stocks that are no longer in the WebSocket data
-    const currentStockSymbols = Array.from(stocksRef.current.keys());
-    currentStockSymbols.forEach(symbol => {
-      if (!currentSymbols.has(symbol)) {
-        stocksRef.current.delete(symbol);
-        hasChanges = true;
-      }
-    });
-
-    // Only update state if there are actual changes
+    // Only update state if there are actual changes (no removal, only additions/updates)
     if (hasChanges) {
       const sortedStocks = Array.from(stocksRef.current.values()).sort((a, b) => b.id - a.id);
       setStocks(sortedStocks);
