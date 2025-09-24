@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { useWebSocket, WebSocketData } from "@/hooks/useWebSocket";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { StockSearchModal } from "./StockSearchModal";
 
@@ -12,6 +12,8 @@ interface StockListProps {
 export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
   const { data: wsData, isConnected, error } = useWebSocket("wss://wss.brokex.trade:8443");
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [stocks, setStocks] = useState<any[]>([]);
+  const stocksRef = useRef<Map<string, any>>(new Map());
 
   // Format prices based on number of digits before decimal
   const formatPrice = (value: number) => {
@@ -22,37 +24,75 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
     return value.toFixed(2);
   };
 
-  const stocks = useMemo(() => {
-    if (!wsData || Object.keys(wsData).length === 0) return [];
+  // Optimized stock updates - only update changed stocks
+  useEffect(() => {
+    if (!wsData || Object.keys(wsData).length === 0) {
+      if (stocks.length > 0) {
+        setStocks([]);
+        stocksRef.current.clear();
+      }
+      return;
+    }
 
-    return Object.entries(wsData).map(([pairKey, payload]) => {
+    let hasChanges = false;
+    const currentSymbols = new Set();
+
+    // Process each stock from WebSocket data
+    Object.entries(wsData).forEach(([pairKey, payload]) => {
       const item = payload?.instruments?.[0];
-      if (!item) return null;
+      if (!item) return;
+
+      const symbol = item.tradingPair.toUpperCase();
+      currentSymbols.add(symbol);
 
       const change = parseFloat(item["24h_change"]);
       const price = parseFloat(item.currentPrice);
       const high24h = parseFloat(item["24h_high"]);
       const low24h = parseFloat(item["24h_low"]);
       
-      // Calculate if price is closer to high or low to determine sign
       const distanceToHigh = Math.abs(price - high24h);
       const distanceToLow = Math.abs(price - low24h);
       const isPositive = distanceToHigh < distanceToLow;
       const signedChangePercent = isPositive ? Math.abs(change) : -Math.abs(change);
 
-        return {
-          symbol: item.tradingPair.toUpperCase(),
-          name: payload.name || item.tradingPair.toUpperCase(),
-          price: price,
-          change: signedChangePercent,
-          changePercent: signedChangePercent,
-          high24h: high24h,
-          low24h: low24h,
-          timestamp: item.timestamp,
-          id: payload.id,
-          pairId: String(payload.id) // Utiliser l'ID pour l'API chart
-        };
-    }).filter(Boolean);
+      const newStock = {
+        symbol,
+        name: payload.name || symbol,
+        price,
+        change: signedChangePercent,
+        changePercent: signedChangePercent,
+        high24h,
+        low24h,
+        timestamp: item.timestamp,
+        id: payload.id,
+        pairId: String(payload.id)
+      };
+
+      const existingStock = stocksRef.current.get(symbol);
+      
+      // Check if stock data has changed
+      if (!existingStock || 
+          existingStock.price !== price || 
+          existingStock.changePercent !== signedChangePercent ||
+          existingStock.timestamp !== item.timestamp) {
+        stocksRef.current.set(symbol, newStock);
+        hasChanges = true;
+      }
+    });
+
+    // Remove stocks that are no longer in the WebSocket data
+    const currentStockSymbols = Array.from(stocksRef.current.keys());
+    currentStockSymbols.forEach(symbol => {
+      if (!currentSymbols.has(symbol)) {
+        stocksRef.current.delete(symbol);
+        hasChanges = true;
+      }
+    });
+
+    // Only update state if there are actual changes
+    if (hasChanges) {
+      setStocks(Array.from(stocksRef.current.values()));
+    }
   }, [wsData]);
 
   if (error) {
