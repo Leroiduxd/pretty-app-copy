@@ -91,7 +91,8 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
 
     // Only update state if there are actual changes
     if (hasChanges) {
-      setStocks(Array.from(stocksRef.current.values()));
+      const sortedStocks = Array.from(stocksRef.current.values()).sort((a, b) => b.id - a.id);
+      setStocks(sortedStocks);
     }
   }, [wsData]);
 
