@@ -13,6 +13,7 @@ const Index = () => {
   const [showPositions, setShowPositions] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  const [storedStockData, setStoredStockData] = useState<any>(null);
   const { data: wsData, isConnected } = useWebSocket("wss://wss.brokex.trade:8443");
   
   // Get current stock data from WebSocket
@@ -43,14 +44,23 @@ const Index = () => {
           low24h: low24h,
         };
       })()
-    : {
-        symbol: selectedStock,
-        price: 0,
-        change: 0,
-        changePercent: 0,
-        high24h: 0,
-        low24h: 0,
-      };
+    : storedStockData 
+      ? {
+          symbol: storedStockData.symbol,
+          price: storedStockData.price,
+          change: storedStockData.change,
+          changePercent: storedStockData.changePercent,
+          high24h: storedStockData.high24h,
+          low24h: storedStockData.low24h,
+        }
+      : {
+          symbol: selectedStock,
+          price: 0,
+          change: 0,
+          changePercent: 0,
+          high24h: 0,
+          low24h: 0,
+        };
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode);
@@ -101,6 +111,12 @@ const Index = () => {
     setSelectedPairId(pairId);
   };
 
+  const handleStockDataChange = (stockData: any) => {
+    if (stockData.symbol === selectedStock) {
+      setStoredStockData(stockData);
+    }
+  };
+
   
   if (isLoading) {
     return <LoadingScreen />;
@@ -119,6 +135,7 @@ const Index = () => {
           <StockList 
             selectedStock={selectedStock}
             onSelectStock={handleStockSelect}
+            onStockDataChange={handleStockDataChange}
           />
           <TradingInterface 
             symbol={currentStockData.symbol}

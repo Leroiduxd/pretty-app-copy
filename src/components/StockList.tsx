@@ -7,9 +7,10 @@ import { StockSearchModal } from "./StockSearchModal";
 interface StockListProps {
   selectedStock: string;
   onSelectStock: (symbol: string, pairId: string) => void;
+  onStockDataChange?: (stockData: any) => void;
 }
 
-export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
+export const StockList = ({ selectedStock, onSelectStock, onStockDataChange }: StockListProps) => {
   const { data: wsData, isConnected, error } = useWebSocket("wss://wss.brokex.trade:8443");
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [stocks, setStocks] = useState<any[]>([]);
@@ -84,6 +85,12 @@ export const StockList = ({ selectedStock, onSelectStock }: StockListProps) => {
     if (hasChanges) {
       const sortedStocks = Array.from(stocksRef.current.values()).sort((a, b) => b.id - a.id);
       setStocks(sortedStocks);
+      
+      // Notify parent of current selected stock data
+      const selectedStockData = stocksRef.current.get(selectedStock);
+      if (selectedStockData && onStockDataChange) {
+        onStockDataChange(selectedStockData);
+      }
     }
   }, [wsData]);
 
