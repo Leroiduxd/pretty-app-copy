@@ -9,13 +9,20 @@ interface StockListProps {
   selectedStock: string;
   onSelectStock: (symbol: string, pairId: string) => void;
   onStockDataChange?: (stockData: any) => void;
+  stocks?: any[];
 }
 
-export const StockList = ({ selectedStock, onSelectStock, onStockDataChange }: StockListProps) => {
+export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, stocks: externalStocks }: StockListProps) => {
   const { data: wsData, isConnected, error } = useWebSocket("wss://wss.brokex.trade:8443");
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [stocks, setStocks] = useState<any[]>([]);
   const stocksRef = useRef<Map<string, any>>(new Map());
+  
+  // Function to get stock name by symbol or return fallback
+  const getStockName = (symbol: string, pairId: string) => {
+    const stock = stocksRef.current.get(symbol);
+    return stock?.name || `ASSET_${pairId}`;
+  };
 
   // Format prices based on number of digits before decimal
   const formatPrice = (value: number) => {
@@ -87,13 +94,16 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange }: S
       const sortedStocks = Array.from(stocksRef.current.values()).sort((a, b) => b.id - a.id);
       setStocks(sortedStocks);
       
-      // Notify parent of current selected stock data
+      // Notify parent of current selected stock data with fallback name
       const selectedStockData = stocksRef.current.get(selectedStock);
       if (selectedStockData && onStockDataChange) {
-        onStockDataChange(selectedStockData);
+        onStockDataChange({
+          ...selectedStockData,
+          name: getStockName(selectedStock, selectedStockData.pairId)
+        });
       }
     }
-  }, [wsData]);
+  }, [wsData, selectedStock]);
 
   if (error) {
     return (
@@ -164,8 +174,7 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange }: S
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium text-foreground text-sm">{stock.symbol}</div>
-                    <div className="text-xs text-muted-foreground truncate">{stock.name}</div>
-                    {/* ID retiré de l'UI selon demande */}
+                    <div className="text-xs text-muted-foreground truncate">{getStockName(stock.symbol, stock.pairId)}</div>
                   </div>
                   <div className="text-right">
                     <div className="font-medium text-foreground text-sm">{formatPrice(stock.price)}</div>

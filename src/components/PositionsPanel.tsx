@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -115,7 +116,33 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
 
             <TabsContent value="positions" className="mt-4 flex-1 overflow-hidden">
               {isLoading ? (
-                <div className="text-center text-muted-foreground py-8">Loading positions...</div>
+                <ScrollArea className="h-full">
+                  <div className="space-y-3 pr-2 pb-4">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <Card key={`position-skeleton-${index}`} className="p-4 bg-card border-border">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Skeleton className="h-4 w-16" />
+                              <Skeleton className="h-5 w-12" />
+                            </div>
+                            <Skeleton className="h-3 w-20" />
+                          </div>
+                          <Skeleton className="h-7 w-24" />
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                          {Array.from({ length: 8 }).map((_, i) => (
+                            <div key={i}>
+                              <Skeleton className="h-3 w-16 mb-1" />
+                              <Skeleton className="h-4 w-20" />
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
               ) : openPositions.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No open positions</div>
               ) : (
@@ -188,7 +215,35 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
             </TabsContent>
 
             <TabsContent value="orders" className="mt-4 flex-1 overflow-hidden">
-              {openOrders.length === 0 ? (
+              {isLoading ? (
+                <ScrollArea className="h-full">
+                  <div className="space-y-3 pr-2 pb-4">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <Card key={`order-skeleton-${index}`} className="p-4 bg-card border-border">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Skeleton className="h-4 w-16" />
+                              <Skeleton className="h-5 w-12" />
+                            </div>
+                            <Skeleton className="h-3 w-20" />
+                          </div>
+                          <Skeleton className="h-7 w-24" />
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                          {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i}>
+                              <Skeleton className="h-3 w-16 mb-1" />
+                              <Skeleton className="h-4 w-20" />
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              ) : openOrders.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No open orders</div>
               ) : (
                 <ScrollArea className="h-full">
@@ -250,7 +305,34 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
             </TabsContent>
 
             <TabsContent value="history" className="mt-4 flex-1 overflow-hidden">
-              {closedPositions.length === 0 ? (
+              {isLoading ? (
+                <ScrollArea className="h-full">
+                  <div className="space-y-3 pr-2 pb-4">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <Card key={`history-skeleton-${index}`} className="p-4 bg-card border-border">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Skeleton className="h-4 w-16" />
+                              <Skeleton className="h-5 w-12" />
+                            </div>
+                          </div>
+                          <Skeleton className="h-4 w-16" />
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                          {Array.from({ length: 7 }).map((_, i) => (
+                            <div key={i}>
+                              <Skeleton className="h-3 w-16 mb-1" />
+                              <Skeleton className="h-4 w-20" />
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              ) : closedPositions.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">No closed positions</div>
               ) : (
                 <ScrollArea className="h-full">
