@@ -88,7 +88,11 @@ const Index = () => {
   }, [wsData, selectedStock]);
 
   useEffect(() => {
-    // Hide loading screen only when stocks list is ready with data
+    // Hide loading screen after maximum 2 seconds or when stocks are ready
+    const maxTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // Maximum loading time of 2 seconds
+
     if (isConnected && wsData && Object.keys(wsData).length > 0) {
       // Check if we have actual stock data with valid instruments
       const hasValidStocks = Object.values(wsData).some(payload => 
@@ -101,9 +105,14 @@ const Index = () => {
           setIsLoading(false);
         }, 800); // Minimum loading time for better UX
         
-        return () => clearTimeout(timer);
+        return () => {
+          clearTimeout(timer);
+          clearTimeout(maxTimer);
+        };
       }
     }
+
+    return () => clearTimeout(maxTimer);
   }, [isConnected, wsData]);
 
   const handleStockSelect = (symbol: string, pairId: string) => {

@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useWebSocket, WebSocketData } from "@/hooks/useWebSocket";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
@@ -131,9 +132,26 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange }: S
       
       <div className="space-y-0.5 p-2">
         {stocks.length === 0 ? (
-          <div className="text-muted-foreground text-center py-8">
-            No data available
-          </div>
+          // Show loading skeleton buttons when no data
+          Array.from({ length: 20 }).map((_, index) => (
+            <div key={`skeleton-${index}`}>
+              <Card className="p-2.5 border-0 bg-transparent">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <Skeleton className="h-4 w-16 mb-1" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                  <div className="text-right">
+                    <Skeleton className="h-4 w-12 mb-1" />
+                    <Skeleton className="h-3 w-10" />
+                  </div>
+                </div>
+              </Card>
+              {index < 19 && (
+                <div className="h-px bg-border/50 mx-2" />
+              )}
+            </div>
+          ))
         ) : (
           stocks.map((stock, index) => (
             <div key={stock.symbol}>
