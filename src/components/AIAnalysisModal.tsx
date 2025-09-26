@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 import { TrendingUp, TrendingDown, Minus, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -109,57 +110,67 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
             </div>
           ) : data ? (
             <>
-              {/* Current Price */}
-              <div className="text-center p-3 bg-muted rounded-lg">
-                <p className="text-sm text-muted-foreground">Current Price</p>
-                <p className="text-2xl font-bold">${data.spot.toLocaleString()}</p>
-              </div>
-
               {/* Score Analysis */}
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <h3 className="font-semibold text-sm">Trading Signals</h3>
                 
-                <div className="grid grid-cols-3 gap-2">
-                  {/* Short Term */}
-                  <div className="p-3 bg-card border rounded-lg text-center">
-                    <div className={`flex items-center justify-center gap-1 mb-1 ${getScoreColor(data.short)}`}>
-                      {getScoreIcon(data.short)}
-                      <span className="text-xs font-medium">Short</span>
-                    </div>
-                    <p className={`text-xs font-bold ${getScoreColor(data.short)}`}>
+                {/* Short Term */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Short Term</span>
+                    <span className={`text-sm font-bold ${getScoreColor(data.short)}`}>
                       {getScoreLabel(data.short)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {data.short.toFixed(1)}
-                    </p>
+                    </span>
                   </div>
-
-                  {/* Mid Term */}
-                  <div className="p-3 bg-card border rounded-lg text-center">
-                    <div className={`flex items-center justify-center gap-1 mb-1 ${getScoreColor(data.mid)}`}>
-                      {getScoreIcon(data.mid)}
-                      <span className="text-xs font-medium">Mid</span>
+                  <div className="relative">
+                    <Progress 
+                      value={(data.short + 100) / 2} 
+                      className="h-3"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-between px-1 text-xs text-muted-foreground">
+                      <span>Sell</span>
+                      <span>Buy</span>
                     </div>
-                    <p className={`text-xs font-bold ${getScoreColor(data.mid)}`}>
+                  </div>
+                </div>
+
+                {/* Mid Term */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Mid Term</span>
+                    <span className={`text-sm font-bold ${getScoreColor(data.mid)}`}>
                       {getScoreLabel(data.mid)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {data.mid.toFixed(1)}
-                    </p>
+                    </span>
                   </div>
-
-                  {/* Long Term */}
-                  <div className="p-3 bg-card border rounded-lg text-center">
-                    <div className={`flex items-center justify-center gap-1 mb-1 ${getScoreColor(data.long)}`}>
-                      {getScoreIcon(data.long)}
-                      <span className="text-xs font-medium">Long</span>
+                  <div className="relative">
+                    <Progress 
+                      value={(data.mid + 100) / 2} 
+                      className="h-3"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-between px-1 text-xs text-muted-foreground">
+                      <span>Sell</span>
+                      <span>Buy</span>
                     </div>
-                    <p className={`text-xs font-bold ${getScoreColor(data.long)}`}>
+                  </div>
+                </div>
+
+                {/* Long Term */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Long Term</span>
+                    <span className={`text-sm font-bold ${getScoreColor(data.long)}`}>
                       {getScoreLabel(data.long)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {data.long.toFixed(1)}
-                    </p>
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <Progress 
+                      value={(data.long + 100) / 2} 
+                      className="h-3"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-between px-1 text-xs text-muted-foreground">
+                      <span>Sell</span>
+                      <span>Buy</span>
+                    </div>
                   </div>
                 </div>
               </div>
