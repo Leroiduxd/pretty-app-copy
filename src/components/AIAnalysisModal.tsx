@@ -1,7 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Minus, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Clock, Brain } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface AIAnalysisModalProps {
@@ -27,11 +28,12 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen && assetId !== undefined) {
-      fetchAnalysis();
-    }
-  }, [isOpen, assetId]);
+  // Remove automatic fetch on open
+  // useEffect(() => {
+  //   if (isOpen && assetId !== undefined) {
+  //     fetchAnalysis();
+  //   }
+  // }, [isOpen, assetId]);
 
   const fetchAnalysis = async () => {
     setLoading(true);
@@ -93,7 +95,14 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
         </DialogHeader>
         
         <div className="space-y-4">
-          {loading ? (
+          {!data && !loading ? (
+            <div className="text-center py-8">
+              <Button onClick={fetchAnalysis} className="flex items-center gap-2">
+                <Brain className="w-4 h-4" />
+                Get AI Analysis
+              </Button>
+            </div>
+          ) : loading ? (
             <div className="space-y-3">
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-3/4" />
@@ -106,7 +115,11 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
             </div>
           ) : error ? (
             <div className="text-center py-8">
-              <p className="text-red-500">{error}</p>
+              <p className="text-red-500 mb-4">{error}</p>
+              <Button onClick={fetchAnalysis} variant="outline" className="flex items-center gap-2">
+                <Brain className="w-4 h-4" />
+                Retry Analysis
+              </Button>
             </div>
           ) : data ? (
             <>
