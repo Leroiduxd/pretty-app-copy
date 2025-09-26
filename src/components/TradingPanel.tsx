@@ -9,7 +9,8 @@ import { parseUnits } from 'viem';
 import { toast } from "sonner";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
 import { useTokenApproval } from "@/hooks/useTokenApproval";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Brain } from "lucide-react";
+import { AIAnalysisModal } from "./AIAnalysisModal";
 
 interface TradingPanelProps {
   symbol: string;
@@ -54,6 +55,7 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
   const [showStopLoss, setShowStopLoss] = useState(false);
   const [showTakeProfit, setShowTakeProfit] = useState(false);
   const [lastTxHash, setLastTxHash] = useState<string | null>(null);
+  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
 
   // Update limit price when price or symbol changes
   useEffect(() => {
@@ -208,7 +210,18 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
       <div className="space-y-4">
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm text-muted-foreground">{symbol}</span>
-          <span className="text-lg font-bold text-foreground">${price.toFixed(2)}</span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAIAnalysis(true)}
+              className="h-8 px-2 gap-1 text-xs"
+            >
+              <Brain className="w-3 h-3" />
+              AI Trend
+            </Button>
+            <span className="text-lg font-bold text-foreground">${price.toFixed(2)}</span>
+          </div>
         </div>
         
         {/* BUY/SELL Selection */}
@@ -418,6 +431,13 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
           </div>
         </div>
       </div>
+      
+      <AIAnalysisModal
+        isOpen={showAIAnalysis}
+        onClose={() => setShowAIAnalysis(false)}
+        assetId={assetId}
+        symbol={symbol}
+      />
     </div>
   );
 };
