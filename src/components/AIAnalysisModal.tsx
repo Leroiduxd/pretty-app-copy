@@ -119,17 +119,38 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">Short Term</span>
                     <span className={`text-sm font-bold ${getScoreColor(data.short)}`}>
-                      {getScoreLabel(data.short)}
+                      {data.short.toFixed(1)}
                     </span>
                   </div>
-                  <div className="relative">
-                    <Progress 
-                      value={(data.short + 100) / 2} 
-                      className="h-3"
+                  <div className="relative border-2 border-muted-foreground rounded-sm h-6 bg-muted overflow-hidden">
+                    {/* Background segments for vintage look */}
+                    <div className="absolute inset-0 flex">
+                      {Array.from({ length: 20 }, (_, i) => (
+                        <div
+                          key={i}
+                          className={`flex-1 border-r border-muted-foreground/30 ${
+                            i % 2 === 0 ? 'bg-muted' : 'bg-muted/50'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    {/* Score indicator */}
+                    <div 
+                      className={`absolute top-0 bottom-0 w-1 ${
+                        data.short >= 0 ? 'bg-blue-500' : 'bg-red-500'
+                      } transition-all duration-300`}
+                      style={{ 
+                        left: `${Math.max(0, Math.min(100, (data.short + 100) / 2))}%`,
+                        transform: 'translateX(-50%)'
+                      }}
                     />
-                    <div className="absolute inset-0 flex items-center justify-between px-1 text-xs text-muted-foreground">
-                      <span>Sell</span>
-                      <span>Buy</span>
+                    {/* Center line */}
+                    <div className="absolute top-0 bottom-0 w-0.5 bg-foreground left-1/2 transform -translate-x-1/2" />
+                    {/* Labels */}
+                    <div className="absolute inset-0 flex items-center justify-between px-2 text-xs font-medium">
+                      <span className="text-red-500">-100</span>
+                      <span className="text-muted-foreground">0</span>
+                      <span className="text-blue-500">+100</span>
                     </div>
                   </div>
                 </div>
@@ -139,17 +160,38 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">Mid Term</span>
                     <span className={`text-sm font-bold ${getScoreColor(data.mid)}`}>
-                      {getScoreLabel(data.mid)}
+                      {data.mid.toFixed(1)}
                     </span>
                   </div>
-                  <div className="relative">
-                    <Progress 
-                      value={(data.mid + 100) / 2} 
-                      className="h-3"
+                  <div className="relative border-2 border-muted-foreground rounded-sm h-6 bg-muted overflow-hidden">
+                    {/* Background segments for vintage look */}
+                    <div className="absolute inset-0 flex">
+                      {Array.from({ length: 20 }, (_, i) => (
+                        <div
+                          key={i}
+                          className={`flex-1 border-r border-muted-foreground/30 ${
+                            i % 2 === 0 ? 'bg-muted' : 'bg-muted/50'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    {/* Score indicator */}
+                    <div 
+                      className={`absolute top-0 bottom-0 w-1 ${
+                        data.mid >= 0 ? 'bg-blue-500' : 'bg-red-500'
+                      } transition-all duration-300`}
+                      style={{ 
+                        left: `${Math.max(0, Math.min(100, (data.mid + 100) / 2))}%`,
+                        transform: 'translateX(-50%)'
+                      }}
                     />
-                    <div className="absolute inset-0 flex items-center justify-between px-1 text-xs text-muted-foreground">
-                      <span>Sell</span>
-                      <span>Buy</span>
+                    {/* Center line */}
+                    <div className="absolute top-0 bottom-0 w-0.5 bg-foreground left-1/2 transform -translate-x-1/2" />
+                    {/* Labels */}
+                    <div className="absolute inset-0 flex items-center justify-between px-2 text-xs font-medium">
+                      <span className="text-red-500">-100</span>
+                      <span className="text-muted-foreground">0</span>
+                      <span className="text-blue-500">+100</span>
                     </div>
                   </div>
                 </div>
@@ -159,17 +201,38 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">Long Term</span>
                     <span className={`text-sm font-bold ${getScoreColor(data.long)}`}>
-                      {getScoreLabel(data.long)}
+                      {data.long.toFixed(1)}
                     </span>
                   </div>
-                  <div className="relative">
-                    <Progress 
-                      value={(data.long + 100) / 2} 
-                      className="h-3"
+                  <div className="relative border-2 border-muted-foreground rounded-sm h-6 bg-muted overflow-hidden">
+                    {/* Background segments for vintage look */}
+                    <div className="absolute inset-0 flex">
+                      {Array.from({ length: 20 }, (_, i) => (
+                        <div
+                          key={i}
+                          className={`flex-1 border-r border-muted-foreground/30 ${
+                            i % 2 === 0 ? 'bg-muted' : 'bg-muted/50'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    {/* Score indicator */}
+                    <div 
+                      className={`absolute top-0 bottom-0 w-1 ${
+                        data.long >= 0 ? 'bg-blue-500' : 'bg-red-500'
+                      } transition-all duration-300`}
+                      style={{ 
+                        left: `${Math.max(0, Math.min(100, (data.long + 100) / 2))}%`,
+                        transform: 'translateX(-50%)'
+                      }}
                     />
-                    <div className="absolute inset-0 flex items-center justify-between px-1 text-xs text-muted-foreground">
-                      <span>Sell</span>
-                      <span>Buy</span>
+                    {/* Center line */}
+                    <div className="absolute top-0 bottom-0 w-0.5 bg-foreground left-1/2 transform -translate-x-1/2" />
+                    {/* Labels */}
+                    <div className="absolute inset-0 flex items-center justify-between px-2 text-xs font-medium">
+                      <span className="text-red-500">-100</span>
+                      <span className="text-muted-foreground">0</span>
+                      <span className="text-blue-500">+100</span>
                     </div>
                   </div>
                 </div>
