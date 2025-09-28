@@ -28,12 +28,11 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Remove automatic fetch on open
-  // useEffect(() => {
-  //   if (isOpen && assetId !== undefined) {
-  //     fetchAnalysis();
-  //   }
-  // }, [isOpen, assetId]);
+  useEffect(() => {
+    if (isOpen && assetId !== undefined) {
+      fetchAnalysis();
+    }
+  }, [isOpen, assetId]);
 
   const fetchAnalysis = async () => {
     setLoading(true);
@@ -95,14 +94,7 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
         </DialogHeader>
         
         <div className="space-y-4">
-          {!data && !loading ? (
-            <div className="text-center py-8">
-              <Button onClick={fetchAnalysis} className="flex items-center gap-2">
-                <Brain className="w-4 h-4" />
-                Get AI Analysis
-              </Button>
-            </div>
-          ) : loading ? (
+          {loading ? (
             <div className="space-y-3">
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-3/4" />
