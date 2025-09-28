@@ -122,7 +122,6 @@ export const CustomWalletButton = ({ isDarkMode }: CustomWalletButtonProps) => {
                             </div>
                             <div>
                               <p className="font-medium text-foreground">{account.displayName}</p>
-                              <p className="text-sm text-muted-foreground">{parseFloat(tokenBalance).toFixed(2)} PHRS</p>
                               <p className="text-xs text-muted-foreground">${usdBalance} USD</p>
                             </div>
                           </div>
