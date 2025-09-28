@@ -367,7 +367,20 @@ export const usePositions = () => {
     };
 
     fetchOrders();
-  }, [orderIds, address]);
+  }, [orderIds, address, wsData]);
+
+  // Update orders live from WebSocket
+  useEffect(() => {
+    if (!wsData) return;
+    setOpenOrders((prev) => {
+      if (!prev || prev.length === 0) return prev;
+      return prev.map((order) => {
+        const symbol = idToPair.get(order.assetIndex) || `ASSET_${order.assetIndex}`;
+        const currentPrice = lastPrices[order.assetIndex] || 0;
+        return { ...order, symbol, currentPrice };
+      });
+    });
+  }, [wsData]);
 
   // Process closed positions
   useEffect(() => {
@@ -399,7 +412,19 @@ export const usePositions = () => {
     });
 
     setClosedPositions(processedClosed);
-  }, [closedData]);
+  }, [closedData, wsData]);
+
+  // Update closed positions live from WebSocket
+  useEffect(() => {
+    if (!wsData) return;
+    setClosedPositions((prev) => {
+      if (!prev || prev.length === 0) return prev;
+      return prev.map((position) => {
+        const symbol = idToPair.get(position.assetIndex) || `ASSET_${position.assetIndex}`;
+        return { ...position, symbol };
+      });
+    });
+  }, [wsData]);
 
   const closePosition = async (openId: bigint) => {
     try {
