@@ -140,12 +140,14 @@ const Index = () => {
           onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
         />
         
-        <div className="flex flex-1 overflow-hidden">
-          <StockList 
-            selectedStock={selectedStock}
-            onSelectStock={handleStockSelect}
-            onStockDataChange={handleStockDataChange}
-          />
+        <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+          <div className="hidden md:block">
+            <StockList 
+              selectedStock={selectedStock}
+              onSelectStock={handleStockSelect}
+              onStockDataChange={handleStockDataChange}
+            />
+          </div>
           <TradingInterface 
             symbol={currentStockData.symbol}
             price={currentStockData.price}
