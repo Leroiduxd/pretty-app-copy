@@ -93,7 +93,7 @@ export const PositionsPanel = ({ isOpen, onClose }: PositionsPanelProps) => {
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
-      <div className="fixed right-0 top-0 h-full w-full md:w-[600px] bg-background border-l border-border shadow-xl flex flex-col">
+      <div className="fixed right-0 top-0 h-full w-[600px] bg-background border-l border-border shadow-xl flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-3">
             <h2 className="text-lg font-semibold text-foreground">Trading Dashboard</h2>
