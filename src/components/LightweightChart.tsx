@@ -189,7 +189,7 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
         
         const priceLine = seriesRef.current.createPriceLine({
           price: position.openPrice,
-          color: position.isLong ? '#26a69a' : '#ef5350',
+          color: position.isLong ? '#3b82f6' : '#ef5350',
           lineWidth: 2,
           lineStyle: 2, // Dashed
           axisLabelVisible: true,
