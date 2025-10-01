@@ -40,6 +40,27 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
       const borderColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.25)';
       const textColor = isDark ? '#ffffff' : '#374151';
 
+      // Calculate price range to determine optimal grid spacing
+      let priceRange = 1;
+      if (data.length > 0) {
+        const prices = data.flatMap(d => [d.high, d.low]);
+        const maxPrice = Math.max(...prices);
+        const minPrice = Math.min(...prices);
+        priceRange = maxPrice - minPrice;
+      }
+
+      // Determine tick size based on price variation
+      let minMove = 0.01; // Default
+      if (priceRange < 0.01) {
+        minMove = 0.001; // Very small variation (forex pairs)
+      } else if (priceRange < 0.1) {
+        minMove = 0.01; // Small variation
+      } else if (priceRange < 1) {
+        minMove = 0.1; // Medium variation
+      } else {
+        minMove = 1; // Large variation
+      }
+
       // Create chart with proper configuration - based on working repo
       const chart = createChart(chartContainerRef.current, {
         layout: {
@@ -54,6 +75,15 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
           borderColor: borderColor,
           textColor: textColor,
           visible: true,
+          minimumWidth: 80,
+          autoScale: true,
+          ticksVisible: true,
+          mode: 0, // Normal price scale
+          alignLabels: true,
+          scaleMargins: {
+            top: 0.1,
+            bottom: 0.1,
+          },
         },
         timeScale: {
           borderColor: borderColor,
@@ -89,6 +119,7 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
           priceFormat: {
             type: 'custom',
             formatter: (price: number) => formatPrice(price),
+            minMove: minMove,
           },
         });
       } else {
@@ -102,6 +133,7 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
           priceFormat: {
             type: 'custom',
             formatter: (price: number) => formatPrice(price),
+            minMove: minMove,
           },
         });
       }
@@ -125,7 +157,7 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
         seriesRef.current = null;
       }
     };
-  }, [width, height, chartType]);
+  }, [width, height, chartType, data]);
 
   useEffect(() => {
     if (seriesRef.current && data.length > 0) {
