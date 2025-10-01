@@ -9,17 +9,28 @@ interface ChartData {
   close: number;
 }
 
+interface Position {
+  id: string;
+  openPrice: number;
+  isLong: boolean;
+  size: number;
+  pnl: number;
+}
+
 interface LightweightChartProps {
   data: ChartData[];
   width?: number;
   height?: number;
   chartType?: string;
+  positions?: Position[];
+  currentPrice?: number;
 }
 
-export const LightweightChart = ({ data, width, height, chartType = "candlesticks" }: LightweightChartProps) => {
+export const LightweightChart = ({ data, width, height, chartType = "candlesticks", positions = [], currentPrice }: LightweightChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const seriesRef = useRef<any>(null);
+  const priceLinesRef = useRef<any[]>([]);
 
   // Format prices based on number of digits before decimal
   const formatPrice = (value: number) => {
@@ -155,6 +166,42 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
       }
     }
   }, [data, chartType]);
+
+  // Add price lines for open positions
+  useEffect(() => {
+    if (!seriesRef.current || !positions || positions.length === 0) return;
+
+    // Remove existing price lines
+    priceLinesRef.current.forEach(line => {
+      try {
+        seriesRef.current.removePriceLine(line);
+      } catch (e) {
+        console.warn('Error removing price line:', e);
+      }
+    });
+    priceLinesRef.current = [];
+
+    // Add new price lines for each position
+    positions.forEach(position => {
+      try {
+        const pnlText = position.pnl >= 0 ? `+$${formatPrice(position.pnl)}` : `-$${formatPrice(Math.abs(position.pnl))}`;
+        const positionType = position.isLong ? 'LONG' : 'SHORT';
+        
+        const priceLine = seriesRef.current.createPriceLine({
+          price: position.openPrice,
+          color: position.isLong ? '#26a69a' : '#ef5350',
+          lineWidth: 2,
+          lineStyle: 2, // Dashed
+          axisLabelVisible: true,
+          title: `${positionType} ${pnlText}`,
+        });
+
+        priceLinesRef.current.push(priceLine);
+      } catch (error) {
+        console.error('Error creating price line:', error);
+      }
+    });
+  }, [positions, currentPrice]);
 
   return (
     <div className="w-full h-full relative">

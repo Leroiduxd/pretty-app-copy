@@ -10,6 +10,7 @@ import { LightweightChart } from "./LightweightChart";
 import { useChartData } from "@/hooks/useChartData";
 import { TradingPanel } from "./TradingPanel";
 import { FloatingTradingPanel } from "./FloatingTradingPanel";
+import { usePositions } from "@/hooks/usePositions";
 
 interface TradingInterfaceProps {
   symbol: string;
@@ -39,6 +40,18 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
   
   const { usdBalance } = useTokenBalance();
   const fullscreenRef = useRef<HTMLDivElement>(null);
+  const { openPositions } = usePositions();
+  
+  // Filter positions for current asset
+  const currentAssetPositions = openPositions.filter(
+    pos => pos.assetIndex === parseInt(pairId || "0")
+  ).map(pos => ({
+    id: pos.id.toString(),
+    openPrice: pos.openPrice,
+    isLong: pos.isLong,
+    size: pos.sizeUsd,
+    pnl: pos.pnl,
+  }));
   
   // Mapping timeframes to intervals in seconds
   const getTimeframeInterval = (timeframe: string) => {
@@ -217,6 +230,8 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
                 width={undefined} 
                 height={undefined}
                 chartType={chartType}
+                positions={currentAssetPositions}
+                currentPrice={price}
               />
             ) : (
               <div className="flex items-center justify-center h-full">
