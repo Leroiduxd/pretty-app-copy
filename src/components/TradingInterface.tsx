@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChart, TrendingUp, Plus } from "lucide-react";
-import { useState } from "react";
+import { BarChart, TrendingUp, Plus, Maximize2 } from "lucide-react";
+import { useState, useRef } from "react";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
 import { LightweightChart } from "./LightweightChart";
 import { useChartData } from "@/hooks/useChartData";
 import { TradingPanel } from "./TradingPanel";
+import { FloatingTradingPanel } from "./FloatingTradingPanel";
 
 interface TradingInterfaceProps {
   symbol: string;
@@ -31,8 +32,10 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
   const [showStopLoss, setShowStopLoss] = useState(false);
   const [showTakeProfit, setShowTakeProfit] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState("5M");
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   const { usdBalance } = useTokenBalance();
+  const fullscreenRef = useRef<HTMLDivElement>(null);
   
   // Mapping timeframes to intervals in seconds
   const getTimeframeInterval = (timeframe: string) => {
@@ -85,8 +88,35 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
     "Weighted Close"
   ];
 
+  const handleFullscreen = async () => {
+    if (!fullscreenRef.current) return;
+    
+    try {
+      if (!document.fullscreenElement) {
+        await fullscreenRef.current.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch (error) {
+      console.error('Fullscreen error:', error);
+    }
+  };
+
+  const handleExitFullscreen = async () => {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      }
+      setIsFullscreen(false);
+    } catch (error) {
+      console.error('Exit fullscreen error:', error);
+    }
+  };
+
   return (
-    <div className="flex-1 flex overflow-hidden">
+    <div className="flex-1 flex overflow-hidden" ref={fullscreenRef}>
       {/* Chart Section */}
       <div className="flex-1 p-4">
         <Card className="h-full bg-card border-border flex flex-col">
@@ -132,6 +162,16 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
                     ))}
                   </SelectContent>
                 </Select>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleFullscreen}
+                  className="h-8 px-2"
+                  title="Fullscreen"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </Button>
               </div>
             </div>
             
@@ -180,11 +220,22 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
         </Card>
       </div>
 
-      <TradingPanel 
-        symbol={symbol}
-        price={price}
-        assetId={parseInt(pairId || "0")}
-      />
+      {!isFullscreen && (
+        <TradingPanel 
+          symbol={symbol}
+          price={price}
+          assetId={parseInt(pairId || "0")}
+        />
+      )}
+
+      {isFullscreen && (
+        <FloatingTradingPanel
+          symbol={symbol}
+          price={price}
+          assetId={parseInt(pairId || "0")}
+          onExitFullscreen={handleExitFullscreen}
+        />
+      )}
     </div>
   );
 };
