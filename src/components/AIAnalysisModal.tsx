@@ -124,7 +124,7 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
-        <DialogHeader>
+        <DialogHeader className="border-b pb-3">
           <DialogTitle className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5" />
             AI Analysis - {symbol}
@@ -155,8 +155,6 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
             <>
               {/* Score Analysis */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-sm">Trading Signals</h3>
-                
                 {/* Short Term */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
@@ -165,9 +163,9 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                       {data.short.toFixed(1)}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1 justify-center">
+                  <div className="flex items-center gap-0.5 w-full">
                     {/* Left side (Red/Bearish) - 10 blocks */}
-                    <div className="flex gap-1">
+                    <div className="flex gap-0.5 flex-1">
                       {Array.from({ length: 10 }, (_, i) => {
                         const blocks = getIntensityBlocks(data.short);
                         const leftBlocks = blocks.filter(b => b.side === 'left');
@@ -177,7 +175,7 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                         return (
                           <div
                             key={`left-${i}`}
-                            className={`w-3 h-6 rounded-sm border border-muted-foreground/30 transition-colors ${
+                            className={`flex-1 h-6 rounded border border-muted-foreground/30 transition-colors ${
                               block ? getBlockColor(block.intensity, 'left') : 'bg-muted'
                             }`}
                           />
@@ -186,10 +184,10 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                     </div>
                     
                     {/* Center divider */}
-                    <div className="w-0.5 h-6 bg-foreground mx-1" />
+                    <div className="w-0.5 h-6 bg-foreground mx-0.5" />
                     
                     {/* Right side (Blue/Bullish) - 10 blocks */}
-                    <div className="flex gap-1">
+                    <div className="flex gap-0.5 flex-1">
                       {Array.from({ length: 10 }, (_, i) => {
                         const blocks = getIntensityBlocks(data.short);
                         const rightBlocks = blocks.filter(b => b.side === 'right');
@@ -198,7 +196,7 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                         return (
                           <div
                             key={`right-${i}`}
-                            className={`w-3 h-6 rounded-sm border border-muted-foreground/30 transition-colors ${
+                            className={`flex-1 h-6 rounded border border-muted-foreground/30 transition-colors ${
                               block ? getBlockColor(block.intensity, 'right') : 'bg-muted'
                             }`}
                           />
@@ -216,9 +214,9 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                       {data.mid.toFixed(1)}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1 justify-center">
+                  <div className="flex items-center gap-0.5 w-full">
                     {/* Left side (Red/Bearish) - 10 blocks */}
-                    <div className="flex gap-1">
+                    <div className="flex gap-0.5 flex-1">
                       {Array.from({ length: 10 }, (_, i) => {
                         const blocks = getIntensityBlocks(data.mid);
                         const leftBlocks = blocks.filter(b => b.side === 'left');
@@ -228,7 +226,7 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                         return (
                           <div
                             key={`left-${i}`}
-                            className={`w-3 h-6 rounded-sm border border-muted-foreground/30 transition-colors ${
+                            className={`flex-1 h-6 rounded border border-muted-foreground/30 transition-colors ${
                               block ? getBlockColor(block.intensity, 'left') : 'bg-muted'
                             }`}
                           />
@@ -237,10 +235,10 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                     </div>
                     
                     {/* Center divider */}
-                    <div className="w-0.5 h-6 bg-foreground mx-1" />
+                    <div className="w-0.5 h-6 bg-foreground mx-0.5" />
                     
                     {/* Right side (Blue/Bullish) - 10 blocks */}
-                    <div className="flex gap-1">
+                    <div className="flex gap-0.5 flex-1">
                       {Array.from({ length: 10 }, (_, i) => {
                         const blocks = getIntensityBlocks(data.mid);
                         const rightBlocks = blocks.filter(b => b.side === 'right');
@@ -249,7 +247,7 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                         return (
                           <div
                             key={`right-${i}`}
-                            className={`w-3 h-6 rounded-sm border border-muted-foreground/30 transition-colors ${
+                            className={`flex-1 h-6 rounded border border-muted-foreground/30 transition-colors ${
                               block ? getBlockColor(block.intensity, 'right') : 'bg-muted'
                             }`}
                           />
@@ -267,9 +265,9 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                       {data.long.toFixed(1)}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1 justify-center">
+                  <div className="flex items-center gap-0.5 w-full">
                     {/* Left side (Red/Bearish) - 10 blocks */}
-                    <div className="flex gap-1">
+                    <div className="flex gap-0.5 flex-1">
                       {Array.from({ length: 10 }, (_, i) => {
                         const blocks = getIntensityBlocks(data.long);
                         const leftBlocks = blocks.filter(b => b.side === 'left');
@@ -279,7 +277,7 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                         return (
                           <div
                             key={`left-${i}`}
-                            className={`w-3 h-6 rounded-sm border border-muted-foreground/30 transition-colors ${
+                            className={`flex-1 h-6 rounded border border-muted-foreground/30 transition-colors ${
                               block ? getBlockColor(block.intensity, 'left') : 'bg-muted'
                             }`}
                           />
@@ -288,10 +286,10 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                     </div>
                     
                     {/* Center divider */}
-                    <div className="w-0.5 h-6 bg-foreground mx-1" />
+                    <div className="w-0.5 h-6 bg-foreground mx-0.5" />
                     
                     {/* Right side (Blue/Bullish) - 10 blocks */}
-                    <div className="flex gap-1">
+                    <div className="flex gap-0.5 flex-1">
                       {Array.from({ length: 10 }, (_, i) => {
                         const blocks = getIntensityBlocks(data.long);
                         const rightBlocks = blocks.filter(b => b.side === 'right');
@@ -300,7 +298,7 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                         return (
                           <div
                             key={`right-${i}`}
-                            className={`w-3 h-6 rounded-sm border border-muted-foreground/30 transition-colors ${
+                            className={`flex-1 h-6 rounded border border-muted-foreground/30 transition-colors ${
                               block ? getBlockColor(block.intensity, 'right') : 'bg-muted'
                             }`}
                           />
@@ -336,9 +334,12 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
               </div>
 
               {/* Last Updated */}
-              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2 border-t">
-                <Clock className="w-3 h-3" />
-                <span>Updated: {formatDate(data.t)}</span>
+              <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-3 h-3" />
+                  <span>Updated:</span>
+                </div>
+                <span>{formatDate(data.t)}</span>
               </div>
             </>
           ) : null}
