@@ -20,6 +20,8 @@ interface FloatingTradingPanelProps {
   price: number;
   assetId: number;
   onExitFullscreen: () => void;
+  leverage: string;
+  onLeverageChange: (leverage: string) => void;
 }
 
 const CORE_CONTRACT_ADDRESS = '0x34f89ca5a1c6dc4eb67dfe0af5b621185df32854' as const;
@@ -46,14 +48,14 @@ const CORE_CONTRACT_ABI = [
    "stateMutability":"nonpayable","type":"function"}
 ] as const;
 
-export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen }: FloatingTradingPanelProps) => {
+export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen, leverage: externalLeverage, onLeverageChange }: FloatingTradingPanelProps) => {
   const [position, setPosition] = useState({ x: 20, y: 20 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isMinimized, setIsMinimized] = useState(false);
   const [orderSize, setOrderSize] = useState("10");
-  const [leverage, setLeverage] = useState("1");
   const [limitPrice, setLimitPrice] = useState("");
+  const [showPositions, setShowPositions] = useState(false);
   const [stopLoss, setStopLoss] = useState("");
   const [takeProfit, setTakeProfit] = useState("");
   const [orderType, setOrderType] = useState<"market" | "limit">("market");
@@ -143,7 +145,7 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen 
     setIsLoading(true);
     try {
       const sizeUsd = Math.floor(parseFloat(orderSize) * 1000000);
-      const lev = parseInt(leverage);
+      const lev = parseInt(externalLeverage);
       const slPrice = stopLoss ? parseUnits(stopLoss, 18) : 0n;
       const tpPrice = takeProfit ? parseUnits(takeProfit, 18) : 0n;
       const isLong = orderSide === "long";
@@ -231,11 +233,11 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen 
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger className="no-drag flex items-center gap-1 text-sm font-semibold hover:text-primary">
-              {leverage}x <ChevronDown className="w-3 h-3" />
+              {externalLeverage}x <ChevronDown className="w-3 h-3" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-popover border-border z-[10000]">
               {leverageOptions.map((lev) => (
-                <DropdownMenuItem key={lev} onClick={() => setLeverage(lev)}>
+                <DropdownMenuItem key={lev} onClick={() => onLeverageChange(lev)}>
                   {lev}x
                 </DropdownMenuItem>
               ))}
@@ -265,23 +267,37 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen 
       {/* Content */}
       {!isMinimized && (
         <div className="p-3 space-y-3 no-drag">
-          {/* Market/Limit Toggle */}
-          <div className="flex gap-2">
+          {/* Market/Limit Toggle + Positions Button */}
+          <div className="flex gap-2 items-center">
+            <div className="flex-1 flex bg-muted rounded-md p-0.5">
+              <button
+                onClick={() => setOrderType("market")}
+                className={`flex-1 h-7 text-xs rounded transition-colors ${
+                  orderType === "market" 
+                    ? "bg-primary text-primary-foreground font-medium" 
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Market
+              </button>
+              <button
+                onClick={() => setOrderType("limit")}
+                className={`flex-1 h-7 text-xs rounded transition-colors ${
+                  orderType === "limit" 
+                    ? "bg-primary text-primary-foreground font-medium" 
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Limit
+              </button>
+            </div>
             <Button
-              variant={orderType === "market" ? "default" : "outline"}
+              variant="outline"
               size="sm"
-              onClick={() => setOrderType("market")}
-              className="flex-1 h-8 text-xs"
+              onClick={() => setShowPositions(!showPositions)}
+              className="h-7 text-xs whitespace-nowrap"
             >
-              Market
-            </Button>
-            <Button
-              variant={orderType === "limit" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setOrderType("limit")}
-              className="flex-1 h-8 text-xs"
-            >
-              Limit
+              Positions
             </Button>
           </div>
 

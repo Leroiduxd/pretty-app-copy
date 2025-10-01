@@ -206,6 +206,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
               </div>
             ) : chartData.length > 0 ? (
               <LightweightChart 
+                key={isFullscreen ? 'fullscreen' : 'normal'}
                 data={chartData} 
                 width={undefined} 
                 height={undefined}
@@ -234,6 +235,8 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
           price={price}
           assetId={parseInt(pairId || "0")}
           onExitFullscreen={handleExitFullscreen}
+          leverage={leverage}
+          onLeverageChange={setLeverage}
         />
       )}
     </div>
