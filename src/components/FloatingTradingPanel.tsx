@@ -22,6 +22,8 @@ interface FloatingTradingPanelProps {
   onExitFullscreen: () => void;
   leverage: string;
   onLeverageChange: (leverage: string) => void;
+  availableStocks?: any[];
+  onSelectStock?: (symbol: string, pairId: string) => void;
 }
 
 const CORE_CONTRACT_ADDRESS = '0x34f89ca5a1c6dc4eb67dfe0af5b621185df32854' as const;
@@ -48,7 +50,7 @@ const CORE_CONTRACT_ABI = [
    "stateMutability":"nonpayable","type":"function"}
 ] as const;
 
-export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen, leverage: externalLeverage, onLeverageChange }: FloatingTradingPanelProps) => {
+export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen, leverage: externalLeverage, onLeverageChange, availableStocks = [], onSelectStock }: FloatingTradingPanelProps) => {
   const [position, setPosition] = useState({ x: 20, y: 20 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -224,8 +226,19 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
             <DropdownMenuTrigger className="no-drag flex items-center gap-1 text-sm font-semibold hover:text-primary">
               {symbol} <ChevronDown className="w-3 h-3" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-popover border-border z-[10000]">
-              <DropdownMenuItem>Change pair (coming soon)</DropdownMenuItem>
+            <DropdownMenuContent className="bg-popover border-border z-[10000] max-h-60 overflow-y-auto">
+              {availableStocks.length > 0 ? (
+                availableStocks.map((stock: any) => (
+                  <DropdownMenuItem 
+                    key={stock.symbol}
+                    onClick={() => onSelectStock?.(stock.symbol, stock.pairId)}
+                  >
+                    {stock.symbol}
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                <DropdownMenuItem disabled>Loading assets...</DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

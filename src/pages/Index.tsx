@@ -16,6 +16,17 @@ const Index = () => {
   const [storedStockData, setStoredStockData] = useState<any>(null);
   const { data: wsData, isConnected } = useWebSocket("wss://wss.brokex.trade:8443");
   
+  // Get available stocks from WebSocket
+  const availableStocks = Object.entries(wsData || {}).map(([pairKey, payload]) => {
+    const item = payload?.instruments?.[0];
+    if (!item) return null;
+    return {
+      symbol: item.tradingPair.toUpperCase(),
+      pairId: String(payload.id),
+      price: parseFloat(item.currentPrice)
+    };
+  }).filter(Boolean);
+
   // Get current stock data from WebSocket
   const currentStock = Object.entries(wsData || {}).find(([pairKey, payload]) => {
     const item = payload?.instruments?.[0];
@@ -154,6 +165,8 @@ const Index = () => {
             high24h={currentStockData.high24h}
             low24h={currentStockData.low24h}
             pairId={selectedPairId}
+            availableStocks={availableStocks}
+            onSelectStock={handleStockSelect}
           />
         </div>
 

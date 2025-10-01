@@ -19,9 +19,11 @@ interface TradingInterfaceProps {
   high24h?: number;
   low24h?: number;
   pairId?: string;
+  availableStocks?: any[];
+  onSelectStock?: (symbol: string, pairId: string) => void;
 }
 
-export const TradingInterface = ({ symbol, price, change, changePercent, high24h, low24h, pairId }: TradingInterfaceProps) => {
+export const TradingInterface = ({ symbol, price, change, changePercent, high24h, low24h, pairId, availableStocks = [], onSelectStock }: TradingInterfaceProps) => {
   const [orderSize, setOrderSize] = useState("10");
   const [leverage, setLeverage] = useState("1");
   const [leverageInput, setLeverageInput] = useState("1");
@@ -33,6 +35,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
   const [showTakeProfit, setShowTakeProfit] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState("5M");
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [chartKey, setChartKey] = useState(0);
   
   const { usdBalance } = useTokenBalance();
   const fullscreenRef = useRef<HTMLDivElement>(null);
@@ -95,9 +98,11 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
       if (!document.fullscreenElement) {
         await fullscreenRef.current.requestFullscreen();
         setIsFullscreen(true);
+        setChartKey(prev => prev + 1); // Force chart reload
       } else {
         await document.exitFullscreen();
         setIsFullscreen(false);
+        setChartKey(prev => prev + 1); // Force chart reload
       }
     } catch (error) {
       console.error('Fullscreen error:', error);
@@ -110,6 +115,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
         await document.exitFullscreen();
       }
       setIsFullscreen(false);
+      setChartKey(prev => prev + 1); // Force chart reload
     } catch (error) {
       console.error('Exit fullscreen error:', error);
     }
@@ -206,7 +212,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
               </div>
             ) : chartData.length > 0 ? (
               <LightweightChart 
-                key={isFullscreen ? 'fullscreen' : 'normal'}
+                key={`chart-${chartKey}`}
                 data={chartData} 
                 width={undefined} 
                 height={undefined}
@@ -237,6 +243,8 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
           onExitFullscreen={handleExitFullscreen}
           leverage={leverage}
           onLeverageChange={setLeverage}
+          availableStocks={availableStocks}
+          onSelectStock={onSelectStock}
         />
       )}
     </div>
