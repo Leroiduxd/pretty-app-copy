@@ -83,6 +83,44 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
     return new Date(timestamp).toLocaleString();
   };
 
+  // Calculate intensity blocks for the AI bar
+  const getIntensityBlocks = (score: number) => {
+    const absScore = Math.abs(score);
+    const isPositive = score >= 0;
+    const fullBlocks = Math.floor(absScore / 10); // Nombre de blocs à 100%
+    const remainder = absScore % 10; // Le reste pour le dernier bloc
+    
+    const blocks = [];
+    
+    // Add full intensity blocks
+    for (let i = 0; i < fullBlocks && i < 10; i++) {
+      blocks.push({ intensity: 'full', side: isPositive ? 'right' : 'left' });
+    }
+    
+    // Add partial block if there's a remainder
+    if (remainder > 0 && fullBlocks < 10) {
+      if (remainder >= 5) {
+        blocks.push({ intensity: 'medium', side: isPositive ? 'right' : 'left' });
+      } else {
+        blocks.push({ intensity: 'light', side: isPositive ? 'right' : 'left' });
+      }
+    }
+    
+    return blocks;
+  };
+
+  const getBlockColor = (intensity: string, side: string) => {
+    const isBlue = side === 'right';
+    
+    if (intensity === 'full') {
+      return isBlue ? 'bg-blue-600' : 'bg-red-600';
+    } else if (intensity === 'medium') {
+      return isBlue ? 'bg-blue-400' : 'bg-red-400';
+    } else {
+      return isBlue ? 'bg-blue-300' : 'bg-red-300';
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
@@ -127,35 +165,45 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                       {data.short.toFixed(1)}
                     </span>
                   </div>
-                  <div className="relative border-2 border-muted-foreground rounded-sm h-6 bg-muted overflow-hidden">
-                    {/* Background segments for vintage look */}
-                    <div className="absolute inset-0 flex">
-                      {Array.from({ length: 20 }, (_, i) => (
-                        <div
-                          key={i}
-                          className={`flex-1 border-r border-muted-foreground/30 ${
-                            i % 2 === 0 ? 'bg-muted' : 'bg-muted/50'
-                          }`}
-                        />
-                      ))}
+                  <div className="flex items-center gap-1 justify-center">
+                    {/* Left side (Red/Bearish) - 10 blocks */}
+                    <div className="flex gap-1">
+                      {Array.from({ length: 10 }, (_, i) => {
+                        const blocks = getIntensityBlocks(data.short);
+                        const leftBlocks = blocks.filter(b => b.side === 'left');
+                        const blockIndex = 9 - i; // Reverse order for left side
+                        const block = leftBlocks[blockIndex];
+                        
+                        return (
+                          <div
+                            key={`left-${i}`}
+                            className={`w-3 h-6 rounded-sm border border-muted-foreground/30 transition-colors ${
+                              block ? getBlockColor(block.intensity, 'left') : 'bg-muted'
+                            }`}
+                          />
+                        );
+                      })}
                     </div>
-                    {/* Score indicator */}
-                    <div 
-                      className={`absolute top-0 bottom-0 w-1 ${
-                        data.short >= 0 ? 'bg-blue-500' : 'bg-red-500'
-                      } transition-all duration-300`}
-                      style={{ 
-                        left: `${Math.max(0, Math.min(100, (data.short + 100) / 2))}%`,
-                        transform: 'translateX(-50%)'
-                      }}
-                    />
-                    {/* Center line */}
-                    <div className="absolute top-0 bottom-0 w-0.5 bg-foreground left-1/2 transform -translate-x-1/2" />
-                    {/* Labels */}
-                    <div className="absolute inset-0 flex items-center justify-between px-2 text-xs font-medium">
-                      <span className="text-red-500">-100</span>
-                      <span className="text-muted-foreground">0</span>
-                      <span className="text-blue-500">+100</span>
+                    
+                    {/* Center divider */}
+                    <div className="w-0.5 h-6 bg-foreground mx-1" />
+                    
+                    {/* Right side (Blue/Bullish) - 10 blocks */}
+                    <div className="flex gap-1">
+                      {Array.from({ length: 10 }, (_, i) => {
+                        const blocks = getIntensityBlocks(data.short);
+                        const rightBlocks = blocks.filter(b => b.side === 'right');
+                        const block = rightBlocks[i];
+                        
+                        return (
+                          <div
+                            key={`right-${i}`}
+                            className={`w-3 h-6 rounded-sm border border-muted-foreground/30 transition-colors ${
+                              block ? getBlockColor(block.intensity, 'right') : 'bg-muted'
+                            }`}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -168,35 +216,45 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                       {data.mid.toFixed(1)}
                     </span>
                   </div>
-                  <div className="relative border-2 border-muted-foreground rounded-sm h-6 bg-muted overflow-hidden">
-                    {/* Background segments for vintage look */}
-                    <div className="absolute inset-0 flex">
-                      {Array.from({ length: 20 }, (_, i) => (
-                        <div
-                          key={i}
-                          className={`flex-1 border-r border-muted-foreground/30 ${
-                            i % 2 === 0 ? 'bg-muted' : 'bg-muted/50'
-                          }`}
-                        />
-                      ))}
+                  <div className="flex items-center gap-1 justify-center">
+                    {/* Left side (Red/Bearish) - 10 blocks */}
+                    <div className="flex gap-1">
+                      {Array.from({ length: 10 }, (_, i) => {
+                        const blocks = getIntensityBlocks(data.mid);
+                        const leftBlocks = blocks.filter(b => b.side === 'left');
+                        const blockIndex = 9 - i; // Reverse order for left side
+                        const block = leftBlocks[blockIndex];
+                        
+                        return (
+                          <div
+                            key={`left-${i}`}
+                            className={`w-3 h-6 rounded-sm border border-muted-foreground/30 transition-colors ${
+                              block ? getBlockColor(block.intensity, 'left') : 'bg-muted'
+                            }`}
+                          />
+                        );
+                      })}
                     </div>
-                    {/* Score indicator */}
-                    <div 
-                      className={`absolute top-0 bottom-0 w-1 ${
-                        data.mid >= 0 ? 'bg-blue-500' : 'bg-red-500'
-                      } transition-all duration-300`}
-                      style={{ 
-                        left: `${Math.max(0, Math.min(100, (data.mid + 100) / 2))}%`,
-                        transform: 'translateX(-50%)'
-                      }}
-                    />
-                    {/* Center line */}
-                    <div className="absolute top-0 bottom-0 w-0.5 bg-foreground left-1/2 transform -translate-x-1/2" />
-                    {/* Labels */}
-                    <div className="absolute inset-0 flex items-center justify-between px-2 text-xs font-medium">
-                      <span className="text-red-500">-100</span>
-                      <span className="text-muted-foreground">0</span>
-                      <span className="text-blue-500">+100</span>
+                    
+                    {/* Center divider */}
+                    <div className="w-0.5 h-6 bg-foreground mx-1" />
+                    
+                    {/* Right side (Blue/Bullish) - 10 blocks */}
+                    <div className="flex gap-1">
+                      {Array.from({ length: 10 }, (_, i) => {
+                        const blocks = getIntensityBlocks(data.mid);
+                        const rightBlocks = blocks.filter(b => b.side === 'right');
+                        const block = rightBlocks[i];
+                        
+                        return (
+                          <div
+                            key={`right-${i}`}
+                            className={`w-3 h-6 rounded-sm border border-muted-foreground/30 transition-colors ${
+                              block ? getBlockColor(block.intensity, 'right') : 'bg-muted'
+                            }`}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -209,35 +267,45 @@ export const AIAnalysisModal = ({ isOpen, onClose, assetId, symbol }: AIAnalysis
                       {data.long.toFixed(1)}
                     </span>
                   </div>
-                  <div className="relative border-2 border-muted-foreground rounded-sm h-6 bg-muted overflow-hidden">
-                    {/* Background segments for vintage look */}
-                    <div className="absolute inset-0 flex">
-                      {Array.from({ length: 20 }, (_, i) => (
-                        <div
-                          key={i}
-                          className={`flex-1 border-r border-muted-foreground/30 ${
-                            i % 2 === 0 ? 'bg-muted' : 'bg-muted/50'
-                          }`}
-                        />
-                      ))}
+                  <div className="flex items-center gap-1 justify-center">
+                    {/* Left side (Red/Bearish) - 10 blocks */}
+                    <div className="flex gap-1">
+                      {Array.from({ length: 10 }, (_, i) => {
+                        const blocks = getIntensityBlocks(data.long);
+                        const leftBlocks = blocks.filter(b => b.side === 'left');
+                        const blockIndex = 9 - i; // Reverse order for left side
+                        const block = leftBlocks[blockIndex];
+                        
+                        return (
+                          <div
+                            key={`left-${i}`}
+                            className={`w-3 h-6 rounded-sm border border-muted-foreground/30 transition-colors ${
+                              block ? getBlockColor(block.intensity, 'left') : 'bg-muted'
+                            }`}
+                          />
+                        );
+                      })}
                     </div>
-                    {/* Score indicator */}
-                    <div 
-                      className={`absolute top-0 bottom-0 w-1 ${
-                        data.long >= 0 ? 'bg-blue-500' : 'bg-red-500'
-                      } transition-all duration-300`}
-                      style={{ 
-                        left: `${Math.max(0, Math.min(100, (data.long + 100) / 2))}%`,
-                        transform: 'translateX(-50%)'
-                      }}
-                    />
-                    {/* Center line */}
-                    <div className="absolute top-0 bottom-0 w-0.5 bg-foreground left-1/2 transform -translate-x-1/2" />
-                    {/* Labels */}
-                    <div className="absolute inset-0 flex items-center justify-between px-2 text-xs font-medium">
-                      <span className="text-red-500">-100</span>
-                      <span className="text-muted-foreground">0</span>
-                      <span className="text-blue-500">+100</span>
+                    
+                    {/* Center divider */}
+                    <div className="w-0.5 h-6 bg-foreground mx-1" />
+                    
+                    {/* Right side (Blue/Bullish) - 10 blocks */}
+                    <div className="flex gap-1">
+                      {Array.from({ length: 10 }, (_, i) => {
+                        const blocks = getIntensityBlocks(data.long);
+                        const rightBlocks = blocks.filter(b => b.side === 'right');
+                        const block = rightBlocks[i];
+                        
+                        return (
+                          <div
+                            key={`right-${i}`}
+                            className={`w-3 h-6 rounded-sm border border-muted-foreground/30 transition-colors ${
+                              block ? getBlockColor(block.intensity, 'right') : 'bg-muted'
+                            }`}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
