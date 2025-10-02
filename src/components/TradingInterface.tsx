@@ -22,10 +22,9 @@ interface TradingInterfaceProps {
   pairId?: string;
   availableStocks?: any[];
   onSelectStock?: (symbol: string, pairId: string) => void;
-  onOpenPositionsPanel?: () => void;
 }
 
-export const TradingInterface = ({ symbol, price, change, changePercent, high24h, low24h, pairId, availableStocks = [], onSelectStock, onOpenPositionsPanel }: TradingInterfaceProps) => {
+export const TradingInterface = ({ symbol, price, change, changePercent, high24h, low24h, pairId, availableStocks = [], onSelectStock }: TradingInterfaceProps) => {
   const [orderSize, setOrderSize] = useState("10");
   const [leverage, setLeverage] = useState("1");
   const [leverageInput, setLeverageInput] = useState("1");
@@ -233,7 +232,6 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
                 chartType={chartType}
                 positions={currentAssetPositions}
                 currentPrice={price}
-                onPositionClick={onOpenPositionsPanel}
               />
             ) : (
               <div className="flex items-center justify-center h-full">

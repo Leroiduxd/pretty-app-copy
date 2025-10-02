@@ -167,7 +167,6 @@ const Index = () => {
             pairId={selectedPairId}
             availableStocks={availableStocks}
             onSelectStock={handleStockSelect}
-            onOpenPositionsPanel={() => setShowPositions(true)}
           />
         </div>
 
