@@ -11,6 +11,7 @@ import { useChartData } from "@/hooks/useChartData";
 import { TradingPanel } from "./TradingPanel";
 import { FloatingTradingPanel } from "./FloatingTradingPanel";
 import { usePositions } from "@/hooks/usePositions";
+import { useSettings } from "@/hooks/useSettings";
 
 interface TradingInterfaceProps {
   symbol: string;
@@ -41,6 +42,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
   const { usdBalance } = useTokenBalance();
   const fullscreenRef = useRef<HTMLDivElement>(null);
   const { openPositions } = usePositions();
+  const { settings } = useSettings();
   
   // Filter positions for current asset
   const currentAssetPositions = openPositions.filter(
@@ -145,7 +147,10 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
                 <h2 className="text-xl font-bold text-foreground">{symbol}</h2>
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-bold text-foreground">${formatPrice(price)}</span>
-                  <span className={`text-sm ${change >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
+                  <span 
+                    className={`text-sm`}
+                    style={{ color: `hsl(${change >= 0 ? settings.successColor : settings.dangerColor})` }}
+                  >
                     {change >= 0 ? '+' : ''}{changePercent.toFixed(2)}%
                   </span>
                 </div>
@@ -201,9 +206,10 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
                     key={timeframe}
                     className={`cursor-pointer px-2 py-1 rounded ${
                       selectedTimeframe === timeframe
-                        ? 'bg-blue-600 text-white'
+                        ? 'text-white'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
+                    style={selectedTimeframe === timeframe ? { backgroundColor: `hsl(${settings.successColor})` } : {}}
                     onClick={() => setSelectedTimeframe(timeframe)}
                   >
                     {timeframe}
@@ -232,6 +238,9 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
                 chartType={chartType}
                 positions={currentAssetPositions}
                 currentPrice={price}
+                showPositions={settings.showPositionsOnChart}
+                successColor={settings.successColor}
+                dangerColor={settings.dangerColor}
               />
             ) : (
               <div className="flex items-center justify-center h-full">
