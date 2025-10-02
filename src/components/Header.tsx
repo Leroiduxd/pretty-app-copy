@@ -2,12 +2,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Moon, Sun, BarChart3, ChevronDown, Droplets, Bug, Trophy, Settings } from "lucide-react";
+import { Moon, Sun, BarChart3, ChevronDown, Droplets, Bug, Trophy } from "lucide-react";
 import { CustomWalletButton } from "./CustomWalletButton";
 import { ReportBugModal } from "./ReportBugModal";
 import { FaucetModal } from "./FaucetModal";
 import { CompetitionModal } from "./CompetitionModal";
-import { SettingsModal } from "./SettingsModal";
 
 interface HeaderProps {
   onTogglePositions: () => void;
@@ -20,8 +19,7 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
   const [faucetOpen, setFaucetOpen] = useState(false);
   const [reportBugOpen, setReportBugOpen] = useState(false);
   const [competitionOpen, setCompetitionOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [lastUsedTool, setLastUsedTool] = useState<'faucet' | 'bug' | 'competition' | 'settings'>('faucet');
+  const [lastUsedTool, setLastUsedTool] = useState<'faucet' | 'bug' | 'competition'>('faucet');
 
   const networks = [
     { value: "pharos", label: "Pharos Testnet", color: "text-blue-500" },
@@ -74,12 +72,6 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
                     Competition
                   </>
                 )}
-                {lastUsedTool === 'settings' && (
-                  <>
-                    <Settings className="h-4 w-4" />
-                    Settings
-                  </>
-                )}
                 <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
@@ -96,17 +88,12 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
                 <Trophy className="h-4 w-4 mr-2 text-blue-500" />
                 Competition
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => { setSettingsOpen(true); setLastUsedTool('settings'); }} className="cursor-pointer">
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
           <FaucetModal open={faucetOpen} onOpenChange={setFaucetOpen} />
           <ReportBugModal open={reportBugOpen} onOpenChange={setReportBugOpen} />
           <CompetitionModal open={competitionOpen} onOpenChange={setCompetitionOpen} />
-          <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
         </div>
 
         <div className="flex items-center gap-4">

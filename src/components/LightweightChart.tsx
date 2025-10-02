@@ -24,22 +24,9 @@ interface LightweightChartProps {
   chartType?: string;
   positions?: Position[];
   currentPrice?: number;
-  showPositions?: boolean;
-  successColor?: string;
-  dangerColor?: string;
 }
 
-export const LightweightChart = ({ 
-  data, 
-  width, 
-  height, 
-  chartType = "candlesticks", 
-  positions = [], 
-  currentPrice,
-  showPositions = true,
-  successColor = "210 100% 50%",
-  dangerColor = "0 84% 60%"
-}: LightweightChartProps) => {
+export const LightweightChart = ({ data, width, height, chartType = "candlesticks", positions = [], currentPrice }: LightweightChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const seriesRef = useRef<any>(null);
@@ -116,16 +103,13 @@ export const LightweightChart = ({
           },
         });
       } else {
-        const upColorHex = `hsl(${successColor})`;
-        const downColorHex = `hsl(${dangerColor})`;
-        
         series = chart.addSeries(CandlestickSeries, {
-          upColor: upColorHex,
-          downColor: downColorHex,
-          borderDownColor: downColorHex,
-          borderUpColor: upColorHex,
-          wickDownColor: downColorHex,
-          wickUpColor: upColorHex,
+          upColor: '#3b82f6',
+          downColor: '#ef4444',
+          borderDownColor: '#ef4444',
+          borderUpColor: '#3b82f6',
+          wickDownColor: '#ef4444',
+          wickUpColor: '#3b82f6',
           priceFormat: {
             type: 'custom',
             formatter: (price: number) => formatPrice(price),
@@ -185,7 +169,7 @@ export const LightweightChart = ({
 
   // Add price lines for open positions
   useEffect(() => {
-    if (!seriesRef.current || !showPositions || !positions || positions.length === 0) return;
+    if (!seriesRef.current || !positions || positions.length === 0) return;
 
     // Remove existing price lines
     priceLinesRef.current.forEach(line => {
@@ -203,11 +187,9 @@ export const LightweightChart = ({
         const pnlText = position.pnl >= 0 ? `+$${formatPrice(position.pnl)}` : `-$${formatPrice(Math.abs(position.pnl))}`;
         const positionType = position.isLong ? 'LONG' : 'SHORT';
         
-        const lineColor = position.isLong ? `hsl(${successColor})` : `hsl(${dangerColor})`;
-        
         const priceLine = seriesRef.current.createPriceLine({
           price: position.openPrice,
-          color: lineColor,
+          color: position.isLong ? '#3b82f6' : '#ef5350',
           lineWidth: 2,
           lineStyle: 2, // Dashed
           axisLabelVisible: true,
@@ -219,7 +201,7 @@ export const LightweightChart = ({
         console.error('Error creating price line:', error);
       }
     });
-  }, [positions, currentPrice, showPositions, successColor, dangerColor]);
+  }, [positions, currentPrice]);
 
   return (
     <div className="w-full h-full relative">
