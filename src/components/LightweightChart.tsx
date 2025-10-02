@@ -24,9 +24,10 @@ interface LightweightChartProps {
   chartType?: string;
   positions?: Position[];
   currentPrice?: number;
+  onPositionClick?: () => void;
 }
 
-export const LightweightChart = ({ data, width, height, chartType = "candlesticks", positions = [], currentPrice }: LightweightChartProps) => {
+export const LightweightChart = ({ data, width, height, chartType = "candlesticks", positions = [], currentPrice, onPositionClick }: LightweightChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const seriesRef = useRef<any>(null);
@@ -202,6 +203,24 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
       }
     });
   }, [positions, currentPrice]);
+
+  // Add click handler on the chart container
+  useEffect(() => {
+    if (!chartContainerRef.current || !onPositionClick || positions.length === 0) return;
+
+    const handleClick = () => {
+      if (onPositionClick) {
+        onPositionClick();
+      }
+    };
+
+    const container = chartContainerRef.current;
+    container.addEventListener('click', handleClick);
+
+    return () => {
+      container.removeEventListener('click', handleClick);
+    };
+  }, [onPositionClick, positions]);
 
   return (
     <div className="w-full h-full relative">
