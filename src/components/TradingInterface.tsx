@@ -148,8 +148,8 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
     <div className="flex-1 flex overflow-hidden" ref={fullscreenRef}>
       {/* Chart Section */}
       <div className="flex-1 p-4">
-        <Card className="h-full bg-background border-border flex flex-col">
-          <div className="p-4 border-b border-border">
+        <Card className="h-full bg-background border-border flex flex-col rounded-b-lg overflow-hidden">
+          <div className="p-4 border-b border-border bg-card">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <h2 className="text-xl font-bold text-foreground">{symbol}</h2>
@@ -227,7 +227,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
             </div>
           </div>
           
-          <div className="flex-1 relative overflow-hidden">
+          <div className="flex-1 relative overflow-hidden rounded-b-lg">
             {/* Real-time Chart */}
             {chartLoading ? (
               <div className="flex items-center justify-center h-full">
