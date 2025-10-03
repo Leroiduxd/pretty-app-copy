@@ -215,7 +215,7 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
         top: `${position.y}px`,
         zIndex: 9999,
       }}
-      className={`bg-card border-2 border-border rounded-lg shadow-2xl ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${isMinimized ? 'w-auto' : 'w-80'}`}
+      className={`bg-background border-2 border-border rounded-lg shadow-2xl ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${isMinimized ? 'w-auto' : 'w-80'}`}
       onMouseDown={handleMouseDown}
     >
       {/* Header */}

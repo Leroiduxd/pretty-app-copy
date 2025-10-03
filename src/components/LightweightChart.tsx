@@ -54,7 +54,7 @@ export const LightweightChart = ({ data, width, height, chartType = "candlestick
       // Create chart with proper configuration - based on working repo
       const chart = createChart(chartContainerRef.current, {
         layout: {
-          background: { type: ColorType.Solid, color: 'transparent' },
+          background: { type: ColorType.Solid, color: isDark ? '#000000' : '#ffffff' },
           textColor: textColor,
         },
         grid: {

@@ -12,6 +12,7 @@ const Index = () => {
   const [selectedPairId, setSelectedPairId] = useState<string>("0");
   const [showPositions, setShowPositions] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isStockListVisible, setIsStockListVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [storedStockData, setStoredStockData] = useState<any>(null);
   const { data: wsData, isConnected } = useWebSocket("wss://wss.brokex.trade:8443");
@@ -131,6 +132,14 @@ const Index = () => {
     setSelectedPairId(pairId);
   };
 
+  const handleToggleStockList = () => {
+    setIsStockListVisible(prev => !prev);
+    // Reload chart after 0.1s delay
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
+  };
+
   const handleStockDataChange = (stockData: any) => {
     if (stockData.symbol === selectedStock) {
       setStoredStockData(stockData);
@@ -149,15 +158,19 @@ const Index = () => {
           onTogglePositions={() => setShowPositions(!showPositions)}
           isDarkMode={isDarkMode}
           onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+          isStockListVisible={isStockListVisible}
+          onToggleStockList={handleToggleStockList}
         />
         
         <div className="flex flex-1 overflow-hidden">
-          <StockList 
-            selectedStock={selectedStock}
-            onSelectStock={handleStockSelect}
-            onStockDataChange={handleStockDataChange}
-          />
-          <TradingInterface 
+          {isStockListVisible && (
+            <StockList 
+              selectedStock={selectedStock}
+              onSelectStock={handleStockSelect}
+              onStockDataChange={handleStockDataChange}
+            />
+          )}
+          <TradingInterface
             symbol={currentStockData.symbol}
             price={currentStockData.price}
             change={currentStockData.change}

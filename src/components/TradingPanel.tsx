@@ -206,7 +206,7 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
   const buyingPower = parseFloat(usdBalance) * parseFloat(leverage);
 
   return (
-    <div className="w-80 p-4 bg-card border-l border-border overflow-y-auto">
+    <div className="w-80 p-4 bg-background border-l border-border overflow-y-auto">
       <div className="space-y-4">
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm text-muted-foreground">{symbol}</span>

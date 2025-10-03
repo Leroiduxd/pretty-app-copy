@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Moon, Sun, BarChart3, ChevronDown, Droplets, Bug, Trophy } from "lucide-react";
+import { Moon, Sun, BarChart3, ChevronDown, Droplets, Bug, Trophy, PanelLeftClose, PanelLeft } from "lucide-react";
 import { CustomWalletButton } from "./CustomWalletButton";
 import { ReportBugModal } from "./ReportBugModal";
 import { FaucetModal } from "./FaucetModal";
@@ -12,9 +12,11 @@ interface HeaderProps {
   onTogglePositions: () => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
+  isStockListVisible: boolean;
+  onToggleStockList: () => void;
 }
 
-export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: HeaderProps) => {
+export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode, isStockListVisible, onToggleStockList }: HeaderProps) => {
   const [selectedNetwork, setSelectedNetwork] = useState("pharos");
   const [faucetOpen, setFaucetOpen] = useState(false);
   const [reportBugOpen, setReportBugOpen] = useState(false);
@@ -97,6 +99,17 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode }: Head
         </div>
 
         <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggleStockList}
+            className="h-8"
+            title={isStockListVisible ? "Hide asset list" : "Show asset list"}
+          >
+            {isStockListVisible ? <PanelLeftClose className="w-4 h-4 mr-2" /> : <PanelLeft className="w-4 h-4 mr-2" />}
+            Assets
+          </Button>
+
           <Button
             variant="ghost"
             size="sm"

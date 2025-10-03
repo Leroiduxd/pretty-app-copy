@@ -148,7 +148,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
     <div className="flex-1 flex overflow-hidden" ref={fullscreenRef}>
       {/* Chart Section */}
       <div className="flex-1 p-4">
-        <Card className="h-full bg-card border-border flex flex-col">
+        <Card className="h-full bg-background border-border flex flex-col">
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
