@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useWebSocket, WebSocketData } from "@/hooks/useWebSocket";
 import { useMemo, useState, useEffect, useRef } from "react";
-import { Search } from "lucide-react";
+import { Search, PanelLeftClose } from "lucide-react";
 import { StockSearchModal } from "./StockSearchModal";
 
 interface StockListProps {
@@ -10,9 +10,10 @@ interface StockListProps {
   onSelectStock: (symbol: string, pairId: string) => void;
   onStockDataChange?: (stockData: any) => void;
   stocks?: any[];
+  onToggleStockList?: () => void;
 }
 
-export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, stocks: externalStocks }: StockListProps) => {
+export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, stocks: externalStocks, onToggleStockList }: StockListProps) => {
   const { data: wsData, isConnected, error } = useWebSocket("wss://wss.brokex.trade:8443");
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [stocks, setStocks] = useState<any[]>([]);
@@ -126,7 +127,18 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, sto
       <div className="w-72 h-full bg-card border-r border-border overflow-y-auto">
         <div className="sticky top-0 z-10 bg-card p-3 border-b border-border">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">SYMBOL</span>
+            <div className="flex items-center gap-1.5">
+              {onToggleStockList && (
+                <button
+                  onClick={onToggleStockList}
+                  className="p-1 hover:bg-muted rounded transition-colors"
+                  title="Hide asset list"
+                >
+                  <PanelLeftClose size={12} className="text-muted-foreground" />
+                </button>
+              )}
+              <span className="text-muted-foreground">SYMBOL</span>
+            </div>
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground">LAST/CHANGE</span>
               <button

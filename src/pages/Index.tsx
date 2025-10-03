@@ -165,9 +165,10 @@ const Index = () => {
         <div className="flex flex-1 overflow-hidden">
           {isStockListVisible && (
             <StockList 
-              selectedStock={selectedStock}
-              onSelectStock={handleStockSelect}
+              selectedStock={selectedStock} 
+              onSelectStock={handleStockSelect} 
               onStockDataChange={handleStockDataChange}
+              onToggleStockList={handleToggleStockList}
             />
           )}
           <TradingInterface

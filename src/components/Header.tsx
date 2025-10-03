@@ -102,17 +102,6 @@ export const Header = ({ onTogglePositions, isDarkMode, onToggleDarkMode, isStoc
           <Button
             variant="ghost"
             size="sm"
-            onClick={onToggleStockList}
-            className="h-8"
-            title={isStockListVisible ? "Hide asset list" : "Show asset list"}
-          >
-            {isStockListVisible ? <PanelLeftClose className="w-4 h-4 mr-2" /> : <PanelLeft className="w-4 h-4 mr-2" />}
-            Assets
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
             onClick={onTogglePositions}
             className="h-8"
           >
