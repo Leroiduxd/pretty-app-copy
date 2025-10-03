@@ -226,18 +226,21 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
             <DropdownMenuTrigger className="no-drag flex items-center gap-1 text-sm font-semibold hover:text-primary">
               {symbol} <ChevronDown className="w-3 h-3" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-popover border-border z-[10000] max-h-60 overflow-y-auto">
+            <DropdownMenuContent className="bg-popover border-border z-[10000] max-h-60 overflow-y-auto no-drag">
               {availableStocks.length > 0 ? (
                 availableStocks.map((stock: any) => (
                   <DropdownMenuItem 
                     key={stock.symbol}
-                    onClick={() => onSelectStock?.(stock.symbol, stock.pairId)}
+                    onClick={() => {
+                      onSelectStock?.(stock.symbol, stock.pairId);
+                    }}
+                    className="no-drag"
                   >
                     {stock.symbol}
                   </DropdownMenuItem>
                 ))
               ) : (
-                <DropdownMenuItem disabled>Loading assets...</DropdownMenuItem>
+                <DropdownMenuItem disabled className="no-drag">Loading assets...</DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -248,9 +251,15 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
             <DropdownMenuTrigger className="no-drag flex items-center gap-1 text-sm font-semibold hover:text-primary">
               {externalLeverage}x <ChevronDown className="w-3 h-3" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-popover border-border z-[10000]">
+            <DropdownMenuContent className="bg-popover border-border z-[10000] no-drag">
               {leverageOptions.map((lev) => (
-                <DropdownMenuItem key={lev} onClick={() => onLeverageChange(lev)}>
+                <DropdownMenuItem 
+                  key={lev} 
+                  onClick={() => {
+                    onLeverageChange(lev);
+                  }}
+                  className="no-drag"
+                >
                   {lev}x
                 </DropdownMenuItem>
               ))}

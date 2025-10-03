@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, TrendingUp, Plus, Maximize2 } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
 import { LightweightChart } from "./LightweightChart";
 import { useChartData } from "@/hooks/useChartData";
@@ -111,11 +111,11 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
       if (!document.fullscreenElement) {
         await fullscreenRef.current.requestFullscreen();
         setIsFullscreen(true);
-        setChartKey(prev => prev + 1); // Force chart reload
+        setTimeout(() => setChartKey(prev => prev + 1), 100); // 0.1s delay before reload
       } else {
         await document.exitFullscreen();
         setIsFullscreen(false);
-        setChartKey(prev => prev + 1); // Force chart reload
+        setTimeout(() => setChartKey(prev => prev + 1), 100); // 0.1s delay before reload
       }
     } catch (error) {
       console.error('Fullscreen error:', error);
@@ -128,11 +128,21 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
         await document.exitFullscreen();
       }
       setIsFullscreen(false);
-      setChartKey(prev => prev + 1); // Force chart reload
+      setTimeout(() => setChartKey(prev => prev + 1), 100); // 0.1s delay before reload
     } catch (error) {
       console.error('Exit fullscreen error:', error);
     }
   };
+
+  // Handle window resize to reload chart
+  useEffect(() => {
+    const handleResize = () => {
+      setChartKey(prev => prev + 1);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div className="flex-1 flex overflow-hidden" ref={fullscreenRef}>
