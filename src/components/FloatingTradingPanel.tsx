@@ -331,12 +331,12 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
                 placeholder="Limit price"
                 value={limitPrice}
                 onChange={(e) => setLimitPrice(e.target.value)}
-                className="h-8 text-sm pr-12"
+                className="h-8 text-sm pr-14"
               />
-              <div className="absolute right-0 top-0 h-8 flex border-l border-border">
+              <div className="absolute right-1 top-1 h-6 flex gap-1">
                 <button
                   type="button"
-                  className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs border-r border-border"
+                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
                   onClick={() => {
                     const current = limitPrice ? parseFloat(limitPrice) : price;
                     const decimals = current.toString().split('.')[1]?.length || 2;
@@ -348,7 +348,7 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
                 </button>
                 <button
                   type="button"
-                  className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs"
+                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
                   onClick={() => {
                     const current = limitPrice ? parseFloat(limitPrice) : price;
                     const decimals = current.toString().split('.')[1]?.length || 2;
@@ -399,19 +399,19 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
                 type="number"
                 value={orderSize}
                 onChange={(e) => setOrderSize(e.target.value)}
-                className="h-8 text-sm pr-12"
+                className="h-8 text-sm pr-14"
               />
-              <div className="absolute right-0 top-0 h-8 flex border-l border-border">
+              <div className="absolute right-1 top-1 h-6 flex gap-1">
                 <button
                   type="button"
-                  className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs border-r border-border"
+                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
                   onClick={() => setOrderSize((prev) => Math.max(0, parseFloat(prev || "0") - 1).toString())}
                 >
                   -
                 </button>
                 <button
                   type="button"
-                  className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs"
+                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
                   onClick={() => setOrderSize((prev) => (parseFloat(prev || "0") + 1).toString())}
                 >
                   +
@@ -462,12 +462,12 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
                 placeholder="Stop loss price"
                 value={stopLoss}
                 onChange={(e) => setStopLoss(e.target.value)}
-                className="h-8 text-sm pr-12"
+                className="h-8 text-sm pr-14"
               />
-              <div className="absolute right-0 top-0 h-8 flex border-l border-border">
+              <div className="absolute right-1 top-1 h-6 flex gap-1">
                 <button
                   type="button"
-                  className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs border-r border-border"
+                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
                   onClick={() => {
                     const current = stopLoss ? parseFloat(stopLoss) : price;
                     const decimals = current.toString().split('.')[1]?.length || 2;
@@ -479,7 +479,7 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
                 </button>
                 <button
                   type="button"
-                  className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs"
+                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
                   onClick={() => {
                     const current = stopLoss ? parseFloat(stopLoss) : price;
                     const decimals = current.toString().split('.')[1]?.length || 2;
@@ -501,12 +501,12 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
                 placeholder="Take profit price"
                 value={takeProfit}
                 onChange={(e) => setTakeProfit(e.target.value)}
-                className="h-8 text-sm pr-12"
+                className="h-8 text-sm pr-14"
               />
-              <div className="absolute right-0 top-0 h-8 flex border-l border-border">
+              <div className="absolute right-1 top-1 h-6 flex gap-1">
                 <button
                   type="button"
-                  className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs border-r border-border"
+                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
                   onClick={() => {
                     const current = takeProfit ? parseFloat(takeProfit) : price;
                     const decimals = current.toString().split('.')[1]?.length || 2;
@@ -518,7 +518,7 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
                 </button>
                 <button
                   type="button"
-                  className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs"
+                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
                   onClick={() => {
                     const current = takeProfit ? parseFloat(takeProfit) : price;
                     const decimals = current.toString().split('.')[1]?.length || 2;
