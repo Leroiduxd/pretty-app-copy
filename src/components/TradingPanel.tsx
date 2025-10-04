@@ -262,20 +262,30 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
           <TabsContent value="limit" className="mt-2">
             <div className="space-y-2">
               <div className="text-xs text-muted-foreground">Set target price</div>
-              <div className="flex items-center gap-1">
+              <div className="relative">
                 <Input
                   type="number"
                   placeholder="Target price"
-                  value={limitPrice || price.toString()}
+                  value={limitPrice}
                   onChange={(e) => setLimitPrice(e.target.value)}
-                  className="bg-input border-border text-foreground text-sm h-8"
+                  className="bg-input border-border text-foreground text-sm h-8 pr-12"
                 />
-                <div className="flex flex-col gap-0.5">
-                  <Button
+                <div className="absolute right-0 top-0 h-8 flex border-l border-border">
+                  <button
                     type="button"
-                    size="icon"
-                    variant="outline"
-                    className="h-3.5 w-6 p-0"
+                    className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs border-r border-border"
+                    onClick={() => {
+                      const current = limitPrice ? parseFloat(limitPrice) : price;
+                      const decimals = current.toString().split('.')[1]?.length || 2;
+                      const increment = decimals >= 5 ? 0.001 : decimals >= 3 ? 0.1 : 1;
+                      setLimitPrice((current - increment).toFixed(decimals));
+                    }}
+                  >
+                    -
+                  </button>
+                  <button
+                    type="button"
+                    className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs"
                     onClick={() => {
                       const current = limitPrice ? parseFloat(limitPrice) : price;
                       const decimals = current.toString().split('.')[1]?.length || 2;
@@ -283,22 +293,8 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
                       setLimitPrice((current + increment).toFixed(decimals));
                     }}
                   >
-                    <span className="text-xs">+</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    className="h-3.5 w-6 p-0"
-                    onClick={() => {
-                      const current = limitPrice ? parseFloat(limitPrice) : price;
-                      const decimals = current.toString().split('.')[1]?.length || 2;
-                      const increment = decimals >= 5 ? 0.001 : decimals >= 3 ? 0.1 : 1;
-                      setLimitPrice(Math.max(0, current - increment).toFixed(decimals));
-                    }}
-                  >
-                    <span className="text-xs">-</span>
-                  </Button>
+                    +
+                  </button>
                 </div>
               </div>
             </div>
@@ -313,32 +309,28 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
               <span className="text-muted-foreground">Order Size (USDC)</span>
               <span className="text-foreground">Max: ${usdBalance}</span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="relative">
               <Input
                 type="number"
                 value={orderSize}
                 onChange={(e) => setOrderSize(e.target.value)}
-                className="bg-input border-border text-foreground h-9"
+                className="bg-input border-border text-foreground h-9 pr-12"
               />
-              <div className="flex flex-col gap-0.5">
-                <Button
+              <div className="absolute right-0 top-0 h-9 flex border-l border-border">
+                <button
                   type="button"
-                  size="icon"
-                  variant="outline"
-                  className="h-4 w-6 p-0"
-                  onClick={() => setOrderSize((prev) => (parseFloat(prev || "0") + 1).toString())}
-                >
-                  <span className="text-xs">+</span>
-                </Button>
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="outline"
-                  className="h-4 w-6 p-0"
+                  className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs border-r border-border"
                   onClick={() => setOrderSize((prev) => Math.max(0, parseFloat(prev || "0") - 1).toString())}
                 >
-                  <span className="text-xs">-</span>
-                </Button>
+                  -
+                </button>
+                <button
+                  type="button"
+                  className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs"
+                  onClick={() => setOrderSize((prev) => (parseFloat(prev || "0") + 1).toString())}
+                >
+                  +
+                </button>
               </div>
             </div>
             
@@ -409,34 +401,18 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
           {showStopLoss && (
             <div>
               <div className="text-xs text-muted-foreground mb-2">Stop Loss Price</div>
-              <div className="flex items-center gap-1">
+              <div className="relative">
                 <Input
                   type="number"
                   placeholder="Stop loss price"
                   value={stopLoss}
                   onChange={(e) => setStopLoss(e.target.value)}
-                  className="bg-input border-border text-foreground text-sm h-8"
+                  className="bg-input border-border text-foreground text-sm h-8 pr-12"
                 />
-                <div className="flex flex-col gap-0.5">
-                  <Button
+                <div className="absolute right-0 top-0 h-8 flex border-l border-border">
+                  <button
                     type="button"
-                    size="icon"
-                    variant="outline"
-                    className="h-3.5 w-6 p-0"
-                    onClick={() => {
-                      const current = stopLoss ? parseFloat(stopLoss) : price;
-                      const decimals = current.toString().split('.')[1]?.length || 2;
-                      const increment = decimals >= 5 ? 0.001 : decimals >= 3 ? 0.1 : 1;
-                      setStopLoss((current + increment).toFixed(decimals));
-                    }}
-                  >
-                    <span className="text-xs">+</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    className="h-3.5 w-6 p-0"
+                    className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs border-r border-border"
                     onClick={() => {
                       const current = stopLoss ? parseFloat(stopLoss) : price;
                       const decimals = current.toString().split('.')[1]?.length || 2;
@@ -444,8 +420,20 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
                       setStopLoss(Math.max(0, current - increment).toFixed(decimals));
                     }}
                   >
-                    <span className="text-xs">-</span>
-                  </Button>
+                    -
+                  </button>
+                  <button
+                    type="button"
+                    className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs"
+                    onClick={() => {
+                      const current = stopLoss ? parseFloat(stopLoss) : price;
+                      const decimals = current.toString().split('.')[1]?.length || 2;
+                      const increment = decimals >= 5 ? 0.001 : decimals >= 3 ? 0.1 : 1;
+                      setStopLoss((current + increment).toFixed(decimals));
+                    }}
+                  >
+                    +
+                  </button>
                 </div>
               </div>
             </div>
@@ -455,34 +443,18 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
           {showTakeProfit && (
             <div>
               <div className="text-xs text-muted-foreground mb-2">Take Profit Price</div>
-              <div className="flex items-center gap-1">
+              <div className="relative">
                 <Input
                   type="number"
                   placeholder="Take profit price"
                   value={takeProfit}
                   onChange={(e) => setTakeProfit(e.target.value)}
-                  className="bg-input border-border text-foreground text-sm h-8"
+                  className="bg-input border-border text-foreground text-sm h-8 pr-12"
                 />
-                <div className="flex flex-col gap-0.5">
-                  <Button
+                <div className="absolute right-0 top-0 h-8 flex border-l border-border">
+                  <button
                     type="button"
-                    size="icon"
-                    variant="outline"
-                    className="h-3.5 w-6 p-0"
-                    onClick={() => {
-                      const current = takeProfit ? parseFloat(takeProfit) : price;
-                      const decimals = current.toString().split('.')[1]?.length || 2;
-                      const increment = decimals >= 5 ? 0.001 : decimals >= 3 ? 0.1 : 1;
-                      setTakeProfit((current + increment).toFixed(decimals));
-                    }}
-                  >
-                    <span className="text-xs">+</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    className="h-3.5 w-6 p-0"
+                    className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs border-r border-border"
                     onClick={() => {
                       const current = takeProfit ? parseFloat(takeProfit) : price;
                       const decimals = current.toString().split('.')[1]?.length || 2;
@@ -490,8 +462,20 @@ export const TradingPanel = ({ symbol, price, assetId }: TradingPanelProps) => {
                       setTakeProfit(Math.max(0, current - increment).toFixed(decimals));
                     }}
                   >
-                    <span className="text-xs">-</span>
-                  </Button>
+                    -
+                  </button>
+                  <button
+                    type="button"
+                    className="w-6 h-full hover:bg-muted transition-colors flex items-center justify-center text-xs"
+                    onClick={() => {
+                      const current = takeProfit ? parseFloat(takeProfit) : price;
+                      const decimals = current.toString().split('.')[1]?.length || 2;
+                      const increment = decimals >= 5 ? 0.001 : decimals >= 3 ? 0.1 : 1;
+                      setTakeProfit((current + increment).toFixed(decimals));
+                    }}
+                  >
+                    +
+                  </button>
                 </div>
               </div>
             </div>
