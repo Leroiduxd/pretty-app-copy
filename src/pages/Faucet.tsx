@@ -52,14 +52,23 @@ export default function Faucet() {
   });
 
   useEffect(() => {
-    if (isConfirmed) {
+    if (isConfirmed && hash) {
       refetchClaimed();
       toast({
         title: "Claim Successful!",
         description: "Your trading credit has been sent.",
+        action: (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.open(`https://testnet.pharosscan.xyz/tx/${hash}`, "_blank")}
+          >
+            View on Pharosscan
+          </Button>
+        ),
       });
     }
-  }, [isConfirmed, refetchClaimed, toast]);
+  }, [isConfirmed, hash, refetchClaimed, toast]);
 
   const handleClaim = () => {
     if (!isConnected || !address) {
