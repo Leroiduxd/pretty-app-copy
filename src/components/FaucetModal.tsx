@@ -154,7 +154,7 @@ export const FaucetModal = ({ open: controlledOpen, onOpenChange }: FaucetModalP
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => window.open("https://brokex.trade/faucet", "_blank")}
+              onClick={() => window.location.href = "/faucet"}
               className="w-full"
             >
               <ExternalLink className="h-4 w-4 mr-2" />
