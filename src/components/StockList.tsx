@@ -1,9 +1,12 @@
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { useWebSocket, WebSocketData } from "@/hooks/useWebSocket";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { Search, PanelLeftClose } from "lucide-react";
 import { StockSearchModal } from "./StockSearchModal";
+
+type MarketCategory = 'crypto' | 'forex' | 'commodities' | 'stocks' | 'indices';
 
 interface StockListProps {
   selectedStock: string;
@@ -17,7 +20,37 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, sto
   const { data: wsData, isConnected, error } = useWebSocket("wss://wss.brokex.trade:8443");
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [stocks, setStocks] = useState<any[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<Set<MarketCategory>>(new Set());
   const stocksRef = useRef<Map<string, any>>(new Map());
+  
+  // Function to determine market category based on ID
+  const getMarketCategory = (id: number): MarketCategory => {
+    if (id >= 0 && id <= 999) return 'crypto';
+    if (id >= 5000 && id <= 5099) return 'forex';
+    if (id >= 5500 && id <= 5599) return 'commodities';
+    if (id >= 6000 && id <= 6099) return 'stocks';
+    if (id >= 6100 && id <= 6199) return 'indices';
+    return 'crypto'; // default
+  };
+  
+  // Toggle category selection
+  const toggleCategory = (category: MarketCategory) => {
+    setSelectedCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
+      }
+      return newSet;
+    });
+  };
+  
+  // Filter stocks based on selected categories
+  const filteredStocks = useMemo(() => {
+    if (selectedCategories.size === 0) return stocks;
+    return stocks.filter(stock => selectedCategories.has(getMarketCategory(stock.id)));
+  }, [stocks, selectedCategories]);
   
   // Function to get stock name by symbol or return fallback
   const getStockName = (symbol: string, pairId: string) => {
@@ -151,9 +184,55 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, sto
             </div>
           </div>
         </div>
+        
+        {/* Market Category Filters */}
+        <div className="sticky top-[53px] z-10 bg-card p-3 border-b border-border">
+          <div className="flex flex-wrap gap-1.5">
+            <Button
+              variant={selectedCategories.has('crypto') ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => toggleCategory('crypto')}
+              className="h-7 text-xs px-2"
+            >
+              Crypto
+            </Button>
+            <Button
+              variant={selectedCategories.has('forex') ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => toggleCategory('forex')}
+              className="h-7 text-xs px-2"
+            >
+              Forex
+            </Button>
+            <Button
+              variant={selectedCategories.has('commodities') ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => toggleCategory('commodities')}
+              className="h-7 text-xs px-2"
+            >
+              Commodities
+            </Button>
+            <Button
+              variant={selectedCategories.has('stocks') ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => toggleCategory('stocks')}
+              className="h-7 text-xs px-2"
+            >
+              Stocks
+            </Button>
+            <Button
+              variant={selectedCategories.has('indices') ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => toggleCategory('indices')}
+              className="h-7 text-xs px-2"
+            >
+              Indices
+            </Button>
+          </div>
+        </div>
       
       <div className="space-y-0.5 p-2">
-        {stocks.length === 0 ? (
+        {filteredStocks.length === 0 && stocks.length === 0 ? (
           // Show loading skeleton buttons when no data
           Array.from({ length: 20 }).map((_, index) => (
             <div key={`skeleton-${index}`}>
@@ -174,8 +253,12 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, sto
               )}
             </div>
           ))
+        ) : filteredStocks.length === 0 ? (
+          <div className="text-center text-muted-foreground text-sm py-8">
+            No assets in selected categories
+          </div>
         ) : (
-          stocks.map((stock, index) => (
+          filteredStocks.map((stock, index) => (
             <div key={stock.symbol}>
               <Card
                 className={`p-2.5 cursor-pointer transition-colors hover:bg-muted border-0 ${
@@ -196,7 +279,7 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, sto
                   </div>
                 </div>
               </Card>
-              {index < stocks.length - 1 && (
+              {index < filteredStocks.length - 1 && (
                 <div className="h-px bg-border/50 mx-2" />
               )}
             </div>
