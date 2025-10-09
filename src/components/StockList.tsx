@@ -186,13 +186,13 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, sto
         </div>
         
         {/* Market Category Filters */}
-        <div className="sticky top-[53px] z-10 bg-card p-3 border-b border-border">
-          <div className="flex flex-wrap gap-1.5">
+        <div className="sticky top-[53px] z-10 bg-card p-2 border-b border-border">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
             <Button
               variant={selectedCategories.has('crypto') ? 'default' : 'outline'}
               size="sm"
               onClick={() => toggleCategory('crypto')}
-              className="h-7 text-xs px-2"
+              className="h-6 text-xs px-2 whitespace-nowrap"
             >
               Crypto
             </Button>
@@ -200,7 +200,7 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, sto
               variant={selectedCategories.has('forex') ? 'default' : 'outline'}
               size="sm"
               onClick={() => toggleCategory('forex')}
-              className="h-7 text-xs px-2"
+              className="h-6 text-xs px-2 whitespace-nowrap"
             >
               Forex
             </Button>
@@ -208,7 +208,7 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, sto
               variant={selectedCategories.has('commodities') ? 'default' : 'outline'}
               size="sm"
               onClick={() => toggleCategory('commodities')}
-              className="h-7 text-xs px-2"
+              className="h-6 text-xs px-2 whitespace-nowrap"
             >
               Commodities
             </Button>
@@ -216,7 +216,7 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, sto
               variant={selectedCategories.has('stocks') ? 'default' : 'outline'}
               size="sm"
               onClick={() => toggleCategory('stocks')}
-              className="h-7 text-xs px-2"
+              className="h-6 text-xs px-2 whitespace-nowrap"
             >
               Stocks
             </Button>
@@ -224,7 +224,7 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, sto
               variant={selectedCategories.has('indices') ? 'default' : 'outline'}
               size="sm"
               onClick={() => toggleCategory('indices')}
-              className="h-7 text-xs px-2"
+              className="h-6 text-xs px-2 whitespace-nowrap"
             >
               Indices
             </Button>
