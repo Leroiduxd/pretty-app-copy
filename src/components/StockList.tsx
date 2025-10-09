@@ -186,7 +186,7 @@ export const StockList = ({ selectedStock, onSelectStock, onStockDataChange, sto
         </div>
         
         {/* Market Category Filters */}
-        <div className="sticky top-[53px] z-10 bg-card p-2 border-b border-border overflow-x-auto">
+        <div className="sticky top-[53px] z-10 bg-card px-2 py-1.5 border-b border-border overflow-x-auto">
           <div className="flex gap-1.5 min-w-max">
             <Button
               variant={selectedCategories.has('crypto') ? 'default' : 'outline'}
