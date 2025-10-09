@@ -325,41 +325,13 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
 
           {/* Limit Price Input */}
           {orderType === "limit" && (
-            <div className="relative">
-              <Input
-                type="number"
-                placeholder="Limit price"
-                value={limitPrice}
-                onChange={(e) => setLimitPrice(e.target.value)}
-                className="h-8 text-sm pr-14"
-              />
-              <div className="absolute right-1 top-1 h-6 flex gap-1">
-                <button
-                  type="button"
-                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
-                  onClick={() => {
-                    const current = limitPrice ? parseFloat(limitPrice) : price;
-                    const decimals = current.toString().split('.')[1]?.length || 2;
-                    const increment = decimals >= 5 ? 0.001 : decimals >= 3 ? 0.1 : 1;
-                    setLimitPrice((current - increment).toFixed(decimals));
-                  }}
-                >
-                  -
-                </button>
-                <button
-                  type="button"
-                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
-                  onClick={() => {
-                    const current = limitPrice ? parseFloat(limitPrice) : price;
-                    const decimals = current.toString().split('.')[1]?.length || 2;
-                    const increment = decimals >= 5 ? 0.001 : decimals >= 3 ? 0.1 : 1;
-                    setLimitPrice((current + increment).toFixed(decimals));
-                  }}
-                >
-                  +
-                </button>
-              </div>
-            </div>
+            <Input
+              type="number"
+              placeholder="Limit price"
+              value={limitPrice}
+              onChange={(e) => setLimitPrice(e.target.value)}
+              className="h-8 text-sm"
+            />
           )}
 
           {/* Long/Short Buttons */}
@@ -394,30 +366,12 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
               <span className="text-muted-foreground">Size (USDC)</span>
               <span className="text-muted-foreground">Balance: ${usdBalance}</span>
             </div>
-            <div className="relative">
-              <Input
-                type="number"
-                value={orderSize}
-                onChange={(e) => setOrderSize(e.target.value)}
-                className="h-8 text-sm pr-14"
-              />
-              <div className="absolute right-1 top-1 h-6 flex gap-1">
-                <button
-                  type="button"
-                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
-                  onClick={() => setOrderSize((prev) => Math.max(0, parseFloat(prev || "0") - 1).toString())}
-                >
-                  -
-                </button>
-                <button
-                  type="button"
-                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
-                  onClick={() => setOrderSize((prev) => (parseFloat(prev || "0") + 1).toString())}
-                >
-                  +
-                </button>
-              </div>
-            </div>
+            <Input
+              type="number"
+              value={orderSize}
+              onChange={(e) => setOrderSize(e.target.value)}
+              className="h-8 text-sm"
+            />
           </div>
 
           {/* SL/TP Buttons */}
@@ -456,80 +410,24 @@ export const FloatingTradingPanel = ({ symbol, price, assetId, onExitFullscreen,
 
           {/* SL Input */}
           {showStopLoss && (
-            <div className="relative">
-              <Input
-                type="number"
-                placeholder="Stop loss price"
-                value={stopLoss}
-                onChange={(e) => setStopLoss(e.target.value)}
-                className="h-8 text-sm pr-14"
-              />
-              <div className="absolute right-1 top-1 h-6 flex gap-1">
-                <button
-                  type="button"
-                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
-                  onClick={() => {
-                    const current = stopLoss ? parseFloat(stopLoss) : price;
-                    const decimals = current.toString().split('.')[1]?.length || 2;
-                    const increment = decimals >= 5 ? 0.001 : decimals >= 3 ? 0.1 : 1;
-                    setStopLoss(Math.max(0, current - increment).toFixed(decimals));
-                  }}
-                >
-                  -
-                </button>
-                <button
-                  type="button"
-                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
-                  onClick={() => {
-                    const current = stopLoss ? parseFloat(stopLoss) : price;
-                    const decimals = current.toString().split('.')[1]?.length || 2;
-                    const increment = decimals >= 5 ? 0.001 : decimals >= 3 ? 0.1 : 1;
-                    setStopLoss((current + increment).toFixed(decimals));
-                  }}
-                >
-                  +
-                </button>
-              </div>
-            </div>
+            <Input
+              type="number"
+              placeholder="Stop loss price"
+              value={stopLoss}
+              onChange={(e) => setStopLoss(e.target.value)}
+              className="h-8 text-sm"
+            />
           )}
 
           {/* TP Input */}
           {showTakeProfit && (
-            <div className="relative">
-              <Input
-                type="number"
-                placeholder="Take profit price"
-                value={takeProfit}
-                onChange={(e) => setTakeProfit(e.target.value)}
-                className="h-8 text-sm pr-14"
-              />
-              <div className="absolute right-1 top-1 h-6 flex gap-1">
-                <button
-                  type="button"
-                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
-                  onClick={() => {
-                    const current = takeProfit ? parseFloat(takeProfit) : price;
-                    const decimals = current.toString().split('.')[1]?.length || 2;
-                    const increment = decimals >= 5 ? 0.001 : decimals >= 3 ? 0.1 : 1;
-                    setTakeProfit(Math.max(0, current - increment).toFixed(decimals));
-                  }}
-                >
-                  -
-                </button>
-                <button
-                  type="button"
-                  className="w-6 h-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center text-xs font-semibold rounded"
-                  onClick={() => {
-                    const current = takeProfit ? parseFloat(takeProfit) : price;
-                    const decimals = current.toString().split('.')[1]?.length || 2;
-                    const increment = decimals >= 5 ? 0.001 : decimals >= 3 ? 0.1 : 1;
-                    setTakeProfit((current + increment).toFixed(decimals));
-                  }}
-                >
-                  +
-                </button>
-              </div>
-            </div>
+            <Input
+              type="number"
+              placeholder="Take profit price"
+              value={takeProfit}
+              onChange={(e) => setTakeProfit(e.target.value)}
+              className="h-8 text-sm"
+            />
           )}
 
           {/* Execute Button */}
