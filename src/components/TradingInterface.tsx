@@ -165,7 +165,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
                       className="h-8 w-8 p-0"
                       title="Search assets"
                     >
-                      <Search className="w-4 h-4" />
+                      <Plus className="w-4 h-4" />
                     </Button>
                   )}
                 </div>
