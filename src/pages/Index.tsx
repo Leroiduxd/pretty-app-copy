@@ -181,6 +181,7 @@ const Index = () => {
             pairId={selectedPairId}
             availableStocks={availableStocks}
             onSelectStock={handleStockSelect}
+            isStockListVisible={isStockListVisible}
           />
         </div>
 

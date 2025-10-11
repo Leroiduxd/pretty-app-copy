@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChart, TrendingUp, Plus, Maximize2 } from "lucide-react";
+import { BarChart, TrendingUp, Plus, Maximize2, Search } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
 import { LightweightChart } from "./LightweightChart";
@@ -11,6 +11,7 @@ import { useChartData } from "@/hooks/useChartData";
 import { TradingPanel } from "./TradingPanel";
 import { FloatingTradingPanel } from "./FloatingTradingPanel";
 import { usePositions } from "@/hooks/usePositions";
+import { StockSearchModal } from "./StockSearchModal";
 
 interface TradingInterfaceProps {
   symbol: string;
@@ -22,9 +23,10 @@ interface TradingInterfaceProps {
   pairId?: string;
   availableStocks?: any[];
   onSelectStock?: (symbol: string, pairId: string) => void;
+  isStockListVisible?: boolean;
 }
 
-export const TradingInterface = ({ symbol, price, change, changePercent, high24h, low24h, pairId, availableStocks = [], onSelectStock }: TradingInterfaceProps) => {
+export const TradingInterface = ({ symbol, price, change, changePercent, high24h, low24h, pairId, availableStocks = [], onSelectStock, isStockListVisible = true }: TradingInterfaceProps) => {
   const [orderSize, setOrderSize] = useState("10");
   const [leverage, setLeverage] = useState("1");
   const [leverageInput, setLeverageInput] = useState("1");
@@ -37,6 +39,7 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
   const [selectedTimeframe, setSelectedTimeframe] = useState("5M");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [chartKey, setChartKey] = useState(0);
+  const [showSearchModal, setShowSearchModal] = useState(false);
   
   const { usdBalance } = useTokenBalance();
   const fullscreenRef = useRef<HTMLDivElement>(null);
@@ -152,7 +155,20 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
           <div className="p-4 border-b border-border bg-card">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <h2 className="text-xl font-bold text-foreground">{symbol}</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-bold text-foreground">{symbol}</h2>
+                  {!isStockListVisible && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowSearchModal(true)}
+                      className="h-8 w-8 p-0"
+                      title="Search assets"
+                    >
+                      <Search className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-bold text-foreground">${formatPrice(price)}</span>
                   <span className={`text-sm ${change >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
@@ -272,6 +288,29 @@ export const TradingInterface = ({ symbol, price, change, changePercent, high24h
           onSelectStock={onSelectStock}
         />
       )}
+
+      <StockSearchModal
+        isOpen={showSearchModal}
+        onClose={() => setShowSearchModal(false)}
+        stocks={availableStocks.map(stock => ({
+          symbol: stock.symbol,
+          name: stock.symbol,
+          price: stock.price,
+          change: 0,
+          changePercent: 0,
+          high24h: 0,
+          low24h: 0,
+          timestamp: "",
+          id: stock.pairId,
+          pairId: stock.pairId,
+        }))}
+        onSelectStock={(symbol, pairId) => {
+          if (onSelectStock) {
+            onSelectStock(symbol, pairId);
+          }
+        }}
+        formatPrice={formatPrice}
+      />
     </div>
   );
 };
