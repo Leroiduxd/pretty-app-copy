@@ -97,7 +97,7 @@ export const StockSearchModal = ({
               {filteredStocks.map((stock) => (
                 <Card
                   key={stock.symbol}
-                  className="p-3 cursor-pointer transition-colors hover:bg-muted border-0 bg-transparent"
+                  className="p-3 cursor-pointer transition-colors hover:bg-white/5 border-0 bg-black"
                   onClick={() => handleSelectStock(stock.symbol, stock.pairId)}
                 >
                   <div className="flex items-center justify-between">
