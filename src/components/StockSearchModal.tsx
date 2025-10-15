@@ -59,7 +59,7 @@ export const StockSearchModal = ({
       />
       
       {/* Modal */}
-      <div className="relative bg-card border border-border rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[80vh] flex flex-col">
+      <div className="relative bg-black border border-border rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[80vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="text-lg font-semibold">Search Assets</h2>
